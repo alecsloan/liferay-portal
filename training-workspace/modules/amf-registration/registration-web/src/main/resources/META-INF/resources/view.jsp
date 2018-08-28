@@ -1,7 +1,5 @@
 <%@ include file="/init.jsp" %>
-<%
-	System.out.println(request.getParameter("test"));
-%>
+
 <aui:form action="" method="post" name="fm">
 	<aui:fieldset label="Basic Info">
 		<aui:input 
@@ -140,4 +138,32 @@
 			type="text"
 		/>
 	</aui:fieldset>
+	
+	<hr />
+	
+	<aui:fieldset label="Misc.">
+		<aui:select label="Security Question:" name="security_question" required="true" title="Security Question">
+			<aui:option label="Must choose one of the following" selected="true"/>
+			<aui:option label="What is your mother's maiden name?" value="what-is-your-mother's-maiden-name"/>
+			<aui:option label="What is the make of your first car?" value="what-is-the-make-of-your-first-car"/>
+			<aui:option label="What is your high school mascot?" value="what-is-your-high-school-mascot"/>
+			<aui:option label="Who is your favorite actor?" value="who-is-your-favorite-actor"/>			
+		</aui:select>
+		<aui:input 
+			label="Answer"
+			maxlength="255"
+			name="security_answer"
+			required="true"
+			title="Security Answer" 
+			type="text"
+		/>
+		<aui:input 
+			label="I have read, understand, and agree with the Terms of Use governing my access to and use of the Acme Movie Fanatics web site." 
+			name="accepted_tou" 
+			required="true"
+			title="Terms of Use" 
+			type="checkbox"
+		/>
+	</aui:fieldset>
+	<aui:button name="submit" type="submit" value="Register"></aui:button>
 </aui:form>
