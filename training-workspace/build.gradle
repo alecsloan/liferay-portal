@@ -1,0 +1,3 @@
+createToken {
+	tokenFile "${projectDir}/configs/token"
+}
