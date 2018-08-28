@@ -3,78 +3,81 @@
 	System.out.println(request.getParameter("test"));
 %>
 <aui:form action="" method="post" name="fm">
-<aui:fieldset label="Basic Info">
-	<aui:input 
-		label="First Name:"
-		maxlength="50"
-		name="first_name"
-		required="true"
-		title="First Name"
-		type="text"
-	/>
+	<aui:fieldset label="Basic Info">
+		<aui:input 
+			label="First Name:"
+			maxlength="50"
+			name="first_name"
+			required="true"
+			title="First Name"
+			type="text"
+		/>
 	
-	<aui:input 
-		label="Last Name:"
-		maxlength="50"
-		name="last_name" 
-		required="true"
-		title="Last Name" 
-		type="text" 
-	/>
+		<aui:input 
+			label="Last Name:"
+			maxlength="50"
+			name="last_name" 
+			required="true"
+			title="Last Name" 
+			type="text" 
+		/>
 	
-	<aui:input
-		label="Email Address:"
-		maxlength="255"
-		name="email_address"
-		required="true"
-		title="Email Address"
-		type="email"
-	/>
+		<aui:input
+			label="Email Address:"
+			maxlength="255"
+			name="email_address"
+			required="true"
+			title="Email Address"
+			type="email"
+		/>
 	
-	<aui:input 
-		label="Username:"
-		maxlength="16"
-		name="username"
-		required="true"
-		title="Username"
-		type="text"
-	/>
+		<aui:input 
+			label="Username:"
+			maxlength="16"
+			name="username"
+			required="true"
+			title="Username"
+			type="text"
+		/>
 	
-	<aui:input 
-		label=" Male" 
-		name="male" 
-		required="true"
-		title="Male" 
-		type="checkbox"
-	/>
-	<label for="birthday">Birthday: </label>
-	<liferay-ui:input-date
-		dayParam="b_day"
-		dayValue="1"
-		name="birthday"
-		monthParam="b_month"
-		monthValue="0"
-		yearParam="b_year"
-		yearValue="1970"
-	/>
+		<aui:input 
+			label=" Male" 
+			name="male" 
+			required="true"
+			title="Male" 
+			type="checkbox"
+		/>
+		
+		<label for="birthday">Birthday: </label>
+		<liferay-ui:input-date
+			dayParam="b_day"
+			dayValue="1"
+			name="birthday"
+			monthParam="b_month"
+			monthValue="0"
+			yearParam="b_year"
+			yearValue="1970"
+		/>
 	
-	<aui:input 
-		label="Password:"
-		name="password1" 
-		required="true"
-		title="Password" 
-		type="password"
-	/>
+		<aui:input 
+			label="Password:"
+			name="password1" 
+			required="true"
+			title="Password" 
+			type="password"
+		/>
 	
-	<aui:input 
-		label="Confirm Password:" 
-		name="password2" 
-		required="true"
-		title="Confirm Password" 
-		type="password"
-	/>
+		<aui:input 
+			label="Confirm Password:" 
+			name="password2" 
+			required="true"
+			title="Confirm Password" 
+			type="password"
+		/>
 	</aui:fieldset>
+	
 	<hr />
+	
 	<aui:fieldset label="Phone">
 		<aui:input 
 			label="Home Phone:"
@@ -90,6 +93,50 @@
 			name="mobile_phone"
 			prefix="+1"
 			title="Mobile Phone" 
+			type="text"
+		/>
+	</aui:fieldset>
+	
+	<hr />
+	
+	<aui:fieldset label="Billing Address">
+		<aui:input 
+			label="Address 1"
+			maxlength="255"
+			name="address"
+			required="true"
+			title="Address" 
+			type="text"
+		/>
+		<aui:input 
+			label="Address 2"
+			maxlength="255"
+			name="address"
+			title="Address" 
+			type="text"
+		/>
+		<aui:input 
+			label="City"
+			maxlength="255"
+			name="city"
+			required="true"
+			title="City" 
+			type="text"
+		/>
+		<aui:input 
+			label="State"
+			maxlength="2"
+			name="state"
+			required="true"
+			title="state" 
+			type="text"
+		/>
+		<aui:input 
+			label="Zip Code"
+			maxlength="5"
+			name="zip"
+			required="true"
+			title="zip" 
 			type="text"
 		/>
 	</aui:fieldset>
