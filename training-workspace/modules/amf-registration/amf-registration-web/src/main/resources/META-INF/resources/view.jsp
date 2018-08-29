@@ -1,10 +1,14 @@
 <%@ include file="/init.jsp" %>
 <%@page import="com.liferay.amf.registration.portlet.RegistrationPortlet" %>
-<%
-	RegistrationPortlet reg = new RegistrationPortlet();
+<%@page import="java.util.*" %>
 
-	System.out.println(reg.getStates());
-%>
+<% 
+	RegistrationPortlet reg = new RegistrationPortlet();
+	//Put states into a TreeMap so that they're ordered alphabetically
+	Map<String,String> states = new TreeMap<String,String>(reg.getStates());
+
+	request.setAttribute("states",states);
+	%>
 <aui:form action="" method="post" name="fm">
 	<aui:fieldset label="Basic Info">
 		<aui:input 
@@ -125,6 +129,11 @@
 			title="City" 
 			type="text"
 		/>
+		<aui:select label="State: " name="state" title="State" required="true">
+			<c:forEach items="${states}" var="state">
+				<aui:option label="${state.key}" value="${state.value}"></aui:option>
+			</c:forEach>
+		</aui:select>
 		<aui:input 
 			label="State"
 			maxlength="2"

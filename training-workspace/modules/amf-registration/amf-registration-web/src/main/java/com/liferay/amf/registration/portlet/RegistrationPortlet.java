@@ -4,10 +4,17 @@ import com.liferay.amf.registration.constants.RegistrationPortletKeys;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 
+import com.liferay.portal.kernel.servlet.SessionMessages;
+
 import java.io.IOException;
 import java.sql.*;
+import java.util.*;
 
 import javax.portlet.Portlet;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -28,8 +35,9 @@ import org.osgi.service.component.annotations.Component;
 	service = Portlet.class
 )
 public class RegistrationPortlet extends MVCPortlet {
-	
-	public String getStates() {
+	public Map<String,String> getStates() {
+		Map<String,String> states = new HashMap<String,String>();
+		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		
@@ -42,15 +50,12 @@ public class RegistrationPortlet extends MVCPortlet {
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while (rs.next()) {
-				System.out.println(rs.getString("name")+": "+rs.getString("regionCode"));
+				states.put(rs.getString("name"), rs.getString("regionCode"));
 		    }
-			
-			return "Got States";
         
-		}catch (Exception e) {
-			System.out.println(e);
-			return "Failed to get States";
+		} catch (Exception e) {
+			states.put("Failed", "Failed to get states.");
 		}
-		
+		return states;
 	}
 }
