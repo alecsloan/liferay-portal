@@ -3,7 +3,6 @@
 <%@page import="java.util.*" %>
 
 <% 
-System.out.println((String)renderRequest.getAttribute("first_name"));
 	RegistrationPortlet reg = new RegistrationPortlet();
 	//Put states into a TreeMap so that they're ordered alphabetically
 	Map<String,String> states = new TreeMap<String,String>(reg.getStates());
@@ -15,6 +14,7 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 	<liferay-portlet:actionURL name="registerUser" var="registerUserURL"></liferay-portlet:actionURL>
 	<aui:form action="<%=registerUserURL%>" method="post" name="fm">
 		<aui:fieldset label="Basic Info">
+			
 			<aui:input 
 				label="First Name:"
 				maxlength="50"
@@ -22,8 +22,14 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				required="true"
 				title="First Name"
 				type="text"
+				cssClass="has-error"
 			/>
-	
+			<% if (renderRequest.getAttribute("first_name") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					First Name:	<%=renderRequest.getAttribute("first_name") %>
+				</aui:alert>
+			<% } %>
+			
 			<aui:input 
 				label="Last Name:"
 				maxlength="50"
@@ -32,6 +38,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="Last Name" 
 				type="text" 
 			/>
+			<% if (renderRequest.getAttribute("last_name") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Last Name: <%=renderRequest.getAttribute("last_name") %>
+				</aui:alert>
+			<% } %>
 	
 			<aui:input
 				label="Email Address:"
@@ -41,6 +52,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="Email Address"
 				type="email"
 			/>
+			<% if (renderRequest.getAttribute("email_address") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Email Address:	<%=renderRequest.getAttribute("email_address") %>
+				</aui:alert>
+			<% } %>
 	
 			<aui:input 
 				label="Username:"
@@ -50,6 +66,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="Username"
 				type="text"
 			/>
+			<% if (renderRequest.getAttribute("username") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Username: <%=renderRequest.getAttribute("username") %>
+				</aui:alert>
+			<% } %>
 	
 			<aui:input 
 				label=" Male" 
@@ -68,6 +89,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				yearParam="b_year"
 				yearValue="1970"
 			/>
+			<% if (renderRequest.getAttribute("birthday") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Birthday: <%=renderRequest.getAttribute("birthday") %>
+				</aui:alert>
+			<% } %>
 	
 			<aui:input 
 				label="Password:"
@@ -76,6 +102,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="Password" 
 				type="password"
 			/>
+			<% if (renderRequest.getAttribute("password1") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Password: <%=renderRequest.getAttribute("password1") %>
+				</aui:alert>
+			<% } %>
 	
 			<aui:input 
 				label="Confirm Password:" 
@@ -84,6 +115,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="Confirm Password" 
 				type="password"
 			/>
+			<% if (renderRequest.getAttribute("password2") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Password: <%=renderRequest.getAttribute("password2") %>
+				</aui:alert>
+			<% } %>
 		</aui:fieldset>
 	
 		<hr />
@@ -118,6 +154,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="Address" 
 				type="text"
 			/>
+			<% if (renderRequest.getAttribute("address") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Address 1: <%=renderRequest.getAttribute("address") %>
+				</aui:alert>
+			<% } %>
 			<aui:input 
 				label="Address 2"
 				maxlength="255"
@@ -133,6 +174,12 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="City" 
 				type="text"
 			/>
+			<% if (renderRequest.getAttribute("city") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					City: <%=renderRequest.getAttribute("city") %>
+				</aui:alert>
+			<% } %>
+			
 			<% if (states.size() == 1){ %>
 			<aui:input 
 				label="State"
@@ -157,13 +204,18 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="zip" 
 				type="text"
 			/>
+			<% if (renderRequest.getAttribute("zip") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Zip: <%=renderRequest.getAttribute("zip") %>
+				</aui:alert>
+			<% } %>
 		</aui:fieldset>
 	
 		<hr />
 	
 		<aui:fieldset label="Misc.">
 			<aui:select label="Security Question:" name="security_question" required="true" title="Security Question">
-				<aui:option label="Must choose one of the following" selected="true"/>
+				<aui:option label="Must choose one of the following" value="" selected="true"/>
 				<aui:option label="What is your mother's maiden name?" value="what-is-your-mother's-maiden-name"/>
 				<aui:option label="What is the make of your first car?" value="what-is-the-make-of-your-first-car"/>
 				<aui:option label="What is your high school mascot?" value="what-is-your-high-school-mascot"/>
@@ -177,6 +229,11 @@ System.out.println((String)renderRequest.getAttribute("first_name"));
 				title="Security Answer" 
 				type="text"
 			/>
+			<% if (renderRequest.getAttribute("security_answer") != null) { %>
+				<aui:alert closable="true" cssClass="alert alert-danger">
+					Answer: <%=renderRequest.getAttribute("security_answer") %>
+				</aui:alert>
+			<% } %>
 			<aui:input 
 				label="I have read, understand, and agree with the Terms of Use governing my access to and use of the Acme Movie Fanatics web site." 
 				name="accepted_tou" 
