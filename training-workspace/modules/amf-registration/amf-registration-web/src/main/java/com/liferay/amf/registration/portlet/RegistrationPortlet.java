@@ -45,7 +45,7 @@ public class RegistrationPortlet extends MVCPortlet {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal", "root", "root");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal?autoReconnect=true&useSSL=false", "root", "root");
 
 			Statement stmt = conn.createStatement();
 
@@ -99,12 +99,7 @@ public class RegistrationPortlet extends MVCPortlet {
 			b_month = fieldValid("b_month", req.getParameter("b_month")) ? Integer.parseInt(req.getParameter("b_month")) : -1;
 			b_day = fieldValid("b_day", req.getParameter("b_day")) ? Integer.parseInt(req.getParameter("b_day")) : -1;
 			b_year = fieldValid("b_year", req.getParameter("b_year")) ? Integer.parseInt(req.getParameter("b_year")) : -1;
-			password1 = fieldValid("password1", req.getParameter("password1")) ? req.getParameter("password1") : "";
-			password2 = fieldValid("password2", req.getParameter("password2")) ? req.getParameter("password2") : "";
-			home_phone = fieldValid("home_phone", req.getParameter("home_phone")) ? Integer.parseInt(req.getParameter("home_phone")) : -1;
-			mobile_phone = fieldValid("mobile_phone", req.getParameter("mobile_phone")) ? Integer.parseInt(req.getParameter("mobile_phone")) : -1;
 			address = fieldValid("address", req.getParameter("address")) ? req.getParameter("address") : "";
-			address2 = fieldValid("address2", req.getParameter("address2")) ? req.getParameter("address2") : "";
 			city = fieldValid("city", req.getParameter("city")) ? req.getParameter("city") : "";
 			state = fieldValid("state", req.getParameter("state")) ? req.getParameter("state") : "";
 			zip = fieldValid("zip", req.getParameter("zip")) ? Integer.parseInt(req.getParameter("zip")) : -1;
@@ -112,13 +107,32 @@ public class RegistrationPortlet extends MVCPortlet {
 			security_answer = fieldValid("security_answer", req.getParameter("security_answer")) ? req.getParameter("security_answer") : "";
 			accepted_tou = fieldValid("accepted_tou", req.getParameter("accepted_tou")) ? true : false;
 
+			//Parse non-required fields only if they have values
+			if (req.getParameter("home_phone").contains("[0-9]"))
+				home_phone = fieldValid("home_phone", req.getParameter("home_phone")) ? Integer.parseInt(req.getParameter("home_phone")) : -1;
+			if (req.getParameter("mobile_phone").contains("[0-9]"))
+				mobile_phone = fieldValid("mobile_phone", req.getParameter("mobile_phone")) ? Integer.parseInt(req.getParameter("mobile_phone")) : -1;
+			if (req.getParameter("address2") != null)
+				address2 = fieldValid("address2", req.getParameter("address2")) ? req.getParameter("address2") : "";
+			
+			
+			password1 = fieldValid("password1", req.getParameter("password1")) ? req.getParameter("password1") : "";
+			password2 = fieldValid("password2", req.getParameter("password2")) ? req.getParameter("password2") : "";
+			//Validate that the Confirmed password is the same as the Password
+			if (!req.getParameter("password2").equals(req.getParameter("password1"))) {
+		    	errors.put("password2", "Passwords do not match.");
+		    }
+			
 		}
 		
 		private Boolean fieldValid(String field, String value) {
-			if (value == null || value == "") {
+			//Make sure the input has a value
+			//We also don't need to pay attention to the not required fields (home_phone, mobile_phone, and address2)
+			if ((value == null || value == "")) {
 				errors.put(field, "Cannot be empty.");
 				return false;
 			}
+		
 			switch (field) {
 				case "first_name":
 				case "last_name":
@@ -224,7 +238,7 @@ public class RegistrationPortlet extends MVCPortlet {
 		private Boolean isThirteen() {
 			LocalDate birthday = LocalDate.of(b_year, b_month+1, b_day);
 			LocalDate now = LocalDate.now();
-			System.out.println(ChronoUnit.YEARS.between(birthday, now));
+			
 			if (ChronoUnit.YEARS.between(birthday, now) > 12)
 				return true;
 			else
@@ -235,20 +249,20 @@ public class RegistrationPortlet extends MVCPortlet {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
 			
-				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal", "root", "root");
+				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal?autoReconnect=true&useSSL=false", "root", "root");
 
 				Statement stmt = conn.createStatement();
 
 				String sql = "select count(*) as userExists from user_ where screenName = '" + username + "'";
 	    
 				ResultSet rs = stmt.executeQuery(sql);
-			
-				while (rs.next()) {
-					if(Integer.parseInt(rs.getString("userExists")) > 0)
-						return false;
-					else
-						return true;
-				}
+		
+				rs.next();
+				if(Integer.parseInt(rs.getString("userExists")) > 0)
+					return false;
+				else
+					return true;
+				
 			} catch (Exception e) {
 				System.out.println(e);
 			}
@@ -258,13 +272,18 @@ public class RegistrationPortlet extends MVCPortlet {
 	
 	public void registerUser(ActionRequest actionRequest,ActionResponse actionResponse) throws IOException, PortletException {
 	    System.out.println("Registering...");
+	    
 	    UserForm user = new UserForm();
+	    
 	    user.setFields(actionRequest);
-	    user.isThirteen();
-	    System.out.println(user.errors.toString());
-	    if (user.formValid) {
-	    	System.out.println("That's a good form!");
+	    
+	    if (!user.isThirteen()) {
+	    	user.errors.put("birthday", "You must be 13 to register for an account.");
 	    }
+	    
+	    System.out.println("Errors: " + user.errors.toString());
+	    
+	    //Set the errors to be output to the form
 	    for (Map.Entry<String, String> entry : user.errors.entrySet()) {
 	    	actionRequest.setAttribute(entry.getKey(),entry.getValue());
 	    }
