@@ -40,9 +40,9 @@ import org.osgi.service.component.annotations.Component;
 	property = {
 		"com.liferay.portlet.display-category=category.tools",
 		"com.liferay.portlet.instanceable=true",
+		"javax.portlet.display-name=amf-registration",
 		"javax.portlet.init-param.template-path=/",
 		"javax.portlet.init-param.view-template=/view.jsp",
-		"javax.portlet.name=" + RegistrationPortletKeys.Registration,
 		"javax.portlet.resource-bundle=content.Language",
 		"javax.portlet.security-role-ref=power-user,user"
 	},
@@ -280,17 +280,21 @@ public class RegistrationPortlet extends MVCPortlet {
 		}
 	}
 	
-	public void registerUser(ActionRequest actionRequest,ActionResponse actionResponse) throws IOException, PortletException {
+	public void registerUser(ActionRequest actionRequest,ActionResponse actionResponse) throws IOException, PortletException {   
+	    
+		UserForm user = new UserForm();
+	    
 	    System.out.println("Registering...");
 	    
-	    UserForm user = new UserForm();
-	    
+	    //Set the user's form data after validating it
 	    user.setFields(actionRequest);
 	    
+	    //Check that the user is 13
 	    if (!user.isThirteen()) {
 	    	user.errors.put("birthday", "You must be 13 to register for an account.");
 	    }
 	    
+	    //If there are no errors after validation we can create the user in our system
 	    if (user.errors.size() == 0) {
 	    	//Try to Insert user to user table
 	    	Boolean userCreated = insertUser(user, PortalUtil.getCompanyId(actionRequest), PortalUtil.getLocale(actionRequest));
