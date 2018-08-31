@@ -2,9 +2,20 @@ package com.liferay.amf.registration.portlet;
 
 import com.liferay.amf.registration.constants.RegistrationPortletKeys;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.PhoneNumberException;
+import com.liferay.portal.kernel.model.Address;
+import com.liferay.portal.kernel.model.Contact;
+import com.liferay.portal.kernel.model.Phone;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.service.AddressLocalServiceUtil;
+import com.liferay.portal.kernel.service.PhoneLocalServiceUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.servlet.SessionMessages;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.mysql.jdbc.StringUtils;
 
 import java.io.IOException;
 import java.sql.*;
@@ -49,12 +60,12 @@ public class RegistrationPortlet extends MVCPortlet {
 
 			Statement stmt = conn.createStatement();
 
-			String sql = "select name, regionCode from region where countryId = 19";
+			String sql = "select name, regionId from region where countryId = 19";
         
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while (rs.next()) {
-				states.put(rs.getString("name"), rs.getString("regionCode"));
+				states.put(rs.getString("name"), rs.getString("regionId"));
 		    }
         
 		} catch (Exception e) {
@@ -72,21 +83,20 @@ public class RegistrationPortlet extends MVCPortlet {
 			username = "",
 			password1 = "",
 			password2 = "",
+			home_phone = "",
+			mobile_phone = "",
 			address = "",
 			address2 = "",
 			city = "",
 			state = "",
 			security_question = "",
-			security_answer = "";
+			security_answer = "",
+			zip = "";
 		
 		Boolean male = false,
-			accepted_tou = false,
-			formValid = false;
+			accepted_tou = false;
 		
-		Integer home_phone = -1,
-			mobile_phone = -1,
-			zip = -1,
-			b_month = -1,
+		Integer b_month = -1,
 			b_day = -1,
 			b_year = -1;
 		
@@ -102,19 +112,19 @@ public class RegistrationPortlet extends MVCPortlet {
 			address = fieldValid("address", req.getParameter("address")) ? req.getParameter("address") : "";
 			city = fieldValid("city", req.getParameter("city")) ? req.getParameter("city") : "";
 			state = fieldValid("state", req.getParameter("state")) ? req.getParameter("state") : "";
-			zip = fieldValid("zip", req.getParameter("zip")) ? Integer.parseInt(req.getParameter("zip")) : -1;
+			zip = fieldValid("zip", req.getParameter("zip")) ? req.getParameter("zip") : "";
 			security_question = fieldValid("security_question", req.getParameter("security_question")) ? req.getParameter("security_question") : "";
 			security_answer = fieldValid("security_answer", req.getParameter("security_answer")) ? req.getParameter("security_answer") : "";
 			accepted_tou = fieldValid("accepted_tou", req.getParameter("accepted_tou")) ? true : false;
 
 			//Parse non-required fields only if they have values
-			if (req.getParameter("home_phone").contains("[0-9]"))
-				home_phone = fieldValid("home_phone", req.getParameter("home_phone")) ? Integer.parseInt(req.getParameter("home_phone")) : -1;
-			if (req.getParameter("mobile_phone").contains("[0-9]"))
-				mobile_phone = fieldValid("mobile_phone", req.getParameter("mobile_phone")) ? Integer.parseInt(req.getParameter("mobile_phone")) : -1;
+			if (req.getParameter("home_phone").matches("[0-9]+")) {
+				home_phone = fieldValid("home_phone", req.getParameter("home_phone")) ? req.getParameter("home_phone") : "";
+			}
+			if (req.getParameter("mobile_phone").matches("[0-9]+"))
+				mobile_phone = fieldValid("mobile_phone", req.getParameter("mobile_phone")) ? req.getParameter("mobile_phone") : "";
 			if (req.getParameter("address2") != null)
 				address2 = fieldValid("address2", req.getParameter("address2")) ? req.getParameter("address2") : "";
-			
 			
 			password1 = fieldValid("password1", req.getParameter("password1")) ? req.getParameter("password1") : "";
 			password2 = fieldValid("password2", req.getParameter("password2")) ? req.getParameter("password2") : "";
@@ -157,10 +167,10 @@ public class RegistrationPortlet extends MVCPortlet {
 						errors.put(field, "Must be alphanumeric and have no more than 255 characters.");
 					break;
 				case "username":
-					if (value.matches("[a-zA-Z0-9]+") && value.length() > 3 && value.length() < 17 && uniqueUsername(value))
+					if (value.matches("[a-zA-Z0-9]+") && value.length() > 3 && value.length() < 17 && uniqueUsername(value, email_address))
 						return true;
-					else if (!uniqueUsername(value))
-						errors.put(field, "This username is already taken, Please select a different one.");
+					else if (!uniqueUsername(value, email_address))
+						errors.put(field, "This username or email address is already taken, Please select a different one.");
 					else
 						errors.put(field, "Must be alphanumeric, have 4 or more characters, have no more than 16 characters");
 					break;
@@ -204,7 +214,7 @@ public class RegistrationPortlet extends MVCPortlet {
 				case "mobile_phone":
 					if (value.length() == 10) {
 						try {
-							if(Integer.parseInt(value) > 0)
+							if(StringUtils.isStrictlyNumeric(value))
 								return true;
 						}catch (Exception e) {
 							errors.put(field, "Must be numeric.");
@@ -245,7 +255,7 @@ public class RegistrationPortlet extends MVCPortlet {
 				return false;
 		}
 		
-		private Boolean uniqueUsername (String username) {
+		private Boolean uniqueUsername (String username, String email_address) {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
 			
@@ -253,7 +263,7 @@ public class RegistrationPortlet extends MVCPortlet {
 
 				Statement stmt = conn.createStatement();
 
-				String sql = "select count(*) as userExists from user_ where screenName = '" + username + "'";
+				String sql = "select count(*) as userExists from user_ where screenName = '" + username + "' or emailAddress = '" + email_address + "'";
 	    
 				ResultSet rs = stmt.executeQuery(sql);
 		
@@ -281,14 +291,87 @@ public class RegistrationPortlet extends MVCPortlet {
 	    	user.errors.put("birthday", "You must be 13 to register for an account.");
 	    }
 	    
-	    System.out.println("Errors: " + user.errors.toString());
+	    if (user.errors.size() == 0) {
+	    	//Try to Insert user to user table
+	    	Boolean userCreated = insertUser(user, PortalUtil.getCompanyId(actionRequest), PortalUtil.getLocale(actionRequest));
+	    	
+	    	actionRequest.setAttribute("created", userCreated);
+	    } else {
 	    
-	    //Set the errors to be output to the form
-	    for (Map.Entry<String, String> entry : user.errors.entrySet()) {
-	    	actionRequest.setAttribute(entry.getKey(),entry.getValue());
-	    }
+	    	System.out.println("Errors: " + user.errors.toString());
+	    
+	    	//Set the errors to be output to the form
+	    	for (Map.Entry<String, String> entry : user.errors.entrySet()) {
+	    		actionRequest.setAttribute(entry.getKey(),entry.getValue());
+	    	}
 
+	    }
 	    actionResponse.setRenderParameter("jspPage", "/view.jsp");
+	}
+	
+	public Boolean insertUser(UserForm user, long companyId, Locale locale) {
+		ServiceContext sc = new ServiceContext();
+		
+		try {
+			User createdUser = UserLocalServiceUtil.addUser(0, companyId, false,
+					user.password1, user.password1, false,
+                    user.username, user.email_address, 0,
+                    null, locale,
+                    user.first_name, null,
+                    user.last_name, 0, 0, user.male, user.b_month, user.b_day, user.b_year,
+                    null, null, null, null, null, false, null);
+			
+			createdUser.setAgreedToTermsOfUse(user.accepted_tou);
+			createdUser.setReminderQueryQuestion(user.security_question);
+			createdUser.setReminderQueryAnswer(user.security_answer);
+			
+			UserLocalServiceUtil.updateUser(createdUser);
+			
+			System.out.println("User created...");
+	
+			//Set Address info
+			
+			try {
+				Address createdAddress = AddressLocalServiceUtil.addAddress(createdUser.getUserId(), Address.class.getName(), PortalUtil.getClassNameId(Address.class.getName()),
+						user.address, user.address2, null, user.city, user.zip, Long.parseLong(user.state),
+						19L, 0L, true, true, sc);
+				System.out.println("Address created...");
+			} catch (PortalException e) {
+				System.out.println("Failed to create Address: " + e);
+			}
+			
+			//Only try to insert home phone if they gave it to us
+			if (user.home_phone != "") {
+				try {
+					Phone createdHomePhone = PhoneLocalServiceUtil.addPhone(createdUser.getUserId(), Contact.class.getName(),
+							createdUser.getContactId(), user.home_phone, null, 11011, true, sc);
+			
+					System.out.println("Home Phone Created...");
+				} catch (PhoneNumberException e) {
+					System.out.println("Failed to create Home phone: " + e);
+				}
+			}
+			
+			//Only try to insert mobile phone if they gave it to us
+			if (user.mobile_phone != "") {
+				try {
+					Phone createdMobilePhone = PhoneLocalServiceUtil.addPhone(createdUser.getUserId(), Contact.class.getName(),
+							createdUser.getContactId(), user.mobile_phone, null, 11011, false, sc);
+			
+					System.out.println("Mobile Phone Created...");
+				} catch (PortalException e) {
+					e.printStackTrace();
+					System.out.println("Failed to create Home phone: " + e);
+				}
+			}
+						
+			
+			System.out.println("Finished Registration...");
+			return true;
+		} catch (PortalException e) {
+			System.out.println("Failed to create user: " + e);
+		}
+		return false;
 	}
 	
 }
