@@ -56,7 +56,7 @@ public class RegistrationPortlet extends MVCPortlet {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal?autoReconnect=true&useSSL=false", "root", "root");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal?verifyServerCertificate=false&useSSL=true", "root", "root");
 
 			Statement stmt = conn.createStatement();
 
@@ -105,7 +105,7 @@ public class RegistrationPortlet extends MVCPortlet {
 			last_name = fieldValid("last_name", req.getParameter("last_name")) ? req.getParameter("last_name") : "";
 			email_address = fieldValid("email_address", req.getParameter("email_address")) ? req.getParameter("email_address") : "";
 			username = fieldValid("username", req.getParameter("username")) ? req.getParameter("username") : "";
-			male = fieldValid("male", req.getParameter("male")) ? true : false;
+			male = fieldValid("male", req.getParameter("male")) ? Boolean.parseBoolean(req.getParameter("male")) : false;
 			b_month = fieldValid("b_month", req.getParameter("b_month")) ? Integer.parseInt(req.getParameter("b_month")) : -1;
 			b_day = fieldValid("b_day", req.getParameter("b_day")) ? Integer.parseInt(req.getParameter("b_day")) : -1;
 			b_year = fieldValid("b_year", req.getParameter("b_year")) ? Integer.parseInt(req.getParameter("b_year")) : -1;
@@ -123,7 +123,7 @@ public class RegistrationPortlet extends MVCPortlet {
 			}
 			if (req.getParameter("mobile_phone").matches("[0-9]+"))
 				mobile_phone = fieldValid("mobile_phone", req.getParameter("mobile_phone")) ? req.getParameter("mobile_phone") : "";
-			if (req.getParameter("address2") != null)
+			if (req.getParameter("address2").matches("[a-zA-Z0-9 ]+"))
 				address2 = fieldValid("address2", req.getParameter("address2")) ? req.getParameter("address2") : "";
 			
 			password1 = fieldValid("password1", req.getParameter("password1")) ? req.getParameter("password1") : "";
@@ -161,7 +161,7 @@ public class RegistrationPortlet extends MVCPortlet {
 				case "address2": 
 				case "city": 
 				case "security_answer":
-					if (value.matches("[a-zA-Z0-9]+") && value.length() < 256)
+					if (value.matches("[a-zA-Z0-9 ]+") && value.length() < 256)
 						return true;
 					else
 						errors.put(field, "Must be alphanumeric and have no more than 255 characters.");
@@ -259,7 +259,7 @@ public class RegistrationPortlet extends MVCPortlet {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
 			
-				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal?autoReconnect=true&useSSL=false", "root", "root");
+				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lportal?verifyServerCertificate=false&useSSL=true", "root", "root");
 
 				Statement stmt = conn.createStatement();
 
@@ -309,6 +309,7 @@ public class RegistrationPortlet extends MVCPortlet {
 	    		actionRequest.setAttribute(entry.getKey(),entry.getValue());
 	    	}
 
+	    	SessionMessages.add(actionRequest, "Form not submitted");
 	    }
 	    actionResponse.setRenderParameter("jspPage", "/view.jsp");
 	}
@@ -338,7 +339,7 @@ public class RegistrationPortlet extends MVCPortlet {
 			try {
 				Address createdAddress = AddressLocalServiceUtil.addAddress(createdUser.getUserId(), Address.class.getName(), PortalUtil.getClassNameId(Address.class.getName()),
 						user.address, user.address2, null, user.city, user.zip, Long.parseLong(user.state),
-						19L, 0L, true, true, sc);
+						19L, 11002, true, true, sc);
 				System.out.println("Address created...");
 			} catch (PortalException e) {
 				System.out.println("Failed to create Address: " + e);
