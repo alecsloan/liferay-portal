@@ -65,7 +65,7 @@ User selUser = (User)request.getAttribute("user.selUser");
 <aui:model-context bean="<%= organization %>" model="<%= Organization.class %>" />
 
 <div class="row">
-	<aui:fieldset cssClass="col-md-6">
+	<aui:fieldset cssClass="col-md-8">
 		<liferay-ui:error exception="<%= DuplicateOrganizationException.class %>" message="the-organization-name-is-already-taken" />
 
 		<liferay-ui:error exception="<%= OrganizationNameException.class %>">
@@ -120,7 +120,7 @@ User selUser = (User)request.getAttribute("user.selUser");
 		</div>
 	</aui:fieldset>
 
-	<aui:fieldset cssClass="col-md-6">
+	<aui:fieldset cssClass="col-md-4">
 		<div>
 			<c:if test="<%= organization != null %>">
 
@@ -175,7 +175,7 @@ if (parentOrganization != null) {
 }
 %>
 
-<h3><liferay-ui:message key="parent-organization" /></h3>
+<h3 class="sheet-subtitle"><liferay-ui:message key="parent-organization" /></h3>
 
 <liferay-ui:error exception="<%= OrganizationParentException.class %>" message="please-enter-a-valid-parent-organization" />
 
