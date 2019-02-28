@@ -18,4 +18,6 @@
 
 <#include "counters.ftl">
 
+<#include "commerce_product.ftl">
+
 COMMIT_TRANSACTION
