@@ -3,6 +3,16 @@
 <@insertLayout _layoutModel=layoutModel />
 
 <@insertGroup
+	_groupModel=dataFactory.commerceCatalogGroupModel
+	_publicPageCount=0
+/>
+
+<@insertGroup
+	_groupModel=dataFactory.commerceChannelGroupModel
+	_publicPageCount=0
+/>
+
+<@insertGroup
 	_groupModel=dataFactory.globalGroupModel
 	_publicPageCount=1
 />
