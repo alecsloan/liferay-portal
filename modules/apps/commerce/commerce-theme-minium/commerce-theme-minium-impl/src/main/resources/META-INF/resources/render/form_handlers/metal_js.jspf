@@ -33,8 +33,13 @@
 	}
 
 	function updateAddToCart(cpInstance, formValues) {
-		var productExists = cpInstance.cpInstanceExist;
-		var cpInstanceId = cpInstance.cpInstanceId;
+		var productExists = false;
+		var cpInstanceId;
+
+		if (cpInstance) {
+			productExists = cpInstance.cpInstanceExist;
+			cpInstanceId = cpInstance.cpInstanceId;
+		}
 
 		Liferay.fire(
 			eventsDefinitions.CURRENT_PRODUCT_STATUS_CHANGED,
@@ -92,13 +97,35 @@
 	}
 
 	function updateProductFields(productData) {
-		document.querySelector('[data-text-cp-instance-sku]').innerHTML =
-			Liferay.Util.escape(productData.sku) || '';
+		var sku = '';
+		var manufacturerPartNumber = '';
+		var gtin = '';
+		var availability = '';
+		var availabilityEstimate = '';
+		var stockQuantity = '';
+		var subscriptionInfo = '';
+		var deliverySubscriptionInfo = '';
+
+		if (productData) {
+			sku = productData.sku;
+			manufacturerPartNumber = productData.manufacturerPartNumber;
+			gtin = productData.gtn;
+			availability = productData.availability || '';
+			availabilityEstimate = productData.availabilityEstimate || '';
+			stockQuantity = productData.stockQuantity || '';
+			subscriptionInfo = productData.subscriptionInfo || '';
+			deliverySubscriptionInfo = productData.deliverySubscriptionInfo || '';
+		}
+
+		document.querySelector(
+			'[data-text-cp-instance-sku]'
+		).innerHTML = Liferay.Util.escape(sku);
 		document.querySelector(
 			'[data-text-cp-instance-manufacturer-part-number]'
-		).innerHTML = Liferay.Util.escape(productData.manufacturerPartNumber) || '';
-		document.querySelector('[data-text-cp-instance-gtin]').innerHTML =
-			Liferay.Util.escape(productData.gtin) || '';
+		).innerHTML = Liferay.Util.escape(manufacturerPartNumber);
+		document.querySelector(
+			'[data-text-cp-instance-gtin]'
+		).innerHTML = Liferay.Util.escape(gtin);
 
 		var availabilityEstimateContainer = document.querySelector(
 			'[data-text-cp-instance-availability-estimate]'
@@ -115,24 +142,25 @@
 			availabilityContainer &&
 			stockQuantityContainer
 		) {
-			availabilityContainer.innerHTML = productData.availability || '';
-			availabilityEstimateContainer.innerHTML =
-				productData.availabilityEstimate || '';
-			stockQuantityContainer.innerHTML = productData.stockQuantity || '';
+			availabilityContainer.innerHTML = availability;
+			availabilityEstimateContainer.innerHTML = availabilityEstimate;
+			stockQuantityContainer.innerHTML = stockQuantity;
 		}
 
 		document.querySelector(
 			'[data-text-cp-instance-subscription-info]'
-		).innerHTML = productData.subscriptionInfo || '';
+		).innerHTML = subscriptionInfo;
 		document.querySelector(
 			'[data-text-cp-instance-delivery-subscription-info]'
-		).innerHTML = productData.deliverySubscriptionInfo || '';
+		).innerHTML = deliverySubscriptionInfo;
 
-		Liferay.fire('priceUpdated', {
-			displayDiscountLevels: productData.displayDiscountLevels,
-			id: '<%= "productDetail_" + cpCatalogEntry.getCPDefinitionId() %>',
-			prices: productData.prices,
-		});
+		if (productData) {
+			Liferay.fire('priceUpdated', {
+				displayDiscountLevels: productData.displayDiscountLevels,
+				id: '<%= "productDetail_" + cpCatalogEntry.getCPDefinitionId() %>',
+				prices: productData.prices,
+			});
+		}
 	}
 
 	function updateView(productsData) {

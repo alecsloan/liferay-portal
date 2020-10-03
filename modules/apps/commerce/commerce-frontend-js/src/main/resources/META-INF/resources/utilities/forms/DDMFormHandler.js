@@ -25,7 +25,6 @@ class DDMFormHandler {
 		this.fields = getDefaultFieldsShape(DDMFormInstance);
 
 		this._attachFormListener();
-		this.checkCPInstance();
 	}
 
 	_attachFormListener() {
@@ -47,15 +46,13 @@ class DDMFormHandler {
 			body: fieldsParam,
 			headers: new Headers({'x-csrf-token': Liferay.authToken}),
 		}).then((cpInstance) => {
-			if (cpInstance.cpInstanceExist) {
-				const dispatchedPayload = {
-					addToCartId: this.addToCartId,
-					cpInstance,
-					formFields: this.fields,
-				};
+			const dispatchedPayload = {
+				addToCartId: this.addToCartId,
+				cpInstance,
+				formFields: this.fields,
+			};
 
-				Liferay.fire(CP_INSTANCE_CHANGED, dispatchedPayload);
-			}
+			Liferay.fire(CP_INSTANCE_CHANGED, dispatchedPayload);
 		});
 	}
 }
