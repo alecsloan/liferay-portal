@@ -78,6 +78,7 @@ import org.frutilla.FrutillaRule;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -318,6 +319,7 @@ public class CommerceCheckoutTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testUserCheckout() throws Exception {
 		frutillaRule.scenario(
