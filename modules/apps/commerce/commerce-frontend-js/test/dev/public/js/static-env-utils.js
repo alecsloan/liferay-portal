@@ -14,11 +14,12 @@
 
 window.Liferay = {
 	Language: {
-		get(v) {
-			const charZero = v.charAt(0).toUpperCase(),
-				rest = v.substring(1, v.length).split('-').join(' ');
+		get: (key) => {
+			let counter = 0;
 
-			return `${charZero}${rest}`;
+			return key.replace(new RegExp('(^x-)|(-x-)|(-x$)', 'gm'), (match) =>
+				match.replace('x', `{${counter++}}`)
+			);
 		},
 	},
 	ThemeDisplay: {
@@ -27,6 +28,14 @@ window.Liferay = {
 		getLanguageId: () => 'it_IT',
 		getPathThemeImages: () => '/assets',
 		getPortalURL: () => window.location.origin,
+	},
+	Util: {
+		sub: (key, ...values) => {
+			return values.reduce(
+				(acc, value, i) => acc.replace(new RegExp(`{[${i}]}`), value),
+				key
+			);
+		},
 	},
 	component: () => {},
 	detach: (name, fn) => {
@@ -50,6 +59,9 @@ window.Liferay = {
 		Authorization: `Basic ${window.btoa('test@liferay.com:test')}`,
 		'Content-Type': 'application/json',
 	}),
+	staticEnvTestUtils: {
+		print: (message, type) => ({message, type}),
+	},
 };
 
 window.themeDisplay = window.Liferay.ThemeDisplay;

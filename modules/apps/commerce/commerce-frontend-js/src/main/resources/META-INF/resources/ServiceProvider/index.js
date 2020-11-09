@@ -15,11 +15,13 @@
 import AdminCatalogAPI from './commerce-admin-catalog/index';
 import AdminPricingAPI from './commerce-admin-pricing/index';
 import DeliveryCartAPI from './commerce-delivery-cart/index';
+import DeliveryCatalogAPI from './commerce-delivery-catalog/index';
 
 const ServiceProvider = {
 	AdminCatalogAPI,
 	AdminPricingAPI,
 	DeliveryCartAPI,
+	DeliveryCatalogAPI,
 };
 
 export default ServiceProvider;

@@ -12,34 +12,16 @@
  * details.
  */
 
-export function showNotification(
-	message,
-	type = 'success',
-	closeable = true,
-	duration = 500
-) {
-	if (!window.AUI) {
-		return window.Liferay?.staticEnvTestUtils?.print(message, type);
-	}
+import AJAX from '../../../utilities/AJAX/index';
 
-	AUI().use('liferay-notification', () => {
-		new Liferay.Notification({
-			closeable,
-			delay: {
-				hide: 5000,
-				show: 0,
-			},
-			duration,
-			message,
-			render: true,
-			title: Liferay.Language.get(type),
-			type,
-		});
-	});
+const VERSION = 'v1.0';
+
+function resolveProductsPath(basePath, channelId) {
+	return `${basePath}${VERSION}/channels/${channelId}/products`;
 }
 
-export function showErrorNotification(
-	e = Liferay.Language.get('unexpected-error')
-) {
-	showNotification(e, 'danger');
-}
+export default (basePath) => ({
+	getBaseURL: (channelId) => resolveProductsPath(basePath, channelId),
+	getProductsByChannelId: (channelId, ...params) =>
+		AJAX.GET(resolveProductsPath(basePath, channelId), ...params),
+});
