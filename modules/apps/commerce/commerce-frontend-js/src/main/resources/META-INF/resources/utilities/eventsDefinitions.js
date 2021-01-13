@@ -27,19 +27,14 @@ export const IFRAME_LOADED = 'iframe-loaded';
 export const IS_LOADING_MODAL = 'is-loading-modal';
 export const OPEN_MODAL = 'open-modal';
 export const OPEN_SIDE_PANEL = 'open-side-panel';
-export const ORDER_CHANGED = 'order-changed';
 export const PRODUCT_OPTIONS_CHANGED = 'product-options-changed';
-export const PRODUCT_REMOVED = 'productRemovedFromCart';
 export const PRODUCT_REMOVED_FROM_CART = 'product-removed-from-cart';
 export const SIDE_PANEL_CLOSED = 'side-panel-closed';
 export const UPDATE_DATASET_DISPLAY = 'update-data-set-display';
 
 export default {
-	ADD_TO_ORDER,
 	AUTOCOMPLETE_VALUE_UPDATED,
 	CART_PRODUCT_QUANTITY_CHANGED,
-	CHANGE_ACCOUNT,
-	CHANGE_ORDER,
 	CLOSE_MODAL,
 	CLOSE_SIDE_PANEL,
 	CP_INSTANCE_CHANGED,
@@ -53,9 +48,7 @@ export default {
 	IS_LOADING_MODAL,
 	OPEN_MODAL,
 	OPEN_SIDE_PANEL,
-	ORDER_CHANGED,
 	PRODUCT_OPTIONS_CHANGED,
-	PRODUCT_REMOVED,
 	PRODUCT_REMOVED_FROM_CART,
 	SIDE_PANEL_CLOSED,
 	UPDATE_DATASET_DISPLAY,
