@@ -44,7 +44,7 @@
 				"actionIds": [
 					"ACCESS_IN_CONTROL_PANEL"
 				],
-				"resource": "com_liferay_commerce_pricing_web_internal_portlet_CommercePriceListPortlet"
+				"resource": "com_liferay_commerce_pricing_web_internal_portlet_CommercePricingClassesPortlet"
 			},
 			{
 				"actionIds": [
