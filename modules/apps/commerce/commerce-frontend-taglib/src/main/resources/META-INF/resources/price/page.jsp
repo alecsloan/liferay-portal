@@ -22,7 +22,6 @@ String additionalPriceClasses = (String)request.getAttribute("commerce-ui:price:
 String additionalPromoPriceClasses = (String)request.getAttribute("commerce-ui:price:additionalPromoPriceClasses");
 PriceModel prices = (PriceModel)request.getAttribute("commerce-ui:price:prices");
 boolean displayDiscountLevels = (boolean)request.getAttribute("commerce-ui:price:displayDiscountLevels");
-boolean netPrice = (boolean)request.getAttribute("commerce-ui:price:netPrice");
 
 String[] discountPercentages = new String[0];
 
@@ -62,7 +61,7 @@ if (prices != null) {
 	%>
 
 	<span class="price-label <%= promoPriceHideClass %>">
-		<liferay-ui:message key="sale-price" />
+		<liferay-ui:message key="promo-price" />
 	</span>
 	<span class="price-value price-value-promo <%= promoPriceActiveClass %> <%= promoPriceHideClass %> <%= GetterUtil.getString(additionalPromoPriceClasses) %>">
 		<%= GetterUtil.getString(prices.getPromoPrice()) %>
@@ -142,23 +141,8 @@ if (prices != null) {
 		</span>
 	</span>
 
-	<%
-	String netPriceHideClass = "hide";
-	String grossPriceHideClass = "";
-
-	if (netPrice) {
-		netPriceHideClass = "";
-		grossPriceHideClass = "hide";
-	}
-	%>
-
 	<span class="price-label <%= discountHideClass %>">
-		<span class="<%= netPriceHideClass %>">
-			<liferay-ui:message key="net-price" />
-		</span>
-		<span class="<%= grossPriceHideClass %>">
-			<liferay-ui:message key="gross-price" />
-		</span>
+		<liferay-ui:message key="final-price" />
 	</span>
 	<span class="price-value price-value-final <%= discountHideClass %> <%= GetterUtil.getString(additionalDiscountClasses) %>">
 		<%= prices.getFinalPrice() %>

@@ -87,22 +87,6 @@ public class PriceTag extends IncludeTag {
 				commercePriceConfiguration.displayDiscountLevels();
 
 			_prices = priceModel;
-
-			boolean netPrice = true;
-
-			CommerceChannel commerceChannel =
-				commerceChannelLocalService.fetchCommerceChannel(
-					_commerceContext.getCommerceChannelId());
-
-			if ((commerceChannel != null) &&
-				Objects.equals(
-					commerceChannel.getPriceDisplayType(),
-					CommercePricingConstants.TAX_INCLUDED_IN_PRICE)) {
-
-				netPrice = false;
-			}
-
-			_netPrice = netPrice;
 		}
 		catch (Exception exception) {
 			_log.error(exception, exception);
@@ -113,7 +97,6 @@ public class PriceTag extends IncludeTag {
 			_commerceContext = null;
 			_commerceDiscountValue = null;
 			_displayDiscountLevels = false;
-			_netPrice = true;
 			_themeDisplay = null;
 
 			return SKIP_BODY;
@@ -146,10 +129,6 @@ public class PriceTag extends IncludeTag {
 		return _quantity;
 	}
 
-	public boolean isNetPrice() {
-		return _netPrice;
-	}
-
 	public String setAdditionalDiscountClasses(
 		String additionalDiscountClasses) {
 
@@ -172,10 +151,6 @@ public class PriceTag extends IncludeTag {
 
 	public void setCPInstanceId(long cpInstanceId) {
 		_cpInstanceId = cpInstanceId;
-	}
-
-	public void setNetPrice(boolean netPrice) {
-		_netPrice = netPrice;
 	}
 
 	@Override
@@ -205,7 +180,6 @@ public class PriceTag extends IncludeTag {
 		_cpDefinitionId = 0;
 		_cpInstanceId = 0;
 		_displayDiscountLevels = true;
-		_netPrice = true;
 		_prices = null;
 		_quantity = 0;
 		_themeDisplay = null;
@@ -231,7 +205,6 @@ public class PriceTag extends IncludeTag {
 			"commerce-ui:price:commerceDiscountValue", _commerceDiscountValue);
 		request.setAttribute(
 			"commerce-ui:price:displayDiscountLevels", _displayDiscountLevels);
-		request.setAttribute("commerce-ui:price:netPrice", _netPrice);
 		request.setAttribute("commerce-ui:price:prices", _prices);
 	}
 
@@ -251,7 +224,6 @@ public class PriceTag extends IncludeTag {
 	private long _cpDefinitionId;
 	private long _cpInstanceId;
 	private boolean _displayDiscountLevels = true;
-	private boolean _netPrice = true;
 	private PriceModel _prices;
 	private int _quantity;
 	private ThemeDisplay _themeDisplay;
