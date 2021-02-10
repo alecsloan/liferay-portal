@@ -20,6 +20,7 @@
 String additionalDiscountClasses = (String)request.getAttribute("commerce-ui:price:additionalDiscountClasses");
 String additionalPriceClasses = (String)request.getAttribute("commerce-ui:price:additionalPriceClasses");
 String additionalPromoPriceClasses = (String)request.getAttribute("commerce-ui:price:additionalPromoPriceClasses");
+long cpDefinitionId = (long)request.getAttribute("commerce-ui:price:cpDefinitionId");
 PriceModel prices = (PriceModel)request.getAttribute("commerce-ui:price:prices");
 boolean displayDiscountLevels = (boolean)request.getAttribute("commerce-ui:price:displayDiscountLevels");
 
@@ -40,10 +41,10 @@ if (prices != null) {
 	}
 	%>
 
-	<span class="price-label">
+	<span class="price-label" data-text-cp-instance-price-label>
 		<liferay-ui:message key="list-price" />
 	</span>
-	<span class="price-value <%= priceActiveClass %> <%= GetterUtil.getString(additionalPriceClasses) %>">
+	<span class="price-value <%= priceActiveClass %> <%= GetterUtil.getString(additionalPriceClasses) %>" data-text-cp-instance-price>
 		<%= GetterUtil.getString(prices.getPrice()) %>
 	</span>
 
@@ -60,10 +61,10 @@ if (prices != null) {
 	}
 	%>
 
-	<span class="price-label <%= promoPriceHideClass %>">
+	<span class="price-label <%= promoPriceHideClass %>" data-text-cp-instance-promo-price-label>
 		<liferay-ui:message key="promo-price" />
 	</span>
-	<span class="price-value price-value-promo <%= promoPriceActiveClass %> <%= promoPriceHideClass %> <%= GetterUtil.getString(additionalPromoPriceClasses) %>">
+	<span class="price-value price-value-promo <%= promoPriceActiveClass %> <%= promoPriceHideClass %> <%= GetterUtil.getString(additionalPromoPriceClasses) %>" data-text-cp-instance-promo-price>
 		<%= GetterUtil.getString(prices.getPromoPrice()) %>
 	</span>
 
@@ -136,15 +137,125 @@ if (prices != null) {
 				<%= discountPercentageLevel4 %>
 			</span>
 		</span>
-		<span class="discount-percentage price-value price-value-discount <%= discountPercentageHideClass %>">
+		<span class="discount-percentage price-value price-value-discount <%= discountPercentageHideClass %>" data-text-cp-instance-discount-percentage>
 			-<%= prices.getDiscountPercentage() %>
 		</span>
 	</span>
-
 	<span class="price-label <%= discountHideClass %>">
 		<liferay-ui:message key="final-price" />
 	</span>
-	<span class="price-value price-value-final <%= discountHideClass %> <%= GetterUtil.getString(additionalDiscountClasses) %>">
+	<span class="price-value price-value-final <%= discountHideClass %> <%= GetterUtil.getString(additionalDiscountClasses) %>" data-text-cp-instance-final-price>
 		<%= prices.getFinalPrice() %>
 	</span>
 </div>
+
+<liferay-portlet:actionURL name="/cp_content_web/check_cp_instance" portletName="com_liferay_commerce_product_content_web_internal_portlet_CPContentPortlet" var="checkCPInstanceURL">
+	<portlet:param name="cpDefinitionId" value="<%= String.valueOf(cpDefinitionId) %>" />
+	<portlet:param name="groupId" value="<%= String.valueOf(themeDisplay.getScopeGroupId()) %>" />
+</liferay-portlet:actionURL>
+
+<aui:script require="commerce-frontend-js/utilities/eventsDefinitions as events">
+	function updatePriceInfo(productData) {
+		let prices = productData.prices;
+
+		var finalPriceContainer = document.querySelector(
+			'[data-text-cp-instance-final-price]'
+		);
+
+		if (finalPriceContainer) {
+			finalPriceContainer.innerHTML = prices.finalPrice || '';
+		}
+
+		var priceLabelContainer = document.querySelector(
+			'[data-text-cp-instance-price-label]'
+		);
+
+		priceLabelContainer.classList.remove('hide');
+
+		var priceContainer = document.querySelector(
+			'[data-text-cp-instance-price]'
+		);
+
+		let price = '';
+
+		if (prices) {
+			price = prices.price;
+		}
+
+		priceContainer.innerHTML = price;
+
+		var promoPriceLabelContiainer = document.querySelector(
+			'[data-text-cp-instance-promo-price-label]'
+		);
+
+		var promoPriceContainer = document.querySelector(
+			'[data-text-cp-instance-promo-price]'
+		);
+
+		if (price && prices.promoPrice) {
+			promoPriceContainer.innerHTML = prices.promoPrice || '';
+
+			priceContainer.classList.add('price-value-inactive');
+
+			promoPriceLabelContiainer.classList.remove('hide');
+			promoPriceContainer.classList.remove('hide');
+		}
+		else {
+			if (!price) {
+				priceLabelContainer.classList.add('hide');
+			}
+
+			priceContainer.classList.remove('price-value-inactive');
+
+			promoPriceLabelContiainer.classList.add('hide');
+			promoPriceContainer.classList.add('hide');
+		}
+
+		if (
+			productData.displayDiscountLevels ||
+			(prices && prices.discountPercentage)
+		) {
+			if (productData.displayDiscountLevels) {
+				let discountPercentages = prices.discountPercentages;
+
+				for (var i = 0; i < discountPercentages.length; i++) {
+					document.querySelector(
+						`[data-text-cp-instance-discount-percentage-level-${i + 1}]`
+					).innerHTML = discountPercentages[i] || '';
+				}
+			}
+			else {
+				document.querySelector(
+					'[data-text-cp-instance-discount-percentage]'
+				).innerHTML = prices.discountPercentage || '';
+			}
+		}
+	}
+
+	function checkCPInstance() {
+		const ddmFormValues = JSON.stringify(this.fields);
+		const fieldsParam = new FormData();
+
+		fieldsParam.append(
+			'_com_liferay_commerce_product_content_web_internal_portlet_CPContentPortlet_ddmFormValues',
+			ddmFormValues
+		);
+
+		AJAX.POST(this.actionURL, null, {
+			body: fieldsParam,
+			headers: new Headers({'x-csrf-token': Liferay.authToken}),
+		}).then(function (cpInstance) {
+			if (cpInstance.cpInstanceExist) {
+				cpInstance.options = ddmFormValues;
+				cpInstance.skuId = parseInt(cpInstance.cpInstanceId, 10);
+
+				const dispatchedPayload = {
+					cpInstance,
+					formFields: this.fields,
+				};
+
+				Liferay.fire(CP_INSTANCE_CHANGED, dispatchedPayload);
+			}
+		});
+	}
+</aui:script>

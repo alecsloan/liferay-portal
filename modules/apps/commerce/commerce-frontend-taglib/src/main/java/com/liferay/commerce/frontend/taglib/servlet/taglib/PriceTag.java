@@ -23,8 +23,6 @@ import com.liferay.commerce.frontend.model.PriceModel;
 import com.liferay.commerce.frontend.model.ProductSettingsModel;
 import com.liferay.commerce.frontend.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.commerce.frontend.util.ProductHelper;
-import com.liferay.commerce.pricing.constants.CommercePricingConstants;
-import com.liferay.commerce.product.model.CommerceChannel;
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
@@ -34,8 +32,6 @@ import com.liferay.portal.kernel.settings.SystemSettingsLocator;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.util.IncludeTag;
-
-import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -203,6 +199,8 @@ public class PriceTag extends IncludeTag {
 			_additionalPromoPriceClasses);
 		request.setAttribute(
 			"commerce-ui:price:commerceDiscountValue", _commerceDiscountValue);
+		request.setAttribute(
+			"commerce-ui:price:cpDefinitionId", _cpDefinitionId);
 		request.setAttribute(
 			"commerce-ui:price:displayDiscountLevels", _displayDiscountLevels);
 		request.setAttribute("commerce-ui:price:prices", _prices);
