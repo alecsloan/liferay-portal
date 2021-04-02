@@ -76,7 +76,7 @@ public class CommerceMediaResolverUtil {
 	public static void sendMediaBytes(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse)
-		throws IOException, PortalException {
+		throws Exception {
 
 		CommerceMediaResolver commerceMediaResolver =
 			_serviceTracker.getService();
@@ -88,7 +88,7 @@ public class CommerceMediaResolverUtil {
 	public static void sendMediaBytes(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, String download)
-		throws IOException, PortalException {
+		throws Exception {
 
 		CommerceMediaResolver commerceMediaResolver =
 			_serviceTracker.getService();

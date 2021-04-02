@@ -55,11 +55,11 @@ public interface CommerceMediaResolver {
 	public void sendMediaBytes(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse)
-		throws IOException;
+		throws Exception;
 
 	public void sendMediaBytes(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, String download)
-		throws IOException;
+		throws Exception;
 
 }

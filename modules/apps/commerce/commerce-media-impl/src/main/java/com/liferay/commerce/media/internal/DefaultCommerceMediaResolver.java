@@ -24,10 +24,11 @@ import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.model.CProduct;
 import com.liferay.commerce.product.model.CommerceCatalog;
 import com.liferay.commerce.product.service.CPAttachmentFileEntryLocalService;
+import com.liferay.commerce.product.service.CPAttachmentFileEntryService;
 import com.liferay.commerce.product.service.CPDefinitionLocalService;
 import com.liferay.commerce.product.service.CProductLocalService;
 import com.liferay.commerce.product.service.CommerceCatalogLocalService;
-import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -43,7 +44,6 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.CompanyLocalService;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.servlet.PortalSessionThreadLocal;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
@@ -145,7 +145,7 @@ public class DefaultCommerceMediaResolver implements CommerceMediaResolver {
 		}
 		else {
 			cpAttachmentFileEntry =
-				_cpAttachmentFileEntryLocalService.fetchCPAttachmentFileEntry(
+				_cpAttachmentFileEntryService.fetchCPAttachmentFileEntry(
 					cpAttachmentFileEntryId);
 		}
 
@@ -191,7 +191,7 @@ public class DefaultCommerceMediaResolver implements CommerceMediaResolver {
 	public void sendMediaBytes(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse)
-		throws IOException {
+		throws Exception {
 
 		sendMediaBytes(httpServletRequest, httpServletResponse, null);
 	}
@@ -200,7 +200,7 @@ public class DefaultCommerceMediaResolver implements CommerceMediaResolver {
 	public void sendMediaBytes(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, String contentDisposition)
-		throws IOException {
+		throws Exception {
 
 		String path = _http.fixPath(httpServletRequest.getPathInfo());
 
@@ -278,7 +278,7 @@ public class DefaultCommerceMediaResolver implements CommerceMediaResolver {
 
 	protected FileEntry getFileEntry(long fileEntryId) {
 		try {
-			return _dlAppLocalService.getFileEntry(fileEntryId);
+			return _dlAppService.getFileEntry(fileEntryId);
 		}
 		catch (PortalException portalException) {
 			if (_log.isDebugEnabled()) {
@@ -289,24 +289,21 @@ public class DefaultCommerceMediaResolver implements CommerceMediaResolver {
 		}
 	}
 
-	protected long getGroupId(String mediaType, long primaryKey) {
+	protected long getGroupId(String mediaType, long primaryKey)
+		throws Exception {
+
 		if (mediaType.equals("asset-categories")) {
 			AssetCategory assetCategory =
 				_assetCategoryLocalService.fetchCategory(primaryKey);
 
-			try {
-				if (AssetCategoryPermission.contains(
-						PermissionThreadLocal.getPermissionChecker(),
-						assetCategory, ActionKeys.VIEW)) {
+			if (AssetCategoryPermission.contains(
+					PermissionThreadLocal.getPermissionChecker(), assetCategory,
+					ActionKeys.VIEW)) {
 
-					Company company = _companyLocalService.getCompany(
-						assetCategory.getCompanyId());
+				Company company = _companyLocalService.getCompany(
+					assetCategory.getCompanyId());
 
-					return company.getGroupId();
-				}
-			}
-			catch (PortalException portalException) {
-				_log.error(portalException, portalException);
+				return company.getGroupId();
 			}
 		}
 		else if (mediaType.equals("products")) {
@@ -316,7 +313,12 @@ public class DefaultCommerceMediaResolver implements CommerceMediaResolver {
 				_commerceCatalogLocalService.fetchCommerceCatalogByGroupId(
 					cProduct.getGroupId());
 
-			return commerceCatalog.getGroupId();
+			if (_commerceCatalogModelResourcePermission.contains(
+					PermissionThreadLocal.getPermissionChecker(),
+					commerceCatalog, ActionKeys.VIEW)) {
+
+				return commerceCatalog.getGroupId();
+			}
 		}
 
 		return 0;
@@ -425,19 +427,19 @@ public class DefaultCommerceMediaResolver implements CommerceMediaResolver {
 		_cpAttachmentFileEntryLocalService;
 
 	@Reference
+	private CPAttachmentFileEntryService _cpAttachmentFileEntryService;
+
+	@Reference
 	private CPDefinitionLocalService _cpDefinitionLocalService;
 
 	@Reference
 	private CProductLocalService _cProductLocalService;
 
 	@Reference
-	private DLAppLocalService _dlAppLocalService;
+	private DLAppService _dlAppService;
 
 	@Reference
 	private File _file;
-
-	@Reference
-	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private Html _html;

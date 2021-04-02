@@ -76,25 +76,24 @@ public class CommerceMediaServlet extends HttpServlet {
 				PermissionCheckerFactoryUtil.create(user));
 
 			PrincipalThreadLocal.setName(user.getUserId());
+
+			String contentDisposition = HttpHeaders.CONTENT_DISPOSITION_INLINE;
+
+			boolean download = ParamUtil.getBoolean(
+				httpServletRequest, "download");
+
+			if (download) {
+				contentDisposition = HttpHeaders.CONTENT_DISPOSITION_ATTACHMENT;
+			}
+
+			_commerceMediaResolver.sendMediaBytes(
+				httpServletRequest, httpServletResponse, contentDisposition);
 		}
 		catch (Exception exception) {
 			_log.error(exception, exception);
 
 			httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
-
-			return;
 		}
-
-		String contentDisposition = HttpHeaders.CONTENT_DISPOSITION_INLINE;
-
-		boolean download = ParamUtil.getBoolean(httpServletRequest, "download");
-
-		if (download) {
-			contentDisposition = HttpHeaders.CONTENT_DISPOSITION_ATTACHMENT;
-		}
-
-		_commerceMediaResolver.sendMediaBytes(
-			httpServletRequest, httpServletResponse, contentDisposition);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
