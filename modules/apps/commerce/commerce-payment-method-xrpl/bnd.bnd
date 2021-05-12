@@ -1,0 +1,22 @@
+Bundle-Name: Payment Method XRPL
+Bundle-SymbolicName: com.liferay.commerce.payment.method.xrpl
+Bundle-Version: 1.0.0
+Web-ContextPath: /commerce-payment-method-xrpl
+Import-Package:\
+	!android.util.*,\
+	\
+	!org.apache.bsf.*,\
+	\
+	!org.jmock.*,\
+	\
+	!org.junit.*,\
+	\
+	!org.objenesis.*,\
+	\
+	!org.testng.*,\
+	\
+	!com.github.benmanes.*,\
+	\
+	!sun.security.x509.*,\
+	\
+	*
