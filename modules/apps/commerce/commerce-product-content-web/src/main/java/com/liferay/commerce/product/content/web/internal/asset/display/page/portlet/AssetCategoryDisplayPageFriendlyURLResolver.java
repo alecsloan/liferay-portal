@@ -12,25 +12,17 @@
  * details.
  */
 
-package com.liferay.commerce.product.content.web.internal.layout.display.page.portlet;
+package com.liferay.commerce.product.content.web.internal.asset.display.page.portlet;
 
 import com.liferay.asset.display.page.portlet.BaseAssetDisplayPageFriendlyURLResolver;
+import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetTag;
+import com.liferay.asset.kernel.service.AssetCategoryService;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
-import com.liferay.commerce.account.model.CommerceAccount;
-import com.liferay.commerce.account.util.CommerceAccountHelper;
-import com.liferay.commerce.product.catalog.CPCatalogEntry;
 import com.liferay.commerce.product.constants.CPPortletKeys;
-import com.liferay.commerce.product.constants.CPWebKeys;
-import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.model.CPDisplayLayout;
-import com.liferay.commerce.product.model.CProduct;
-import com.liferay.commerce.product.service.CPDefinitionLocalService;
 import com.liferay.commerce.product.service.CPDisplayLayoutLocalService;
-import com.liferay.commerce.product.service.CProductLocalService;
-import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.product.url.CPFriendlyURL;
-import com.liferay.commerce.product.util.CPDefinitionHelper;
 import com.liferay.friendly.url.model.FriendlyURLEntry;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.info.constants.InfoDisplayWebKeys;
@@ -57,6 +49,7 @@ import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.InheritableMap;
@@ -81,7 +74,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Alec Sloan
  */
 @Component(enabled = false, service = FriendlyURLResolver.class)
-public class CProductAssetDisplayPageFriendlyURLResolver
+public class AssetCategoryDisplayPageFriendlyURLResolver
 	extends BaseAssetDisplayPageFriendlyURLResolver {
 
 	@Override
@@ -93,28 +86,28 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 
 		Group companyGroup = _groupLocalService.getCompanyGroup(companyId);
 
-		long classNameId = _portal.getClassNameId(CProduct.class);
-
 		String urlTitle = friendlyURL.substring(_getURLSeparatorLength());
+
+		urlTitle = FriendlyURLNormalizerUtil.normalizeWithEncoding(urlTitle);
 
 		FriendlyURLEntry friendlyURLEntry =
 			_friendlyURLEntryLocalService.fetchFriendlyURLEntry(
-				companyGroup.getGroupId(), classNameId, urlTitle);
+				companyGroup.getGroupId(),
+				_portal.getClassNameId(AssetCategory.class), urlTitle);
 
 		if (friendlyURLEntry == null) {
 			return null;
 		}
 
-		CProduct cProduct = _cProductLocalService.getCProduct(
+		AssetCategory assetCategory = _assetCategoryService.fetchCategory(
 			friendlyURLEntry.getClassPK());
 
 		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider =
-			_getLayoutDisplayPageObjectProvider(cProduct);
+			_getLayoutDisplayPageObjectProvider(assetCategory);
 
 		CPDisplayLayout cpDisplayLayout =
 			_cpDisplayLayoutLocalService.fetchCPDisplayLayout(
-				groupId, CPDefinition.class,
-				cProduct.getPublishedCPDefinitionId());
+				groupId, AssetCategory.class, assetCategory.getCategoryId());
 
 		if ((layoutDisplayPageObjectProvider != null) &&
 			(cpDisplayLayout != null)) {
@@ -153,17 +146,10 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 				LayoutDisplayPageWebKeys.LAYOUT_DISPLAY_PAGE_PROVIDER,
 				layoutDisplayPageProvider);
 			httpServletRequest.setAttribute(
+				WebKeys.ASSET_CATEGORY, assetCategory);
+			httpServletRequest.setAttribute(
 				WebKeys.LAYOUT_ASSET_ENTRY,
 				getAssetEntry(layoutDisplayPageObjectProvider));
-
-			CPCatalogEntry cpCatalogEntry =
-				_cpDefinitionHelper.getCPCatalogEntry(
-					_getCommerceAccountId(groupId, httpServletRequest), groupId,
-					cProduct.getPublishedCPDefinitionId(),
-					_portal.getLocale(httpServletRequest));
-
-			httpServletRequest.setAttribute(
-				CPWebKeys.CP_CATALOG_ENTRY, cpCatalogEntry);
 
 			Layout layout = _layoutLocalService.fetchLayoutByUuidAndGroupId(
 				cpDisplayLayout.getLayoutUuid(), groupId, privateLayout);
@@ -212,7 +198,8 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 		}
 
 		return _getBasicLayoutURL(
-			groupId, privateLayout, mainPath, params, requestContext, cProduct);
+			groupId, privateLayout, mainPath, params, requestContext,
+			assetCategory);
 	}
 
 	@Override
@@ -229,7 +216,7 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 		FriendlyURLEntry friendlyURLEntry =
 			_friendlyURLEntryLocalService.fetchFriendlyURLEntry(
 				companyGroup.getGroupId(),
-				_portal.getClassNameId(CProduct.class), urlTitle);
+				_portal.getClassNameId(AssetCategory.class), urlTitle);
 
 		if (friendlyURLEntry == null) {
 			return null;
@@ -245,16 +232,15 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 			return null;
 		}
 
-		CProduct cProduct = _cProductLocalService.getCProduct(
+		AssetCategory assetCategory = _assetCategoryService.fetchCategory(
 			friendlyURLEntry.getClassPK());
 
 		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider =
-			_getLayoutDisplayPageObjectProvider(cProduct);
+			_getLayoutDisplayPageObjectProvider(assetCategory);
 
 		CPDisplayLayout cpDisplayLayout =
 			_cpDisplayLayoutLocalService.fetchCPDisplayLayout(
-				groupId, CPDefinition.class,
-				cProduct.getPublishedCPDefinitionId());
+				groupId, AssetCategory.class, assetCategory.getCategoryId());
 
 		if ((layoutDisplayPageObjectProvider != null) &&
 			(cpDisplayLayout != null)) {
@@ -264,8 +250,8 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 				requestContext);
 		}
 
-		Layout layout = getProductLayout(
-			groupId, privateLayout, cProduct.getPublishedCPDefinitionId());
+		Layout layout = getAssetCategoryLayout(
+			groupId, privateLayout, assetCategory.getCategoryId());
 
 		return new LayoutFriendlyURLComposite(
 			layout,
@@ -274,54 +260,39 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 
 	@Override
 	public String getURLSeparator() {
-		return _cpFriendlyURL.getProductURLSeparator(
+		return _cpFriendlyURL.getAssetCategoryURLSeparator(
 			CompanyThreadLocal.getCompanyId());
 	}
 
-	protected Layout getProductLayout(
-			long groupId, boolean privateLayout, long cpDefinitionId)
+	protected Layout getAssetCategoryLayout(
+			long groupId, boolean privateLayout, long categoryId)
 		throws PortalException {
 
-		String layoutUuid = _cpDefinitionLocalService.getLayoutUuid(
-			groupId, cpDefinitionId);
+		CPDisplayLayout cpDisplayLayout =
+			_cpDisplayLayoutLocalService.fetchCPDisplayLayout(
+				groupId, AssetCategory.class, categoryId);
 
-		if (Validator.isNotNull(layoutUuid)) {
-			return _layoutLocalService.getLayoutByUuidAndGroupId(
-				layoutUuid, groupId, privateLayout);
-		}
+		if ((cpDisplayLayout == null) ||
+			Validator.isNull(cpDisplayLayout.getLayoutUuid())) {
 
-		long plid = _getPlidFromPortletId(
-			groupId, privateLayout, CPPortletKeys.CP_CONTENT_WEB);
+			long plid = _getPlidFromPortletId(
+				groupId, privateLayout, CPPortletKeys.CP_CATEGORY_CONTENT_WEB);
 
-		try {
 			return _layoutLocalService.getLayout(plid);
 		}
-		catch (PortalException portalException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(portalException, portalException);
-			}
 
-			throw portalException;
-		}
+		return _layoutLocalService.getLayoutByUuidAndGroupId(
+			cpDisplayLayout.getLayoutUuid(), groupId, privateLayout);
 	}
 
 	private String _getBasicLayoutURL(
 			long groupId, boolean privateLayout, String mainPath,
 			Map<String, String[]> params, Map<String, Object> requestContext,
-			CProduct cProduct)
+			AssetCategory assetCategory)
 		throws PortalException {
 
-		HttpServletRequest httpServletRequest =
-			(HttpServletRequest)requestContext.get("request");
-
-		Locale locale = _portal.getLocale(httpServletRequest);
-
-		CPCatalogEntry cpCatalogEntry = _cpDefinitionHelper.getCPCatalogEntry(
-			_getCommerceAccountId(groupId, httpServletRequest), groupId,
-			cProduct.getPublishedCPDefinitionId(), locale);
-
-		Layout layout = getProductLayout(
-			groupId, privateLayout, cpCatalogEntry.getCPDefinitionId());
+		Layout layout = getAssetCategoryLayout(
+			groupId, privateLayout, assetCategory.getCategoryId());
 
 		String layoutActualURL = _portal.getLayoutActualURL(layout, mainPath);
 
@@ -331,11 +302,15 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 			actualParams.setParentMap(params);
 		}
 
+		actualParams.put(
+			"p_p_id", new String[] {CPPortletKeys.CP_CATEGORY_CONTENT_WEB});
 		actualParams.put("p_p_lifecycle", new String[] {"0"});
 		actualParams.put("p_p_mode", new String[] {"view"});
 
-		httpServletRequest.setAttribute(
-			CPWebKeys.CP_CATALOG_ENTRY, cpCatalogEntry);
+		HttpServletRequest httpServletRequest =
+			(HttpServletRequest)requestContext.get("request");
+
+		httpServletRequest.setAttribute(WebKeys.ASSET_CATEGORY, assetCategory);
 
 		String queryString = _http.parameterMapToString(actualParams, false);
 
@@ -348,75 +323,37 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 				layoutActualURL + StringPool.QUESTION + queryString;
 		}
 
-		String languageId = LanguageUtil.getLanguageId(locale);
+		String languageId = LanguageUtil.getLanguageId(
+			_portal.getLocale(httpServletRequest));
 
-		String description = cpCatalogEntry.getMetaDescription(languageId);
+		_portal.addPageSubtitle(
+			assetCategory.getTitle(languageId), httpServletRequest);
+		_portal.addPageDescription(
+			assetCategory.getDescription(languageId), httpServletRequest);
 
-		if (Validator.isNull(description)) {
-			description = cpCatalogEntry.getShortDescription();
+		List<AssetTag> assetTags = _assetTagLocalService.getTags(
+			AssetCategory.class.getName(), assetCategory.getPrimaryKey());
+
+		if (!assetTags.isEmpty()) {
+			_portal.addPageKeywords(
+				ListUtil.toString(assetTags, AssetTag.NAME_ACCESSOR),
+				httpServletRequest);
 		}
-
-		if (Validator.isNotNull(description)) {
-			_portal.addPageDescription(description, httpServletRequest);
-		}
-
-		String keywords = cpCatalogEntry.getMetaKeywords(languageId);
-
-		if (Validator.isNull(keywords)) {
-			List<AssetTag> assetTags = _assetTagLocalService.getTags(
-				CPDefinition.class.getName(),
-				cpCatalogEntry.getCPDefinitionId());
-
-			if (ListUtil.isNotEmpty(assetTags)) {
-				keywords = ListUtil.toString(assetTags, AssetTag.NAME_ACCESSOR);
-			}
-		}
-
-		if (Validator.isNotNull(keywords)) {
-			_portal.addPageKeywords(keywords, httpServletRequest);
-		}
-
-		String subtitle = cpCatalogEntry.getMetaTitle(languageId);
-
-		if (Validator.isNull(subtitle)) {
-			subtitle = cpCatalogEntry.getName();
-		}
-
-		_portal.addPageSubtitle(subtitle, httpServletRequest);
 
 		return layoutActualURL;
 	}
 
-	private long _getCommerceAccountId(
-			long groupId, HttpServletRequest httpServletRequest)
-		throws PortalException {
-
-		CommerceAccount commerceAccount =
-			_commerceAccountHelper.getCurrentCommerceAccount(
-				_commerceChannelLocalService.
-					getCommerceChannelGroupIdBySiteGroupId(groupId),
-				httpServletRequest);
-
-		long commerceAccountId = 0;
-
-		if (commerceAccount != null) {
-			commerceAccountId = commerceAccount.getCommerceAccountId();
-		}
-
-		return commerceAccountId;
-	}
-
 	private LayoutDisplayPageObjectProvider<?>
-			_getLayoutDisplayPageObjectProvider(CProduct cProduct)
+			_getLayoutDisplayPageObjectProvider(AssetCategory assetCategory)
 		throws PortalException {
 
 		LayoutDisplayPageProvider<?> layoutDisplayPageProvider =
 			layoutDisplayPageProviderTracker.
 				getLayoutDisplayPageProviderByClassName(
-					CProduct.class.getName());
+					AssetCategory.class.getName());
 
 		InfoItemReference infoItemReference = new InfoItemReference(
-			CProduct.class.getName(), cProduct.getCProductId());
+			AssetCategory.class.getName(), assetCategory.getCategoryId());
 
 		return layoutDisplayPageProvider.getLayoutDisplayPageObjectProvider(
 			infoItemReference);
@@ -514,31 +451,19 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		CProductAssetDisplayPageFriendlyURLResolver.class);
+		AssetCategoryDisplayPageFriendlyURLResolver.class);
+
+	@Reference
+	private AssetCategoryService _assetCategoryService;
 
 	@Reference
 	private AssetTagLocalService _assetTagLocalService;
-
-	@Reference
-	private CommerceAccountHelper _commerceAccountHelper;
-
-	@Reference
-	private CommerceChannelLocalService _commerceChannelLocalService;
-
-	@Reference
-	private CPDefinitionHelper _cpDefinitionHelper;
-
-	@Reference
-	private CPDefinitionLocalService _cpDefinitionLocalService;
 
 	@Reference
 	private CPDisplayLayoutLocalService _cpDisplayLayoutLocalService;
 
 	@Reference
 	private CPFriendlyURL _cpFriendlyURL;
-
-	@Reference
-	private CProductLocalService _cProductLocalService;
 
 	@Reference
 	private FriendlyURLEntryLocalService _friendlyURLEntryLocalService;
