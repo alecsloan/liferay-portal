@@ -244,10 +244,12 @@ public class NumericDDMFormFieldTemplateContextContributor
 				"changedProperties");
 
 		if (MapUtil.isNotEmpty(changedProperties)) {
-			LocalizedValue localizedValue =
-				(LocalizedValue)changedProperties.get(propertyName);
+			Object changedPropertyValue = changedProperties.get(propertyName);
 
-			if (localizedValue != null) {
+			if (changedPropertyValue instanceof LocalizedValue) {
+				LocalizedValue localizedValue =
+					(LocalizedValue)changedPropertyValue;
+
 				String propertyValue = localizedValue.getString(locale);
 
 				if (propertyValue != null) {

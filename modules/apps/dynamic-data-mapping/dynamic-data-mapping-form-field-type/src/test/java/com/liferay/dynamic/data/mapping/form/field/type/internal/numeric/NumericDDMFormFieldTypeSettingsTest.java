@@ -242,7 +242,7 @@ public class NumericDDMFormFieldTypeSettingsTest
 
 		actions = ddmFormRule3.getActions();
 
-		Assert.assertEquals(actions.toString(), 13, actions.size());
+		Assert.assertEquals(actions.toString(), 14, actions.size());
 		Assert.assertEquals(
 			"setDataType('predefinedValue', getValue('dataType'))",
 			actions.get(0));
@@ -265,7 +265,8 @@ public class NumericDDMFormFieldTypeSettingsTest
 			"setValidationFieldName('validation', getValue('name'))",
 			actions.get(5));
 		Assert.assertEquals(
-			"setVisible('characterOptions', getValue('inputMask'))",
+			"setVisible('characterOptions', equals(getValue('dataType'), " +
+				"'integer') and equals(getValue('inputMask'), TRUE))",
 			actions.get(6));
 		Assert.assertEquals(
 			"setVisible('confirmationErrorMessage', getValue(" +
@@ -278,11 +279,17 @@ public class NumericDDMFormFieldTypeSettingsTest
 			"setVisible('direction', getValue('requireConfirmation'))",
 			actions.get(9));
 		Assert.assertEquals(
-			"setVisible('inputMaskFormat', getValue('inputMask'))",
+			"setVisible('inputMaskFormat', equals(getValue('dataType'), " +
+				"'integer') and equals(getValue('inputMask'), TRUE))",
 			actions.get(10));
 		Assert.assertEquals(
-			"setVisible('requiredErrorMessage', false)", actions.get(11));
-		Assert.assertEquals("setVisible('tooltip', false)", actions.get(12));
+			"setVisible('numericInputMask', equals(getValue('dataType'), " +
+				"'double') and equals(getValue('inputMask'), TRUE))",
+			actions.get(11));
+		Assert.assertEquals(
+			"setVisible('requiredErrorMessage', getValue('required'))",
+			actions.get(12));
+		Assert.assertEquals("setVisible('tooltip', false)", actions.get(13));
 	}
 
 	@Override

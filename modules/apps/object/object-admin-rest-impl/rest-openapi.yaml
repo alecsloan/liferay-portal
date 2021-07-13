@@ -29,15 +29,8 @@ components:
                     type: array
             type: object
         ObjectField:
+            # @review
             properties:
-                dateCreated:
-                    format: date
-                    readOnly: true
-                    type: string
-                dateModified:
-                    format: date
-                    readOnly: true
-                    type: string
                 id:
                     format: int64
                     readOnly: true
@@ -50,9 +43,16 @@ components:
                     type: string
                 name:
                     type: string
+                required:
+                    type: boolean
                 type:
+                    description:
+                        "The available default types are: BigDecimal, Boolean, Date, Double, Integer, Long and String."
                     type: string
 info:
+    description:
+        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        'com.liferay.object.admin.rest.client', and version '1.0.0'."
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"

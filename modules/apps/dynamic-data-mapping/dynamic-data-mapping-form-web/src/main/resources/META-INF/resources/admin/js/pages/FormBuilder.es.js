@@ -23,6 +23,10 @@ import {
 	useFormState,
 } from 'data-engine-js-components-web';
 import {EVENT_TYPES as CORE_EVENT_TYPES} from 'data-engine-js-components-web/js/core/actions/eventTypes.es';
+import {
+	addObjectFields,
+	updateObjectFields,
+} from 'data-engine-js-components-web/js/utils/objectFields';
 import {DragLayer, MultiPanelSidebar} from 'data-engine-taglib';
 import React, {
 	useCallback,
@@ -34,11 +38,13 @@ import React, {
 
 import {FormInfo} from '../components/FormInfo.es';
 import {ManagementToolbar} from '../components/ManagementToolbar.es';
+import ModalObjectRestrictionsBody from '../components/ModalObjectRestrictionsBody';
 import {TranslationManager} from '../components/TranslationManager.es';
 import FormSettings from '../components/form-settings/FormSettings';
 import {ShareFormModalBody} from '../components/share-form/ShareFormModalBody.es';
 import {useAutoSave} from '../hooks/useAutoSave.es';
 import {useToast} from '../hooks/useToast.es';
+import {useValidateFormWithObjects} from '../hooks/useValidateFormWithObjects';
 import fieldDelete from '../thunks/fieldDelete.es';
 import {createFormURL} from '../util/form.es';
 import {submitEmailContent} from '../util/submitEmailContent.es';
@@ -63,6 +69,7 @@ export const FormBuilder = () => {
 		focusedField,
 		formSettingsContext,
 		localizedName,
+		objectFields,
 		pages,
 		rules,
 	} = useFormState();
@@ -88,6 +95,11 @@ export const FormBuilder = () => {
 	const {doSave, doSyncInput} = useAutoSave();
 
 	const addToast = useToast();
+
+	// This hook is used to validate the Forms when the storage type object
+	// is selected in the Forms settings
+
+	const validateFormWithObjects = useValidateFormWithObjects();
 
 	useEffect(() => {
 		const sessionLength = Liferay.Session
@@ -151,7 +163,7 @@ export const FormBuilder = () => {
 	const getFormUrl = useCallback(
 		async (path) => {
 			const settingsDDMForm = await Liferay.componentReady(
-				'settingsDDMForm'
+				'formSettingsAPI'
 			);
 
 			const fields = settingsDDMForm.reactComponentRef.current.getFields();
@@ -223,12 +235,50 @@ export const FormBuilder = () => {
 	);
 
 	const subtmitForm = useCallback(
-		(form) => {
+		async (form) => {
+			const openModalObjectRestrictions = (props) => {
+				modalDispatch({
+					payload: {
+						body: <ModalObjectRestrictionsBody {...props} />,
+						footer: [
+							null,
+							null,
+							<ClayButton.Group key={1} spaced>
+								<ClayButton
+									displayType="secondary"
+									onClick={() => onClose()}
+								>
+									{Liferay.Language.get('cancel')}
+								</ClayButton>
+								<ClayButton disabled displayType="danger">
+									{Liferay.Language.get('done')}
+								</ClayButton>
+							</ClayButton.Group>,
+						],
+						header: Liferay.Language.get(
+							'unmapped-object-required-fields'
+						),
+						status: 'danger',
+					},
+					type: 1,
+				});
+			};
+
 			doSyncInput();
 
-			window.submitForm(form);
+			const isValidToSubmitForm = await validateFormWithObjects(
+
+				// This callback will be rendered when the Forms
+				// validation result is false
+
+				openModalObjectRestrictions
+			);
+
+			if (isValidToSubmitForm) {
+				window.submitForm(form);
+			}
 		},
-		[doSyncInput]
+		[doSyncInput, modalDispatch, onClose, validateFormWithObjects]
 	);
 
 	const onPublishClick = useCallback(
@@ -311,6 +361,12 @@ export const FormBuilder = () => {
 		published,
 		shareFormInstanceURL,
 	]);
+
+	useEffect(() => {
+		if (!objectFields.length) {
+			addObjectFields(dispatch);
+		}
+	}, [dispatch, objectFields]);
 
 	return (
 		<>
@@ -412,7 +468,10 @@ export const FormBuilder = () => {
 
 			<FormSettings
 				{...formSettingsContext}
-				onCloseFormSettings={() => setVisibleFormSettings(false)}
+				onCloseFormSettings={() => {
+					setVisibleFormSettings(false);
+					updateObjectFields(dispatch);
+				}}
 				visibleFormSettings={visibleFormSettings}
 			/>
 		</>

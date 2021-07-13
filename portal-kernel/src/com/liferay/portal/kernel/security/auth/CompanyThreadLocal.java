@@ -53,6 +53,10 @@ public class CompanyThreadLocal {
 		return _deleteInProcess.get();
 	}
 
+	public static boolean isLocked() {
+		return _locked.get();
+	}
+
 	public static SafeCloseable lock(long companyId) {
 		SafeCloseable safeCloseable = setWithSafeCloseable(companyId);
 
@@ -186,13 +190,13 @@ public class CompanyThreadLocal {
 	}
 
 	private static boolean _setCompanyId(Long companyId) {
-		if (_locked.equals(true)) {
-			throw new UnsupportedOperationException(
-				"CompanyThreadLocal modification is not allowed");
-		}
-
 		if (companyId.equals(_companyId.get())) {
 			return false;
+		}
+
+		if (isLocked()) {
+			throw new UnsupportedOperationException(
+				"CompanyThreadLocal modification is not allowed");
 		}
 
 		if (_log.isDebugEnabled()) {

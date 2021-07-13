@@ -12,15 +12,20 @@
  * details.
  */
 
-import {useConfig, useFormState} from 'data-engine-js-components-web';
+import {useFormState} from 'data-engine-js-components-web';
 import {getFields} from 'data-engine-js-components-web/js/utils/fields.es';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
+
+const getFielProperty = (fields, fieldName) => {
+	return fields.find((field) => field.fieldName === fieldName)?.value[0];
+};
 
 const FormSettingsApi = React.forwardRef((_, ref) => {
-	const {containerId} = useConfig();
 	const {pages} = useFormState();
 
 	useEffect(() => {
+		const containerId = 'formSettingsAPI';
+
 		Liferay.component(
 			containerId,
 			{
@@ -34,10 +39,23 @@ const FormSettingsApi = React.forwardRef((_, ref) => {
 		return () => {
 			Liferay.destroyComponent(containerId);
 		};
-	}, [ref, containerId]);
+	}, [ref]);
+
+	const fields = useMemo(() => getFields(pages), [pages]);
 
 	ref.current = {
-		getFields: () => getFields(pages),
+		getFields: () => fields,
+		getObjectDefinitionId: () => {
+			const storageType = getFielProperty(fields, 'storageType');
+			const objectDefinitionId = getFielProperty(
+				fields,
+				'objectDefinitionId'
+			);
+
+			return storageType === 'object' && objectDefinitionId
+				? objectDefinitionId
+				: null;
+		},
 	};
 
 	return null;

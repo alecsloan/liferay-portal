@@ -46,7 +46,7 @@ definition {
 
 		DDLDataDefinition.save();
 
-		Navigator.gotoNavItem(navItem = "Documents and Media");
+		Navigator.gotoNavItem(navItem = "Files");
 
 		DMDocument.addCP(
 			dmDocumentTitle = "DM Title",
@@ -63,6 +63,7 @@ definition {
 			value1 = "Test Text");
 
 		AssertTextEquals.assertValue(
+			key_fieldLabel = "Numeric",
 			locator1 = "TextInput#NUMERIC",
 			value1 = "123");
 	}
@@ -367,7 +368,7 @@ definition {
 
 		PortletEntry.save();
 
-		Navigator.gotoNavItem(navItem = "Documents and Media");
+		Navigator.gotoNavItem(navItem = "Files");
 
 		DMNavigator.gotoAddDocumentTypeCP(dmDocumentTypeName = "DM Document Type Name");
 
@@ -398,7 +399,7 @@ definition {
 
 		Button.clickSave();
 
-		Navigator.gotoNavItem(navItem = "Documents and Media");
+		Navigator.gotoNavItem(navItem = "Files");
 
 		DMNavigator.gotoAddDocumentTypeCP(dmDocumentTypeName = "DM Document Type Name");
 

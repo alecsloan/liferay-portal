@@ -557,6 +557,8 @@ definition {
 
 		Form.configureSubmitLabel(submitLabel = "123456789");
 
+		Button.clickDone();
+
 		Form.save();
 
 		Form.publishForm();
@@ -599,6 +601,10 @@ definition {
 		Form.viewSubmitButtonText(key_buttonText = "!@#$%^&*()+?");
 
 		FormPortlet.submitLocalizedSuccessfully(buttonName = "!@#$%^&*()+?");
+
+		FormPortlet.viewSuccessPage(
+			successPageDescription = "Your information was successfully received. Thank you for filling out the form.",
+			successPageTitle = "Thank you.");
 	}
 
 	@description = "Verify that a Form's Success Page can be deleted"

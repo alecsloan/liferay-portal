@@ -146,6 +146,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BUTTON_ID</td>
+	<td>//*[contains(@class,'btn')][contains(@id,'${buttonId}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BUTTON_LABEL</td>
+	<td>//div[./label[normalize-space(text())='${fieldLabel}']]//button[normalize-space()='${text}']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>CANCEL</td>
 	<td>//a[contains(@class,'cancel') and contains(@class,'btn')] | //button[contains(.,'Cancel')] | //a[contains(@class,'btn') and contains(.,'Cancel')]</td>
 	<td></td>
@@ -396,6 +406,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>GENERAL_BUTTON_MODAL_FOOTER</td>
+	<td>//div[contains(@class, 'modal-footer')]//button[contains(@class,'btn-primary')][contains(text(),'${key_name}')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>I_AGREE</td>
 	<td>//button[contains(.,'I Agree')]</td>
 	<td></td>
@@ -567,7 +582,7 @@
 </tr>
 <tr>
 	<td>PROPAGATE</td>
-	<td>//button[contains(@title,'Propagate')]</td>
+	<td>//button[@*='Propagate']</td>
 	<td></td>
 </tr>
 <tr>
@@ -832,7 +847,7 @@
 </tr>
 <tr>
 	<td>TRY_REDIRECTION</td>
-	<td>//button[@type='button' and @title='Check URL']</td>
+	<td>//button[@type='button' and @*='Check URL']</td>
 	<td></td>
 </tr>
 <tr>

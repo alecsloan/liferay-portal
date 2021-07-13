@@ -327,11 +327,63 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 		testGetProcessNodeMetricsPage_addNodeMetric(
 			_process.getId(), "COMPLETED", nodeMetric5, "3.0");
 
+		NodeMetric nodeMetric6 = randomNodeMetric();
+
+		nodeMetric6.setBreachedInstanceCount(0L);
+		nodeMetric6.setDurationAvg(1000L);
+		nodeMetric6.setInstanceCount(1L);
+		nodeMetric6.setOnTimeInstanceCount(0L);
+		nodeMetric6.setOverdueInstanceCount(0L);
+
+		testGetProcessNodeMetricsPage_addNodeMetric(
+			_process.getId(), "COMPLETED", nodeMetric6, "3.0");
+
 		page = nodeMetricResource.getProcessNodeMetricsPage(
 			_process.getId(), true, null, null, null, "3.0",
 			Pagination.of(1, 2), null);
 
 		Node node5 = nodeMetric5.getNode();
+		Node node6 = nodeMetric6.getNode();
+
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				new NodeMetric() {
+					{
+						breachedInstanceCount =
+							nodeMetric5.getBreachedInstanceCount();
+						breachedInstancePercentage =
+							nodeMetric5.getBreachedInstancePercentage();
+						durationAvg = nodeMetric5.getDurationAvg();
+						instanceCount = nodeMetric5.getInstanceCount();
+						node = new Node() {
+							{
+								label = node5.getLabel();
+								name = node5.getName();
+							}
+						};
+					}
+				},
+				new NodeMetric() {
+					{
+						breachedInstanceCount =
+							nodeMetric6.getBreachedInstanceCount();
+						breachedInstancePercentage =
+							nodeMetric6.getBreachedInstancePercentage();
+						durationAvg = nodeMetric6.getDurationAvg();
+						instanceCount = nodeMetric6.getInstanceCount();
+						node = new Node() {
+							{
+								label = node6.getLabel();
+								name = node6.getName();
+							}
+						};
+					}
+				}),
+			(List<NodeMetric>)page.getItems());
+
+		page = nodeMetricResource.getProcessNodeMetricsPage(
+			_process.getId(), true, null, null, node5.getName(), "3.0",
+			Pagination.of(1, 2), null);
 
 		assertEquals(
 			Arrays.asList(
@@ -352,6 +404,26 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 					}
 				}),
 			(List<NodeMetric>)page.getItems());
+
+		_workflowMetricsRESTTestHelper.updateProcess(
+			testGroup.getCompanyId(), _process.getId(), "4.0");
+
+		NodeMetric nodeMetric7 = randomNodeMetric();
+
+		nodeMetric7.setBreachedInstanceCount(0L);
+		nodeMetric7.setDurationAvg(1000L);
+		nodeMetric7.setInstanceCount(1L);
+		nodeMetric7.setOnTimeInstanceCount(0L);
+		nodeMetric7.setOverdueInstanceCount(0L);
+
+		testGetProcessNodeMetricsPage_addNodeMetric(
+			_process.getId(), nodeMetric7, "4.0");
+
+		page = nodeMetricResource.getProcessNodeMetricsPage(
+			_process.getId(), true, null, null, null, "4.0",
+			Pagination.of(1, 2), null);
+
+		Assert.assertEquals(0, page.getTotalCount());
 	}
 
 	@Override
@@ -442,11 +514,11 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 	}
 
 	protected NodeMetric testGetProcessNodeMetricsPage_addNodeMetric(
-			Long processId, NodeMetric task, String version)
+			Long processId, NodeMetric nodeMetric, String version)
 		throws Exception {
 
 		return testGetProcessNodeMetricsPage_addNodeMetric(
-			processId, "RUNNING", task, version);
+			processId, "RUNNING", nodeMetric, version);
 	}
 
 	protected NodeMetric testGetProcessNodeMetricsPage_addNodeMetric(

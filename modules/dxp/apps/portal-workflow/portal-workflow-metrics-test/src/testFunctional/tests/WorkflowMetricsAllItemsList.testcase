@@ -42,6 +42,8 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "5"
 	test CanOrderByAssignee {
+		property test.name.skip.portal.instance = "WorkflowMetricsAllItemsList#CanOrderByAssignee";
+
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		WorkflowMetrics.createUsersAndAssignInstancesWithGroovy(
@@ -97,10 +99,12 @@ definition {
 	@description = "LPS-130218 - Verify that the user is able to click on the table header Created by to choose the items order (A-Z / Z-A)."
 	@priority = "5"
 	test CanOrderByCreatedBy {
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			portlet = "Workflow",
-			site = "Liferay DXP");
+			site = "${siteName}");
 
 		Workflow.configureWorkflow(
 			workflowDefinition = "Single Approver",
@@ -260,6 +264,8 @@ definition {
 	@description = "LPS-86652 - Verify that every column displays the correct info for a item"
 	@priority = "5"
 	test ColumnsDiplayCorrectInfo {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -291,6 +297,8 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "3"
 	test CorrectNumberOfEntriesDisplayedWhenPaginationEdited {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -673,6 +681,8 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "4"
 	test DueDateHasIconSlaNameDueDateAndResolutionStatus {
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
 		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
 
 		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
@@ -690,7 +700,7 @@ definition {
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			portlet = "Workflow",
-			site = "Liferay DXP");
+			site = "${siteName}");
 
 		Workflow.configureWorkflow(
 			workflowDefinition = "Single Approver",
@@ -886,10 +896,12 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "3"
 	test HoveringCursorDisplayTooltip {
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			portlet = "Workflow",
-			site = "Liferay DXP");
+			site = "${siteName}");
 
 		Workflow.configureWorkflow(
 			workflowDefinition = "Single Approver",
@@ -961,6 +973,8 @@ definition {
 	@description = "LPS-92053 - Verify that, in the item detail modal, when an item is completed On Time, the icon on modal title will keep informing the SLA status but styled in grey color"
 	@priority = "3"
 	test IconOnModalTitleIsGreyWhenItemIsCompletedOnTime {
+		property portal.upstream = "quarantine";
+
 		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
 
 		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
@@ -1061,6 +1075,8 @@ definition {
 	@description = "LPS-92053 - Verify that the item modal places an icon before the modal title referring to the SLA status: On Time"
 	@priority = "3"
 	test ItemModalPlacesIconReferringToSlaStatusOnTime {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -1236,6 +1252,8 @@ definition {
 	@description = "LPS-98517 - Verify that a long username that exceeds 240px in the assignee dropdown option is placed in more than one line, respecting the alignment of the field"
 	@priority = "3"
 	test LongUserNameIsDisplayedInMoreThanOneLineInDropdown {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -1369,10 +1387,12 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "3"
 	test PopoverDisplaysUpTo2SlasOrderFromMostToLeastCritical {
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			portlet = "Workflow",
-			site = "Liferay DXP");
+			site = "${siteName}");
 
 		Workflow.configureWorkflow(
 			workflowDefinition = "Single Approver",
@@ -1551,10 +1571,12 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "3"
 	test ReorderEntriesClickingDueDateColumn {
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			portlet = "Workflow",
-			site = "Liferay DXP");
+			site = "${siteName}");
 
 		Workflow.configureWorkflow(
 			workflowDefinition = "Single Approver",
@@ -1618,6 +1640,8 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "3"
 	test SearchBarIsAddedOnAssigneeDropdownMenuWhenItIsHigherThan496px {
+		property test.name.skip.portal.instance = "WorkflowMetricsAllItemsList#SearchBarIsAddedOnAssigneeDropdownMenuWhenItIsHigherThan496px";
+
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		ProductMenu.gotoPortlet(
@@ -1717,10 +1741,12 @@ definition {
 	@description = "LPS-130216 - Verify that the Item Subject sort will only use the Asset Type information for sorting."
 	@priority = "4"
 	test SortOnlyUseAssetTypeInformation {
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			portlet = "Workflow",
-			site = "Liferay DXP");
+			site = "${siteName}");
 
 		Workflow.configureWorkflow(
 			workflowDefinition = "Single Approver",
@@ -1886,6 +1912,8 @@ definition {
 	@description = "LPS-108138 - Verify that, in All Items page, when the users select an instance that can't be transitioned by them, the option to transition is not available to be selected"
 	@priority = "4"
 	test TransitionOptionIsNotAvailableWhenUserCanNotTransitionInstance {
+		property portal.upstream = "quarantine";
+
 		JSONUser.addUser(
 			userEmailAddress = "user@liferay.com",
 			userFirstName = "user",
@@ -1985,6 +2013,8 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "4"
 	test WhenSlaIsPausedSlaPausedIsDisplayedInsteadOfDueDate {
+		property portal.upstream = "quarantine";
+
 		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
 
 		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");
@@ -2051,6 +2081,8 @@ definition {
 	@description = "LPS-92053 - Verify that, in the item detail modal, Open when an SLA is paused, the SLA status will be related to the moment when it triggered the pause timer"
 	@priority = "4"
 	test WhenSlaIsPausedSlaStatusIsRelatedToThePauseTimer {
+		property portal.upstream = "quarantine";
+
 		WorkflowMetrics.goToWorkflowSLASettings(workflowProcessName = "Single Approver");
 
 		Click(locator1 = "WorkflowMetricsSLA#ADD_NEW_SLA_BUTTON");

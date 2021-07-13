@@ -44,6 +44,8 @@ definition {
 	@description = "LPS-98518 - Verify that there is an image besides the assignee name that is retrieved from the global user profile picture (add, delete, update)"
 	@priority = "3"
 	test AssigneeImagesRetrievedFromGlobalUserProfile {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -136,6 +138,8 @@ definition {
 	@description = "LPS-97669 - Verify the user can search for a assignee with name containing non-ASCII chars (eg: japanese chars) using the search bar"
 	@priority = "3"
 	test CanSearchNonAsciiChars {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -186,6 +190,8 @@ definition {
 	@description = "LPS-97669 - Verify that when editing a user name with pending instances, the Workload by Assignee card is updated accordingly"
 	@priority = "3"
 	test CardIsUpdatedWhenUserNameIsEdited {
+		property test.name.skip.portal.instance = "WorkflowMetricsWorkloadByAssignee#CardIsUpdatedWhenUserNameIsEdited";
+
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		WorkflowMetrics.createUsersAndAssignInstancesWithGroovy(
@@ -223,6 +229,8 @@ definition {
 	@description = "LPS-97669 - Verify that when deleting a user with pending instances, the Workload by Assignee card is updated accordingly"
 	@priority = "4"
 	test CardIsUpdatedWhenUserWithPendingInstanceIsDeleted {
+		property test.name.skip.portal.instance = "WorkflowMetricsWorkloadByAssignee#CardIsUpdatedWhenUserWithPendingInstanceIsDeleted";
+
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		WorkflowMetrics.createUsersAndAssignInstancesWithGroovy(
@@ -379,6 +387,8 @@ definition {
 	@description = "LPS-97669 - Verify that a long username is placed in more than one line, respecting the alignment of the field inside Workload by Assignee card"
 	@priority = "3"
 	test LongUsernameIsPlacedInMoreThanOneLine {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -544,6 +554,7 @@ definition {
 	@description = "LPS-103365 - Verify that when the filters inside (Workload by Assignee) page are higher than 496px, a search bar on it should be included"
 	@priority = "3"
 	test SearchBarIsIncludedWhenDropdownIsHigherThan496Px {
+		property portal.upstream = "quarantine";
 		property test.name.skip.portal.instance = "WorkflowMetricsWorkloadByAssignee#SearchBarIsIncludedWhenDropdownIsHigherThan496Px";
 
 		ApplicationsMenu.gotoPortlet(
@@ -595,6 +606,8 @@ definition {
 	@description = "LPS-98518 - Verify that a search bar is present in the step filter when the dropdown is higher than 496px"
 	@priority = "3"
 	test SearchBarIsPresentInStepFilter {
+		property test.name.skip.portal.instance = "WorkflowMetricsWorkloadByAssignee#SearchBarIsPresentInStepFilter";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",
@@ -634,6 +647,8 @@ definition {
 	@description = "LPS-103368 - Verify that the user can filter the results inside (Workload by Assignee) page by assignee names that contain non-ascii chars (such as ç,é,コン, etc) using the search field"
 	@priority = "3"
 	test SearchFieldAcceptsNonAsciiChars {
+		property portal.upstream = "quarantine";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Workflow",
 			panel = "Applications",

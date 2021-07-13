@@ -15,6 +15,7 @@
 package com.liferay.layout.admin.web.internal.display.context;
 
 import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
+import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.layout.admin.web.internal.configuration.FFLayoutTranslationConfiguration;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -23,6 +24,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutRevision;
@@ -32,16 +34,19 @@ import com.liferay.portal.kernel.model.LayoutTypeController;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutServiceUtil;
 import com.liferay.portal.kernel.service.LayoutSetBranchLocalServiceUtil;
+import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.servlet.taglib.ui.BreadcrumbEntry;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -50,15 +55,23 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.util.LayoutTypeControllerTracker;
 import com.liferay.translation.constants.TranslationActionKeys;
+import com.liferay.translation.constants.TranslationPortletKeys;
+import com.liferay.translation.exporter.TranslationInfoItemFieldValuesExporter;
+import com.liferay.translation.exporter.TranslationInfoItemFieldValuesExporterTracker;
 import com.liferay.translation.security.permission.TranslationPermission;
 import com.liferay.translation.url.provider.TranslationURLProvider;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.portlet.ResourceURL;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -72,12 +85,16 @@ public class MillerColumnsDisplayContext {
 		LayoutsAdminDisplayContext layoutsAdminDisplayContext,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
+		TranslationInfoItemFieldValuesExporterTracker
+			translationInfoItemFieldValuesExporterTracker,
 		TranslationPermission translationPermission,
 		TranslationURLProvider translationURLProvider) {
 
 		_ffLayoutTranslationConfiguration = ffLayoutTranslationConfiguration;
 		_layoutsAdminDisplayContext = layoutsAdminDisplayContext;
 		_liferayPortletResponse = liferayPortletResponse;
+		_translationInfoItemFieldValuesExporterTracker =
+			translationInfoItemFieldValuesExporterTracker;
 		_translationPermission = translationPermission;
 		_translationURLProvider = translationURLProvider;
 
@@ -85,6 +102,71 @@ public class MillerColumnsDisplayContext {
 			liferayPortletRequest);
 		_themeDisplay = (ThemeDisplay)liferayPortletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
+	}
+
+	public Map<String, Object> getExportTranslationData() {
+		ResourceURL exportTranslationURL =
+			_liferayPortletResponse.createResourceURL(
+				TranslationPortletKeys.TRANSLATION);
+
+		exportTranslationURL.setParameter(
+			"groupId", String.valueOf(GroupConstants.DEFAULT_PARENT_GROUP_ID));
+		exportTranslationURL.setParameter(
+			"classNameId",
+			String.valueOf(PortalUtil.getClassNameId(Layout.class.getName())));
+		exportTranslationURL.setResourceID("/translation/export_translation");
+
+		ResourceURL getExportTranslationAvailableLocalesURL =
+			_liferayPortletResponse.createResourceURL(
+				TranslationPortletKeys.TRANSLATION);
+
+		getExportTranslationAvailableLocalesURL.setParameter(
+			"groupId", String.valueOf(GroupConstants.DEFAULT_PARENT_GROUP_ID));
+		getExportTranslationAvailableLocalesURL.setParameter(
+			"classNameId",
+			String.valueOf(PortalUtil.getClassNameId(Layout.class.getName())));
+		getExportTranslationAvailableLocalesURL.setResourceID(
+			"/translation/get_export_translation_available_locales");
+
+		return HashMapBuilder.<String, Object>put(
+			"context",
+			Collections.singletonMap(
+				"namespace", _liferayPortletResponse.getNamespace())
+		).put(
+			"props",
+			HashMapBuilder.<String, Object>put(
+				"availableExportFileFormats",
+				() -> {
+					Collection<TranslationInfoItemFieldValuesExporter>
+						translationInfoItemFieldValuesExporters =
+							_translationInfoItemFieldValuesExporterTracker.
+								getTranslationInfoItemFieldValuesExporters();
+
+					Stream<TranslationInfoItemFieldValuesExporter>
+						translationInfoItemFieldValuesExporterStream =
+							translationInfoItemFieldValuesExporters.stream();
+
+					return translationInfoItemFieldValuesExporterStream.map(
+						this::_getExportFileFormatJSONObject
+					).collect(
+						Collectors.toList()
+					);
+				}
+			).put(
+				"availableTargetLocales",
+				_getLocalesJSONArray(
+					_themeDisplay.getLocale(),
+					LanguageUtil.getAvailableLocales(
+						_themeDisplay.getSiteGroupId()))
+			).put(
+				"exportTranslationURL", exportTranslationURL.toString()
+			).put(
+				"getExportTranslationAvailableLocalesURL",
+				getExportTranslationAvailableLocalesURL.toString()
+			).put(
+				"pathModule", PortalUtil.getPathModule()
+			).build()
+		).build();
 	}
 
 	public String getLayoutChildrenURL() {
@@ -330,6 +412,21 @@ public class MillerColumnsDisplayContext {
 		}
 
 		return breadcrumbEntriesJSONArray;
+	}
+
+	private JSONObject _getExportFileFormatJSONObject(
+		TranslationInfoItemFieldValuesExporter
+			translationInfoItemFieldValuesExporter) {
+
+		InfoLocalizedValue<String> labelInfoLocalizedValue =
+			translationInfoItemFieldValuesExporter.getLabelInfoLocalizedValue();
+
+		return JSONUtil.put(
+			"displayName",
+			labelInfoLocalizedValue.getValue(_themeDisplay.getLocale())
+		).put(
+			"mimeType", translationInfoItemFieldValuesExporter.getMimeType()
+		);
 	}
 
 	private JSONArray _getFirstLayoutColumnActionsJSONArray(
@@ -632,6 +729,50 @@ public class MillerColumnsDisplayContext {
 				));
 		}
 
+		if (_isShowExportTranslationAction()) {
+			jsonArray.put(
+				JSONUtil.put(
+					"id", "exportTranslation"
+				).put(
+					"label",
+					LanguageUtil.get(
+						_httpServletRequest, "export-for-translation")
+				).put(
+					"plid", layout.getPlid()
+				).put(
+					"url", "#enable"
+				));
+		}
+
+		if (_isShowImportTranslationAction(layout)) {
+			jsonArray.put(
+				JSONUtil.put(
+					"id", "importTranslation"
+				).put(
+					"label",
+					LanguageUtil.get(_httpServletRequest, "import-translation")
+				).put(
+					"url",
+					PortletURLBuilder.create(
+						_translationURLProvider.getImportTranslationURL(
+							layout.getGroupId(),
+							PortalUtil.getClassNameId(Layout.class.getName()),
+							layout.getPlid(),
+							RequestBackedPortletURLFactoryUtil.create(
+								_httpServletRequest))
+					).setRedirect(
+						PortalUtil.getCurrentURL(_httpServletRequest)
+					).setPortletResource(
+						() -> {
+							PortletDisplay portletDisplay =
+								_themeDisplay.getPortletDisplay();
+
+							return portletDisplay.getId();
+						}
+					).build()
+				));
+		}
+
 		if (_layoutsAdminDisplayContext.isShowOrphanPortletsAction(layout)) {
 			jsonArray.put(
 				JSONUtil.put(
@@ -791,6 +932,22 @@ public class MillerColumnsDisplayContext {
 		return jsonArray;
 	}
 
+	private JSONArray _getLocalesJSONArray(
+		Locale currentLocale, Collection<Locale> locales) {
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		locales.forEach(
+			locale -> jsonArray.put(
+				JSONUtil.put(
+					"displayName", locale.getDisplayName(currentLocale)
+				).put(
+					"languageId", LocaleUtil.toLanguageId(locale)
+				)));
+
+		return jsonArray;
+	}
+
 	private boolean _hasTranslatePermission() {
 		PermissionChecker permissionChecker =
 			_themeDisplay.getPermissionChecker();
@@ -807,6 +964,34 @@ public class MillerColumnsDisplayContext {
 		}
 
 		return false;
+	}
+
+	private boolean _isShowExportTranslationAction() {
+		if (_ffLayoutTranslationConfiguration.enabled() &&
+			!_isSingleLanguageSite()) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean _isShowImportTranslationAction(Layout layout) {
+		try {
+			if (_ffLayoutTranslationConfiguration.enabled() &&
+				!_isSingleLanguageSite() &&
+				LayoutPermissionUtil.contains(
+					_themeDisplay.getPermissionChecker(), layout,
+					ActionKeys.UPDATE)) {
+
+				return true;
+			}
+
+			return false;
+		}
+		catch (Exception exception) {
+			return false;
+		}
 	}
 
 	private boolean _isShowTranslateAction() {
@@ -836,6 +1021,8 @@ public class MillerColumnsDisplayContext {
 	private final LayoutsAdminDisplayContext _layoutsAdminDisplayContext;
 	private final LiferayPortletResponse _liferayPortletResponse;
 	private final ThemeDisplay _themeDisplay;
+	private final TranslationInfoItemFieldValuesExporterTracker
+		_translationInfoItemFieldValuesExporterTracker;
 	private final TranslationPermission _translationPermission;
 	private final TranslationURLProvider _translationURLProvider;
 

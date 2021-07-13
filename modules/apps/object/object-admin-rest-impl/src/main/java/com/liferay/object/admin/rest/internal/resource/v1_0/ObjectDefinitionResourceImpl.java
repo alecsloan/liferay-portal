@@ -84,13 +84,12 @@ public class ObjectDefinitionResourceImpl
 
 		return new ObjectField() {
 			{
-				dateCreated = objectField.getCreateDate();
-				dateModified = objectField.getModifiedDate();
 				id = objectField.getObjectFieldId();
 				indexed = objectField.getIndexed();
 				indexedAsKeyword = objectField.getIndexedAsKeyword();
 				indexedLanguageId = objectField.getIndexedLanguageId();
 				name = objectField.getName();
+				required = objectField.isRequired();
 				type = objectField.getType();
 			}
 		};
@@ -104,7 +103,7 @@ public class ObjectDefinitionResourceImpl
 				dateCreated = objectDefinition.getCreateDate();
 				dateModified = objectDefinition.getModifiedDate();
 				id = objectDefinition.getObjectDefinitionId();
-				name = objectDefinition.getName();
+				name = objectDefinition.getShortName();
 				objectFields = transformToArray(
 					_objectFieldLocalService.getObjectFields(
 						objectDefinition.getObjectDefinitionId()),
@@ -127,6 +126,7 @@ public class ObjectDefinitionResourceImpl
 		serviceBuilderObjectField.setIndexedLanguageId(
 			objectField.getIndexedLanguageId());
 		serviceBuilderObjectField.setName(objectField.getName());
+		serviceBuilderObjectField.setRequired(objectField.getRequired());
 		serviceBuilderObjectField.setType(objectField.getType());
 
 		return serviceBuilderObjectField;
