@@ -151,6 +151,12 @@ public class NumericDDMFormFieldTypeSettingsTest
 			inputMaskFormatDDMFormField.getProperty("tooltip"));
 		Assert.assertNotNull(inputMaskFormatDDMFormField.getTip());
 
+		DDMFormField numericInputMaskDDMFormField = ddmFormFieldsMap.get(
+			"numericInputMask");
+
+		Assert.assertNotNull(numericInputMaskDDMFormField);
+		Assert.assertNotNull(numericInputMaskDDMFormField.getPredefinedValue());
+
 		DDMFormField placeholderDDMFormField = ddmFormFieldsMap.get(
 			"placeholder");
 
@@ -242,36 +248,54 @@ public class NumericDDMFormFieldTypeSettingsTest
 
 		actions = ddmFormRule3.getActions();
 
-		Assert.assertEquals(actions.toString(), 10, actions.size());
-
+		Assert.assertEquals(actions.toString(), 14, actions.size());
 		Assert.assertEquals(
 			"setDataType('predefinedValue', getValue('dataType'))",
 			actions.get(0));
 		Assert.assertEquals(
-			"setValidationDataType('validation', getValue('dataType'))",
+			"setPropertyValue('predefinedValue', 'inputMask', " +
+				"getValue('inputMask'))",
 			actions.get(1));
 		Assert.assertEquals(
-			"setValidationFieldName('validation', getValue('name'))",
+			"setPropertyValue('predefinedValue', 'inputMaskFormat', " +
+				"getLocalizedValue('inputMaskFormat'))",
 			actions.get(2));
 		Assert.assertEquals(
-			"setVisible('characterOptions', getValue('inputMask'))",
+			"setPropertyValue('predefinedValue', 'numericInputMask', " +
+				"getLocalizedValue('numericInputMask'))",
 			actions.get(3));
+		Assert.assertEquals(
+			"setValidationDataType('validation', getValue('dataType'))",
+			actions.get(4));
+		Assert.assertEquals(
+			"setValidationFieldName('validation', getValue('name'))",
+			actions.get(5));
+		Assert.assertEquals(
+			"setVisible('characterOptions', equals(getValue('dataType'), " +
+				"'integer') and equals(getValue('inputMask'), TRUE))",
+			actions.get(6));
 		Assert.assertEquals(
 			"setVisible('confirmationErrorMessage', getValue(" +
 				"'requireConfirmation'))",
-			actions.get(4));
-		Assert.assertEquals(
-			"setVisible('confirmationLabel', getValue('requireConfirmation'))",
-			actions.get(5));
-		Assert.assertEquals(
-			"setVisible('direction', getValue('requireConfirmation'))",
-			actions.get(6));
-		Assert.assertEquals(
-			"setVisible('inputMaskFormat', getValue('inputMask'))",
 			actions.get(7));
 		Assert.assertEquals(
-			"setVisible('requiredErrorMessage', false)", actions.get(8));
-		Assert.assertEquals("setVisible('tooltip', false)", actions.get(9));
+			"setVisible('confirmationLabel', getValue('requireConfirmation'))",
+			actions.get(8));
+		Assert.assertEquals(
+			"setVisible('direction', getValue('requireConfirmation'))",
+			actions.get(9));
+		Assert.assertEquals(
+			"setVisible('inputMaskFormat', equals(getValue('dataType'), " +
+				"'integer') and equals(getValue('inputMask'), TRUE))",
+			actions.get(10));
+		Assert.assertEquals(
+			"setVisible('numericInputMask', equals(getValue('dataType'), " +
+				"'double') and equals(getValue('inputMask'), TRUE))",
+			actions.get(11));
+		Assert.assertEquals(
+			"setVisible('requiredErrorMessage', getValue('required'))",
+			actions.get(12));
+		Assert.assertEquals("setVisible('tooltip', false)", actions.get(13));
 	}
 
 	@Override

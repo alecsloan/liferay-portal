@@ -486,7 +486,7 @@ Welcome to Liferay Community Edition Portal 7.4.0 CE GA1''';
 			locator1 = "//div[contains(@class,journal-content-article)]//h1[contains(@class,'text')]",
 			value1 = "WC WebContent Text");
 
-		var actual = selenium.getHtmlNodeText("//div[contains(@class,journal-content-article)]//h2[contains(@class,'text-box')]");
+		var actual = TestUtils.getElementTextContent(element = "//div[contains(@class,journal-content-article)]//h2[contains(@class,'text-box')]");
 
 		TestUtils.assertEquals(
 			actual = "${actual}",
@@ -582,6 +582,75 @@ Welcome to Liferay Community Edition Portal 7.4.0 CE GA1''';
 			siteName = "Test Site Name");
 
 		WebContent.viewPGViaWCD(webContentContent = "WC WebContent Content");
+	}
+
+	@description = "This is a test for LPS-129438. The user could configure the border styles of WCD."
+	@priority = "4"
+	@uitest
+	test ConfigureBorderStyles {
+		task ("View the default border width and border color of WCD") {
+			Navigator.gotoSitePage(
+				pageName = "Web Content Display Page",
+				siteName = "Test Site Name");
+
+			AssertVisible(
+				key_portletName = "Web Content Display",
+				locator1 = "Portlet#TITLE");
+
+			for (var borderType : list "top,right,bottom,left") {
+				AssertCssValue(
+					locator1 = "Portlet#PORTLET_CONTENT",
+					locator2 = "border-${borderType}-width",
+					value1 = "1px");
+			}
+
+			for (var borderType : list "top,right,bottom,left") {
+				AssertCssValue(
+					locator1 = "Portlet#PORTLET_CONTENT",
+					locator2 = "border-${borderType}-color",
+					value1 = "rgba(0, 0, 0, 0)");
+			}
+		}
+
+		task ("Define the border width and border color of WCD") {
+			WaitForLiferayEvent.initializeLiferayEventLog();
+
+			Portlet.gotoPortletOptions(
+				portletName = "Web Content Display",
+				portletOption = "Look and Feel Configuration");
+
+			IFrame.selectConfigurationFrame();
+
+			Portlet.configureCustomBorderStylesViaLookandfeelPG(
+				borderColorAttributeList = "Top-FF0D0D",
+				borderWidthAttributeList = "WidthTop-15",
+				borderWidthUnitList = "WidthTop-px",
+				sameForAllFieldsetLabelList = "Border Width,Border Color");
+
+			IFrame.closeFrame();
+
+			Refresh();
+
+			AssertVisible(
+				key_portletName = "Web Content Display",
+				locator1 = "Portlet#TITLE");
+		}
+
+		task ("View the border width and border color of WCD") {
+			for (var borderType : list "top,right,bottom,left") {
+				AssertCssValue(
+					locator1 = "Portlet#PORTLET_CONTENT",
+					locator2 = "border-${borderType}-width",
+					value1 = "15px");
+			}
+
+			for (var borderType : list "top,right,bottom,left") {
+				AssertCssValue(
+					locator1 = "Portlet#PORTLET_CONTENT",
+					locator2 = "border-${borderType}-color",
+					value1 = "rgba(255, 13, 13, 1)");
+			}
+		}
 	}
 
 	@description = "This is a test for LPS-129944. The user could configure WCD when selected web content based on template with embedded widget."

@@ -473,7 +473,9 @@ definition {
 		AssertElementPresent(locator1 = "WorkflowReassignModal#PERMISSION_TOOLTIP");
 		AssertElementPresent(locator1 = "WorkflowReassignModal#NEXT_BUTTON_DISABLED");
 
-		WorkflowMetrics.selectNewAssignee(taskList = "Blogs Entry: Blogs Entry Title 1,Blogs Entry: Blogs Entry Title 2");
+		WorkflowMetrics.selectNewAssignee(
+			nameOfAssignee = "Test Test",
+			taskList = "Blogs Entry: Blogs Entry Title 1,Blogs Entry: Blogs Entry Title 2");
 
 		WorkflowMetrics.goToBulkReassignSelectTasks();
 
@@ -680,7 +682,7 @@ definition {
 
 		WorkflowMetrics.goToUpdateDueDateTasks();
 
-		Click(locator1 = "WorkflowAllItems#WORKFLOW_ALL_ITEMS_SELECT_ALL_MODAL");
+		Check.checkNotVisible(locator1 = "WorkflowAllItems#WORKFLOW_ALL_ITEMS_SELECT_ALL_MODAL");
 
 		Click(locator1 = "WorkflowReassignModal#NEXT_BUTTON");
 
@@ -1165,7 +1167,7 @@ definition {
 			Workflow.assignTaskToUser(
 				assetTitle = "Blogs Entry Title ${InstanceNameNumber}",
 				assetType = "Blogs Entry",
-				assigneeName = "${assignUserNumber}user user${assignUserNumber}",
+				assigneeName = "${assignUserNumber}user (${assignUserNumber}user user${assignUserNumber})",
 				workflowTask = "Review");
 		}
 
@@ -1251,7 +1253,9 @@ definition {
 
 		WorkflowMetrics.assertAssignees();
 
-		WorkflowMetrics.selectNewAssignee(taskList = "Blogs Entry: Blogs Entry Title 1");
+		WorkflowMetrics.selectNewAssignee(
+			nameOfAssignee = "Test Test",
+			taskList = "Blogs Entry: Blogs Entry Title 1");
 
 		MouseOver(
 			locator1 = "WorkflowAllItems#KEBAB_DROPDOWN",
@@ -1846,10 +1850,8 @@ definition {
 		WorkflowMetrics.fillSLAForm(
 			slaDefinitionDays = "1",
 			slaDefinitionDescription = "SLA Description",
-			slaDefinitionEnd = "Process Ends: Approved",
 			slaDefinitionHours = "0000",
-			slaDefinitionName = "One day",
-			slaDefinitionStart = "Process Begins");
+			slaDefinitionName = "One day");
 
 		Button.clickUpdate();
 
@@ -1895,10 +1897,8 @@ definition {
 		WorkflowMetrics.fillSLAForm(
 			slaDefinitionDays = "1",
 			slaDefinitionDescription = "SLA Description",
-			slaDefinitionEnd = "Process Ends: Approved",
 			slaDefinitionHours = "0000",
-			slaDefinitionName = "One day Edit",
-			slaDefinitionStart = "Process Begins");
+			slaDefinitionName = "One day Edit");
 
 		Button.clickUpdate();
 
@@ -2031,6 +2031,8 @@ definition {
 	@description = "LRQA-60717 - Automate LPS-105497: As a Operation Manager, I want to update the due date a workflow instance while analyzing my process metrics"
 	@priority = "4"
 	test UpdateDueDateUnassignedUser {
+		property portal.upstream = "quarantine";
+
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		ProductMenu.gotoPortlet(
@@ -2088,7 +2090,7 @@ definition {
 
 		AssertElementPresent(locator1 = "WorkflowAllItems#KEBAB_DROPDOWN_DISABLED");
 
-		Click(locator1 = "WorkflowAllItems#WORKFLOW_ALL_ITEMS_SELECT_ALL");
+		PortletEntry.selectAll();
 
 		AssertElementNotPresent(locator1 = "WorkflowAllItems#DUE_DATE_ICON");
 	}
@@ -2426,6 +2428,8 @@ definition {
 	@description = "LRQA-53650 Automate LPS-89015: [SLA] Verify the SLA Time Frame Start Pause Stop behaviour"
 	@priority = "5"
 	test VerifySLATimeFrameStartPauseStop {
+		property portal.upstream = "quarantine";
+
 		var siteName = TestCase.getSiteName(siteName = "${siteName}");
 
 		ProductMenu.gotoPortlet(

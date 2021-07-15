@@ -484,9 +484,9 @@ definition {
 				locator1 = "APConfiguration#ASSET_SELECTION_MANUAL_ASSET_ENTRIES_ASSET",
 				value1 = "${assetType}");
 
-			SelectFrame.selectFrameNoLoading(
-				key_title = "Select ${assetType}",
-				locator1 = "IFrame#MODAL_ANY");
+			WaitForElementPresent(locator1 = "APConfigurationManual#ASSET_SELECTION_MANUAL_SELECT_ASSET_ENTRIES_DIALOG");
+
+			SelectFrame.selectFrameNoLoading(locator1 = "IFrame#MODAL_BODY");
 
 			if (isSet(assetTitle)) {
 				var key_assetTitle = "${assetTitle}";
@@ -509,7 +509,10 @@ definition {
 			}
 
 			if (isSet(searchTerm)) {
-				Search.searchCP(searchTerm = "${searchTerm}");
+				Search.searchPG(
+					modal = "true",
+					portletName = "",
+					searchTerm = "${searchTerm}");
 
 				AssertTextEquals(
 					locator1 = "Search#SEARCH_INFO",
@@ -951,9 +954,13 @@ definition {
 
 		Panel.expandPanel(panel = "Select Collection");
 
+		Alert.closeMessage(messageType = "SUCCESS");
+
 		Button.clickSelect();
 
-		SelectFrame.selectFrameNoLoading(locator1 = "IFrame#ASSET_LIST_DIALOG");
+		WaitForElementPresent(locator1 = "IFrame#ASSET_LIST_DIALOG");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "IFrame#MODAL_BODY");
 
 		if (isSet(depotName)) {
 			AssertClick(
@@ -1059,6 +1066,13 @@ definition {
 
 	macro viewAssetPG {
 		var key_assetTitle = "${assetTitle}";
+
+		if (isSet(filteredByCategory)) {
+			AssertTextEquals.assertPartialText(
+				key_categoryName = "${categoryName}",
+				locator1 = "AP#CATEGORIES_FILTER_CATEGORY",
+				value1 = "${categoryName}");
+		}
 
 		AssertTextEquals(
 			locator1 = "AP#ASSET_ABSTRACT_TITLE",

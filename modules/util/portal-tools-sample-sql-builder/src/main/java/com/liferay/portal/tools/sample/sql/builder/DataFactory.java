@@ -16,7 +16,6 @@ package com.liferay.portal.tools.sample.sql.builder;
 
 import com.liferay.account.model.AccountEntry;
 import com.liferay.account.model.AccountEntryModel;
-import com.liferay.account.model.AccountEntryUserRel;
 import com.liferay.account.model.AccountEntryUserRelModel;
 import com.liferay.account.model.impl.AccountEntryModelImpl;
 import com.liferay.account.model.impl.AccountEntryUserRelModelImpl;
@@ -44,14 +43,10 @@ import com.liferay.commerce.inventory.model.CommerceInventoryWarehouseItemModel;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouseModel;
 import com.liferay.commerce.inventory.model.impl.CommerceInventoryWarehouseItemModelImpl;
 import com.liferay.commerce.inventory.model.impl.CommerceInventoryWarehouseModelImpl;
-import com.liferay.commerce.model.CommerceAddress;
-import com.liferay.commerce.model.CommerceAddressModel;
-import com.liferay.commerce.model.CommerceOrder;
 import com.liferay.commerce.model.CommerceOrderItemModel;
 import com.liferay.commerce.model.CommerceOrderModel;
 import com.liferay.commerce.model.CommerceShippingMethod;
 import com.liferay.commerce.model.CommerceShippingMethodModel;
-import com.liferay.commerce.model.impl.CommerceAddressModelImpl;
 import com.liferay.commerce.model.impl.CommerceOrderItemModelImpl;
 import com.liferay.commerce.model.impl.CommerceOrderModelImpl;
 import com.liferay.commerce.model.impl.CommerceShippingMethodModelImpl;
@@ -219,6 +214,8 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.metadata.RawMetadataProcessor;
 import com.liferay.portal.kernel.model.AccountModel;
+import com.liferay.portal.kernel.model.Address;
+import com.liferay.portal.kernel.model.AddressModel;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.ClassNameModel;
 import com.liferay.portal.kernel.model.Company;
@@ -278,6 +275,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.version.Version;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.impl.AccountModelImpl;
+import com.liferay.portal.model.impl.AddressModelImpl;
 import com.liferay.portal.model.impl.ClassNameModelImpl;
 import com.liferay.portal.model.impl.CompanyModelImpl;
 import com.liferay.portal.model.impl.ContactModelImpl;
@@ -370,6 +368,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -384,7 +383,9 @@ public class DataFactory {
 		_simpleDateFormat = FastDateFormatFactoryUtil.getSimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss", TimeZone.getDefault());
 
-		_counter = new SimpleCounter(BenchmarksPropsValues.MAX_GROUP_COUNT + 1);
+		_counter = new SimpleCounter(
+			BenchmarksPropsValues.MAX_GROUP_COUNT +
+				BenchmarksPropsValues.MAX_COMMERCE_GROUP_COUNT + 1);
 		_timeCounter = new SimpleCounter();
 		_futureDateCounter = new SimpleCounter();
 		_layoutPlidCounter = new SimpleCounter();
@@ -557,6 +558,12 @@ public class DataFactory {
 		return getClassNameId(CPDefinition.class);
 	}
 
+	public long getCPInstanceId(long cpDefinitionId) {
+		CPInstanceModel cpInstanceModel = _cpInstanceModels.get(cpDefinitionId);
+
+		return cpInstanceModel.getCPInstanceId();
+	}
+
 	public long getCProductClassNameId() {
 		return getClassNameId(CProduct.class);
 	}
@@ -594,6 +601,10 @@ public class DataFactory {
 
 	public int getMaxBlogsEntryCommentCount() {
 		return BenchmarksPropsValues.MAX_BLOGS_ENTRY_COMMENT_COUNT;
+	}
+
+	public int getMaxCommerceGroupCount() {
+		return BenchmarksPropsValues.MAX_COMMERCE_GROUP_COUNT;
 	}
 
 	public int getMaxContentLayoutCount() {
@@ -696,6 +707,22 @@ public class DataFactory {
 
 	public RoleModel getPowerUserRoleModel() {
 		return _powerUserRoleModel;
+	}
+
+	public int getRandomCProductModelIndex() {
+		Random random = new Random();
+
+		int count = (int)Math.ceil(
+			BenchmarksPropsValues.MAX_COMMERCE_PRODUCT_COUNT /
+				BenchmarksPropsValues.MAX_COMMERCE_CATALOG_COUNT);
+
+		if (BenchmarksPropsValues.MAX_COMMERCE_CATALOG_COUNT >
+				BenchmarksPropsValues.MAX_COMMERCE_PRODUCT_COUNT) {
+
+			count = BenchmarksPropsValues.MAX_COMMERCE_CATALOG_COUNT;
+		}
+
+		return random.nextInt(count);
 	}
 
 	public List<Integer> getSequence(int size) {
@@ -833,6 +860,36 @@ public class DataFactory {
 		accountModel.setLegalName("Liferay, Inc.");
 
 		return accountModel;
+	}
+
+	public AddressModel newAddressModel(long accountEntryId, long countryId) {
+		AddressModel addressModel = new AddressModelImpl();
+
+		// PK fields
+
+		addressModel.setAddressId(_counter.get());
+
+		// Audit fields
+
+		addressModel.setCompanyId(_companyId);
+		addressModel.setUserId(_sampleUserId);
+		addressModel.setUserName(_SAMPLE_USER_NAME);
+		addressModel.setCreateDate(new Date());
+		addressModel.setModifiedDate(new Date());
+
+		// Other fields
+
+		addressModel.setClassNameId(getClassNameId(CommerceAccount.class));
+		addressModel.setClassPK(accountEntryId);
+		addressModel.setName("Sample Address");
+		addressModel.setDescription(null);
+		addressModel.setStreet1("123 Sample Street");
+		addressModel.setCity("Los Angeles");
+		addressModel.setZip("1234");
+		addressModel.setCountryId(countryId);
+		addressModel.setTypeId(14001);
+
+		return addressModel;
 	}
 
 	public List<AssetCategoryModel> newAssetCategoryModels(
@@ -1214,44 +1271,6 @@ public class DataFactory {
 		return accountEntryModels;
 	}
 
-	public CommerceAddressModel newCommerceAddressModel(
-		long accountEntryId, long countryId) {
-
-		CommerceAddressModel commerceAddressModel =
-			new CommerceAddressModelImpl();
-
-		// PK fields
-
-		commerceAddressModel.setCommerceAddressId(_counter.get());
-
-		// Group instance
-
-		commerceAddressModel.setGroupId(0);
-
-		// Audit fields
-
-		commerceAddressModel.setCompanyId(_companyId);
-		commerceAddressModel.setUserId(_sampleUserId);
-		commerceAddressModel.setUserName(_SAMPLE_USER_NAME);
-		commerceAddressModel.setCreateDate(new Date());
-		commerceAddressModel.setModifiedDate(new Date());
-
-		// Other fields
-
-		commerceAddressModel.setClassNameId(
-			getClassNameId(CommerceAccount.class));
-		commerceAddressModel.setClassPK(accountEntryId);
-		commerceAddressModel.setName("Sample Address");
-		commerceAddressModel.setDescription(null);
-		commerceAddressModel.setStreet1("123 Sample Street");
-		commerceAddressModel.setCity("Los Angeles");
-		commerceAddressModel.setZip("1234");
-		commerceAddressModel.setCountryId(countryId);
-		commerceAddressModel.setType(2);
-
-		return commerceAddressModel;
-	}
-
 	public PortletPreferencesModel
 		newCommerceB2BSiteTypePortletPreferencesModel(long ownerId) {
 
@@ -1530,7 +1549,8 @@ public class DataFactory {
 			commerceInventoryWarehouseModel.getCommerceInventoryWarehouseId());
 		commerceInventoryWarehouseItemModel.setSku(cpInstanceModel.getSku());
 		commerceInventoryWarehouseItemModel.setQuantity(
-			BenchmarksPropsValues.MAX_COMMERCE_ORDER_STATUS_OPEN_COUNT);
+			BenchmarksPropsValues.
+				MAX_COMMERCE_INVENTORY_WAREHOUSE_ITEM_QUANTITY);
 		commerceInventoryWarehouseItemModel.setReservedQuantity(0);
 
 		return commerceInventoryWarehouseItemModel;
@@ -1694,7 +1714,7 @@ public class DataFactory {
 
 	public CommerceOrderItemModel newCommerceOrderItemModel(
 		CommerceOrderModel commerceOrderModel, long commercePriceListId,
-		long cProductId, CPInstanceModel cpInstanceModel) {
+		CProductModel cProductModel) {
 
 		CommerceOrderItemModel commerceOrderItemModel =
 			new CommerceOrderItemModelImpl();
@@ -1721,9 +1741,14 @@ public class DataFactory {
 		commerceOrderItemModel.setCommerceOrderId(
 			commerceOrderModel.getCommerceOrderId());
 		commerceOrderItemModel.setCommercePriceListId(commercePriceListId);
-		commerceOrderItemModel.setCProductId(cProductId);
+		commerceOrderItemModel.setCProductId(cProductModel.getCProductId());
+
+		CPInstanceModel cpInstanceModel = _cpInstanceModels.get(
+			cProductModel.getPublishedCPDefinitionId());
+
 		commerceOrderItemModel.setCPInstanceId(
 			cpInstanceModel.getCPInstanceId());
+
 		commerceOrderItemModel.setParentCommerceOrderItemId(0);
 		commerceOrderItemModel.setName("Commerce Order Item Name");
 		commerceOrderItemModel.setQuantity(1);
@@ -2450,7 +2475,15 @@ public class DataFactory {
 
 		// PK fields
 
-		cpDefinitionModel.setCPDefinitionId(_counter.get());
+		if (version ==
+				BenchmarksPropsValues.MAX_COMMERCE_PRODUCT_DEFINITION_COUNT) {
+
+			cpDefinitionModel.setCPDefinitionId(
+				cProductModel.getPublishedCPDefinitionId());
+		}
+		else {
+			cpDefinitionModel.setCPDefinitionId(_counter.get());
+		}
 
 		// Group instance
 
@@ -2664,6 +2697,8 @@ public class DataFactory {
 		cpInstanceModel.setStatusByUserName(_SAMPLE_USER_NAME);
 		cpInstanceModel.setStatusDate(new Date());
 
+		_cpInstanceModels.put(cpDefinitionId, cpInstanceModel);
+
 		return cpInstanceModel;
 	}
 
@@ -2754,16 +2789,16 @@ public class DataFactory {
 
 		cpOptionModel.setName(
 			StringBundler.concat(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><root",
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><root ",
 				"available-locales=\"en_US\" default-locale=\"en_US\">",
-				"<Title language-id=\"en_US\">Option Name ", index,
-				"</Title></root>"));
+				"<Name language-id=\"en_US\">Option Name ", index,
+				"</Name></root>"));
 		cpOptionModel.setDescription("Option Description");
 		cpOptionModel.setDDMFormFieldTypeName(ddmFormFieldTypeName);
 		cpOptionModel.setFacetable(true);
 		cpOptionModel.setRequired(true);
 		cpOptionModel.setSkuContributor(true);
-		cpOptionModel.setKey("key" + index);
+		cpOptionModel.setKey("option-name-" + index);
 
 		return cpOptionModel;
 	}
@@ -2798,7 +2833,7 @@ public class DataFactory {
 				"locales=\"en_US\" default-locale=\"en_US\"><Name language-id",
 				"=\"en_US\">Option Value Name ", index, "</Name></root>"));
 		cpOptionValueModel.setPriority(index - 1);
-		cpOptionValueModel.setKey("key" + index);
+		cpOptionValueModel.setKey("option-value-" + index);
 
 		return cpOptionValueModel;
 	}
@@ -2828,6 +2863,7 @@ public class DataFactory {
 
 		// Other fields
 
+		cProductModel.setPublishedCPDefinitionId(_counter.get());
 		cProductModel.setLatestVersion(
 			BenchmarksPropsValues.MAX_COMMERCE_PRODUCT_DEFINITION_COUNT);
 
@@ -2884,7 +2920,7 @@ public class DataFactory {
 			"Description for specification option with ID " +
 				cpSpecificationOptionId);
 		cpSpecificationOptionModel.setFacetable(false);
-		cpSpecificationOptionModel.setKey("key" + index);
+		cpSpecificationOptionModel.setKey("specification-option-" + index);
 		cpSpecificationOptionModel.setLastPublishDate(null);
 
 		return cpSpecificationOptionModel;
@@ -4359,6 +4395,8 @@ public class DataFactory {
 		// Other fields
 
 		layoutFriendlyURLEntryModel.setPlid(layoutModel.getPlid());
+		layoutFriendlyURLEntryModel.setPrivateLayout(
+			layoutModel.getPrivateLayout());
 		layoutFriendlyURLEntryModel.setFriendlyURL(
 			layoutModel.getFriendlyURL());
 		layoutFriendlyURLEntryModel.setLanguageId("en_US");
@@ -4882,12 +4920,11 @@ public class DataFactory {
 	}
 
 	public List<ResourcePermissionModel> newResourcePermissionModels(
-		AccountEntryUserRelModel accountEntryUserRelModel) {
+		AddressModel addressModel) {
 
 		return newResourcePermissionModels(
-			AccountEntryUserRel.class.getName(),
-			String.valueOf(accountEntryUserRelModel.getAccountEntryUserRelId()),
-			_sampleUserId);
+			Address.class.getName(),
+			String.valueOf(addressModel.getAddressId()), _sampleUserId);
 	}
 
 	public List<ResourcePermissionModel> newResourcePermissionModels(
@@ -4924,15 +4961,6 @@ public class DataFactory {
 	}
 
 	public List<ResourcePermissionModel> newResourcePermissionModels(
-		CommerceAddressModel commerceAddressModel) {
-
-		return newResourcePermissionModels(
-			CommerceAddress.class.getName(),
-			String.valueOf(commerceAddressModel.getCommerceAddressId()),
-			_sampleUserId);
-	}
-
-	public List<ResourcePermissionModel> newResourcePermissionModels(
 		CommerceInventoryWarehouseModel commerceInventoryWarehouseModel) {
 
 		return newResourcePermissionModels(
@@ -4940,15 +4968,6 @@ public class DataFactory {
 			String.valueOf(
 				commerceInventoryWarehouseModel.
 					getCommerceInventoryWarehouseId()),
-			_sampleUserId);
-	}
-
-	public List<ResourcePermissionModel> newResourcePermissionModels(
-		CommerceOrderModel commerceOrderModel) {
-
-		return newResourcePermissionModels(
-			CommerceOrder.class.getName(),
-			String.valueOf(commerceOrderModel.getCommerceOrderId()),
 			_sampleUserId);
 	}
 
@@ -5512,31 +5531,6 @@ public class DataFactory {
 		userName[1] = _lastNames.get((int)(index % _lastNames.size()));
 
 		return userName;
-	}
-
-	public CProductModel setCProductModelPublishedCPDefinitionId(
-		CProductModel cProductModel,
-		List<CPDefinitionModel> cpDefinitionModels) {
-
-		for (CPDefinitionModel cpDefinitionModel : cpDefinitionModels) {
-			if (cProductModel.getCProductId() !=
-					cpDefinitionModel.getCProductId()) {
-
-				continue;
-			}
-
-			if (cpDefinitionModel.getVersion() ==
-					BenchmarksPropsValues.
-						MAX_COMMERCE_PRODUCT_DEFINITION_COUNT) {
-
-				cProductModel.setPublishedCPDefinitionId(
-					cpDefinitionModel.getCPDefinitionId());
-
-				break;
-			}
-		}
-
-		return cProductModel;
 	}
 
 	public String toInsertSQL(BaseModel<?> baseModel) {
@@ -7057,6 +7051,8 @@ public class DataFactory {
 		new HashMap<>();
 	private final long _companyId;
 	private final SimpleCounter _counter;
+	private final Map<Long, CPInstanceModel> _cpInstanceModels =
+		new HashMap<>();
 	private final PortletPreferencesImpl
 		_defaultAssetPublisherPortletPreferencesImpl;
 	private long _defaultDLDDMStructureId;

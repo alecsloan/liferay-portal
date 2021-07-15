@@ -50,6 +50,7 @@ import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
+import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
@@ -519,21 +520,22 @@ public class JournalArticleActionDropdownItemsProvider {
 
 		return dropdownItem -> {
 			dropdownItem.setHref(
-				PortletURLBuilder.createRenderURL(
-					_liferayPortletResponse
-				).setMVCRenderCommandName(
-					"/journal/import_translation"
+				PortletURLBuilder.create(
+					_translationURLProvider.getImportTranslationURL(
+						_article.getGroupId(),
+						PortalUtil.getClassNameId(JournalArticle.class),
+						_article.getResourcePrimKey(),
+						RequestBackedPortletURLFactoryUtil.create(
+							_httpServletRequest))
 				).setRedirect(
 					_getRedirect()
-				).setParameter(
-					"classNameId",
-					PortalUtil.getClassNameId(JournalArticle.class)
-				).setParameter(
-					"classPK", _article.getResourcePrimKey()
-				).setParameter(
-					"groupId", _article.getGroupId()
-				).setParameter(
-					"referringPortletResource", _getReferringPortletResource()
+				).setPortletResource(
+					() -> {
+						PortletDisplay portletDisplay =
+							_themeDisplay.getPortletDisplay();
+
+						return portletDisplay.getId();
+					}
 				).build());
 			dropdownItem.setLabel(
 				LanguageUtil.get(_httpServletRequest, "import-translation"));
@@ -762,14 +764,17 @@ public class JournalArticleActionDropdownItemsProvider {
 		_getTranslateActionUnsafeConsumer() {
 
 		return dropdownItem -> {
+			PortletDisplay portletDisplay = _themeDisplay.getPortletDisplay();
+
 			dropdownItem.setHref(
 				_translationURLProvider.getTranslateURL(
 					PortalUtil.getClassNameId(JournalArticle.class.getName()),
 					_article.getResourcePrimKey(),
 					RequestBackedPortletURLFactoryUtil.create(
 						_httpServletRequest)),
-				"redirect", _getRedirect(), "referringPortletResource",
-				_getReferringPortletResource());
+				"redirect", _getRedirect(), "portletResource",
+				portletDisplay.getId());
+
 			dropdownItem.setLabel(
 				LanguageUtil.get(_httpServletRequest, "translate"));
 		};

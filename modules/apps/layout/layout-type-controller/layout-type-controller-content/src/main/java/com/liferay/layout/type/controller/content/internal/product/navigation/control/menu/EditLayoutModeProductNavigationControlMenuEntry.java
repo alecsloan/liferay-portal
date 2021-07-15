@@ -43,6 +43,7 @@ import com.liferay.product.navigation.control.menu.BaseProductNavigationControlM
 import com.liferay.product.navigation.control.menu.ProductNavigationControlMenuEntry;
 import com.liferay.product.navigation.control.menu.constants.ProductNavigationControlMenuCategoryKeys;
 import com.liferay.sites.kernel.util.SitesUtil;
+import com.liferay.staging.StagingGroupHelper;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -94,12 +95,13 @@ public class EditLayoutModeProductNavigationControlMenuEntry
 
 			Layout layout = themeDisplay.getLayout();
 
-			if ((layout.getClassPK() > 0) &&
-				(_portal.getClassNameId(Layout.class) ==
-					layout.getClassNameId())) {
+			long publishedLayoutPlid = layout.getPlid();
+
+			if (layout.isDraftLayout()) {
+				publishedLayoutPlid = layout.getClassPK();
 
 				redirect = _portal.getLayoutFullURL(
-					_layoutLocalService.getLayout(layout.getClassPK()),
+					_layoutLocalService.getLayout(publishedLayoutPlid),
 					themeDisplay);
 			}
 			else {
@@ -137,7 +139,10 @@ public class EditLayoutModeProductNavigationControlMenuEntry
 			}
 
 			redirect = _http.setParameter(
-				redirect, "p_l_back_url", themeDisplay.getURLCurrent());
+				redirect, "p_l_back_url",
+				_portal.getLayoutFullURL(
+					_layoutLocalService.getLayout(publishedLayoutPlid),
+					themeDisplay));
 
 			return _http.setParameter(redirect, "p_l_mode", Constants.EDIT);
 		}
@@ -164,6 +169,14 @@ public class EditLayoutModeProductNavigationControlMenuEntry
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
+
+		long scopeGroupId = themeDisplay.getScopeGroupId();
+
+		if (_stagingGroupHelper.isLocalLiveGroup(scopeGroupId) ||
+			_stagingGroupHelper.isRemoteLiveGroup(scopeGroupId)) {
+
+			return false;
+		}
 
 		LayoutTypePortlet layoutTypePortlet =
 			themeDisplay.getLayoutTypePortlet();
@@ -230,5 +243,8 @@ public class EditLayoutModeProductNavigationControlMenuEntry
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private StagingGroupHelper _stagingGroupHelper;
 
 }

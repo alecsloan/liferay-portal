@@ -2,11 +2,13 @@
 <head>
 <title>Fragment</title>
 </head>
+
 <body>
-<table cellpadding="1" cellspacing="1" border="1">
+<table border="1" cellpadding="1" cellspacing="1">
 <thead>
 <tr><td rowspan="1" colspan="3">Fragment</td></tr>
 </thead>
+
 <tbody>
 <tr>
 	<td>COLLECTION_CATEGORY_FILTER_DROPDOWN_TOGGLE</td>
@@ -296,8 +298,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>BACKGROUND_IMAGE_EDITABLE_FIELD</td>
-	<td>//div[contains(@class,'page-editor__topper__bar') and contains(.,'${key_fragmentName}')]//following-sibling::div[contains(@class,'page-editor__topper__content')]//div[contains(@data-lfr-background-image-id,'${id}')]</td>
+	<td>BACKGROUND_IMAGE_STYLE</td>
+	<td>xpath=(//div[contains(@style,'${backgroundImageStyle}')])[${position}]</td>
 	<td></td>
 </tr>
 <tr>
@@ -372,8 +374,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>FRAGMENT_HEADER_2</td>
-	<td>xpath=(//li[contains(@class,'topper__title') and contains(.,'${key_fragmentName}')])[2]</td>
+	<td>FRAGMENT_HEADER_ANY</td>
+	<td>xpath=(//li[contains(@class,'topper__title') and contains(.,'${key_fragmentName}')])[${key_index}]</td>
 	<td></td>
 </tr>
 <tr>

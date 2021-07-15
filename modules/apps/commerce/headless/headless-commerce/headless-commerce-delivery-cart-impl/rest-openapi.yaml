@@ -485,7 +485,7 @@ components:
 info:
     description:
         "Headless Delivery Commerce Cart API. A Java client JAR is available for use with the group ID 'com.liferay',
-        artifact ID 'com.liferay.headless.commerce.delivery.cart.client', and version '4.0.3'."
+        artifact ID 'com.liferay.headless.commerce.delivery.cart.client', and version '4.0.5'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -1756,12 +1756,22 @@ paths:
                     description:
                         Unexpected error
             tags: ["ShippingMethod"]
-    /channels/{channelId}/carts:
+    /channels/{channelId}/account/{accountId}/carts:
         get:
             description:
                 Retrieves carts for specific account in the given channel.
-            operationId: getChannelCartsPage
+            operationId: getChannelAccountCartsPage
             parameters:
+                - in: path
+                  explode: false
+                  name: accountId
+                  required: true
+                  schema:
+                      description:
+                          Account Id
+                      format: int64
+                      type: integer
+                  style: simple
                 - in: path
                   explode: false
                   name: channelId
@@ -1828,6 +1838,7 @@ paths:
                     description:
                         Unexpected error
             tags: ["Cart"]
+    /channels/{channelId}/carts:
         post:
             operationId: postChannelCart
             parameters:

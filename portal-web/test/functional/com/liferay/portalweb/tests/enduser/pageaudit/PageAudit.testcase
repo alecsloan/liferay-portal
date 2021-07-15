@@ -11,15 +11,108 @@ definition {
 		User.firstLoginPG();
 
 		JSONGroup.addGroup(groupName = "Test Site Name");
+
+		task ("Create content page") {
+			JSONLayout.addPublicLayout(
+				groupName = "Test Site Name",
+				layoutName = "Content Page",
+				type = "content");
+		}
 	}
 
 	tearDown {
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
+		PageAudit.setAPIViaSystemSettings(apiKey = " ");
+
 		JSONGroup.deleteGroupByName(groupName = "Test Site Name");
 
 		if ("${testPortalInstance}" == "true") {
 			PortalInstances.tearDownCP();
+		}
+	}
+
+	@description = "LPS-119066: Given the Page Audit Panel
+	When the audit is launched (the API is called)
+	Then a progress bar shows and moves forward while retrieving the data until they can be shown"
+
+	@priority = "3"
+	@uitest
+	test AssertProgressBar {
+		property portal.acceptance = "true";
+		property test.name.skip.portal.instance = "PageAudit#AssertProgressBar";
+
+		task ("Set a custom page as canonical URL to have data already loaded") {
+			PageAudit.setSEOcanonicalURL(URL = "https://liferay-tango.github.io/liferay-portal/page-audit-test");
+		}
+
+		task ("Enable Google PageSpeed") {
+			PageAudit.enableGooglePageSpeed();
+		}
+
+		task ("Set Google PageSpeed API") {
+			PageAudit.setAPIViaSystemSettings(apiKey = "AIzaSyAq-oKsvIhlYHdk1UXCFy63h74ECIgbgbE");
+		}
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/content-page");
+
+		task ("Open Page Audit panel and assert the progress bar") {
+			PageAudit.openPanelAfterConfiguration(pageName = "Content Page");
+
+			AssertElementPresent(locator1 = "PageAudit#PROGRESS_BAR");
+		}
+	}
+
+	@description = "LPS-127668: Given the page audit panel
+	When the users access the second level
+	Then they can see the title of the issue, the description and tips sections"
+
+	@priority = "4"
+	@uitest
+	test NavigateToSecondLevel {
+		property portal.acceptance = "true";
+		property test.name.skip.portal.instance = "PageAudit#NavigateToSecondLevel";
+
+		task ("Set a custom page as canonical URL to have data already loaded") {
+			PageAudit.setSEOcanonicalURL(URL = "https://liferay-tango.github.io/liferay-portal/page-audit-test");
+		}
+
+		task ("Enable Google PageSpeed") {
+			PageAudit.enableGooglePageSpeed();
+		}
+
+		task ("Set Google PageSpeed API") {
+			Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/content-page");
+
+			PageAudit.setAPIViaSiteSettings(apiKey = "AIzaSyAq-oKsvIhlYHdk1UXCFy63h74ECIgbgbE");
+		}
+
+		task ("Open Page Audit panel and navigate to the second level of an issue") {
+			Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/content-page");
+
+			PageAudit.openPanelAfterConfiguration(pageName = "Content Page");
+
+			PageAudit.goToDetailView(failingCheckName = "Low Contrast Ratio");
+
+			AssertTextPresent(
+				locator1 = "PageAudit#FAILING_CHECK_TITLE",
+				value1 = "Low Contrast Ratio");
+
+			AssertTextPresent(
+				locator1 = "PageAudit#PANEL_TITLE",
+				value1 = "DESCRIPTION");
+
+			AssertTextPresent(
+				locator1 = "PageAudit#PANEL_TITLE",
+				value1 = "TIPS");
+
+			AssertElementPresent(
+				badgeValue = "1",
+				locator1 = "PageAudit#BADGE_NUMBER");
+
+			AssertTextPresent(
+				locator1 = "PageAudit#FAILING_ELEMENT_NAME",
+				value1 = "color-contrast");
 		}
 	}
 
@@ -43,7 +136,7 @@ definition {
 		}
 
 		task ("Open Page Audit panel") {
-			PageAudit.openPageAuditPanel();
+			PageAudit.openPanelBeforeConfiguration();
 
 			AssertTextPresent(
 				locator1 = "PageAudit#CHECK_ISSUES_TEXT",
@@ -87,7 +180,7 @@ definition {
 		}
 
 		task ("Open Page Audit panel") {
-			PageAudit.openPageAuditPanel();
+			PageAudit.openPanelBeforeConfiguration();
 
 			AssertTextPresent(
 				locator1 = "PageAudit#CHECK_ISSUES_TEXT",
@@ -131,7 +224,7 @@ definition {
 		}
 
 		task ("Open Page Audit panel") {
-			PageAudit.openPageAuditPanel();
+			PageAudit.openPanelBeforeConfiguration();
 
 			AssertTextPresent(
 				locator1 = "PageAudit#CHECK_ISSUES_TEXT",
@@ -216,7 +309,7 @@ definition {
 		}
 
 		task ("Open Page Audit panel") {
-			PageAudit.openPageAuditPanel();
+			PageAudit.openPanelBeforeConfiguration();
 
 			AssertTextPresent(
 				locator1 = "PageAudit#CHECK_ISSUES_TEXT",
@@ -300,7 +393,7 @@ definition {
 		}
 
 		task ("Open Page Audit panel") {
-			PageAudit.openPageAuditPanel();
+			PageAudit.openPanelBeforeConfiguration();
 
 			AssertTextPresent(
 				locator1 = "PageAudit#CHECK_ISSUES_TEXT",
@@ -336,6 +429,41 @@ definition {
 
 		task ("Assert the Page Audit panel is not shown") {
 			AssertElementNotPresent(locator1 = "PageAudit#PAGE_AUDIT_BUTTON");
+		}
+	}
+
+	@description = "LPS-132232: Given the Page Audit Panel
+	When the user opens it and there are no failing elements retrieved for any of the checks
+	Then a message "Your page has no issues" and the matching image show, the two sections SEO and Accessibility show and they are collapsed by default"
+
+	@priority = "3"
+	@uitest
+	test PageWithNoIssues {
+		property portal.acceptance = "true";
+		property test.name.skip.portal.instance = "PageAudit#PageWithNoIssues";
+
+		task ("Set a custom page as canonical URL to have data already loaded") {
+			PageAudit.setSEOcanonicalURL(URL = "https://liferay-tango.github.io/liferay-portal/page-audit-test-no-issues");
+		}
+
+		task ("Enable Google PageSpeed") {
+			PageAudit.enableGooglePageSpeed();
+		}
+
+		task ("Set Google PageSpeed API") {
+			PageAudit.setAPIViaSystemSettings(apiKey = "AIzaSyAq-oKsvIhlYHdk1UXCFy63h74ECIgbgbE");
+		}
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/content-page");
+
+		task ("Open Page Audit panel and assert there are no issues") {
+			PageAudit.openPanelAfterConfiguration(pageName = "Content Page");
+
+			AssertElementPresent(locator1 = "PageAudit#SUCCESS_IMAGE");
+
+			AssertTextPresent(
+				locator1 = "PageAudit#NO_ISSUES_MESSAGE",
+				value1 = "Your page has no issues.");
 		}
 	}
 

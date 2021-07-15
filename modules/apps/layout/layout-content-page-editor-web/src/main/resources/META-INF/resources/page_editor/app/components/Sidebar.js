@@ -208,7 +208,7 @@ export default function Sidebar() {
 	return (
 		<ReactPortal>
 			<div
-				className="page-editor__sidebar page-editor__theme-adapter-forms"
+				className="cadmin page-editor__sidebar page-editor__theme-adapter-forms"
 				ref={dropClearRef}
 			>
 				<div
@@ -319,7 +319,14 @@ export default function Sidebar() {
 								setHasError(true);
 							}}
 						>
-							<Suspense fallback={<ClayLoadingIndicator />}>
+							<Suspense
+								fallback={
+									<ClayLoadingIndicator
+										className="my-4"
+										small
+									/>
+								}
+							>
 								<SidebarPanel
 									getInstance={getInstance}
 									pluginId={sidebarPanelId}

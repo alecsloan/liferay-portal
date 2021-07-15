@@ -12,6 +12,7 @@
  * details.
  */
 
+import ClayAlert from '@clayui/alert';
 import ClayBadge from '@clayui/badge';
 import ClayButton from '@clayui/button';
 import ClayLayout from '@clayui/layout';
@@ -24,14 +25,16 @@ import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {SET_SELECTED_ISSUE} from '../constants/actionTypes';
 import {StoreDispatchContext, StoreStateContext} from '../context/StoreContext';
 import getPageSpeedProgress from '../utils/getPageSpeedProgress';
-import BasicInformation from './BasicInformation';
+import NoIssuesLoaded from './NoIssuesLoaded';
 
 export default function IssuesList() {
 	const {data, error, languageId, loading} = useContext(StoreStateContext);
 
-	const {defaultLanguageId, imagesPath, layoutReportsIssues, pageURLs} = data;
+	const {imagesPath, layoutReportsIssues} = data;
 
 	const [percentage, setPercentage] = useState(0);
+
+	const localizedIssues = layoutReportsIssues?.[languageId];
 
 	useEffect(() => {
 		if (loading && !error) {
@@ -53,24 +56,30 @@ export default function IssuesList() {
 	const successImage = `${imagesPath}/issues_success.gif`;
 
 	return (
-		<div className="pb-3 px-3">
-			<BasicInformation
-				defaultLanguageId={defaultLanguageId}
-				pageURLs={pageURLs}
-				selectedLanguageId={languageId}
-			/>
-
-			{loading ? (
-				<LoadingProgressBar percentage={percentage} />
-			) : (
-				layoutReportsIssues && (
+		<>
+			{localizedIssues && !loading && (
+				<ClayAlert className="mb-4" displayType="info" variant="stripe">
+					{Liferay.Util.sub(
+						Liferay.Language.get(
+							'showing-data-from-x-relaunch-to-update-data'
+						),
+						localizedIssues.date
+					)}
+				</ClayAlert>
+			)}
+			<div className="pb-3 px-3">
+				{loading ? (
+					<LoadingProgressBar percentage={percentage} />
+				) : localizedIssues ? (
 					<Issues
-						layoutReportsIssues={layoutReportsIssues}
+						layoutReportsIssues={localizedIssues.issues}
 						successImage={successImage}
 					/>
-				)
-			)}
-		</div>
+				) : (
+					<NoIssuesLoaded />
+				)}
+			</div>
+		</>
 	);
 }
 
@@ -135,7 +144,6 @@ const Section = ({section}) => {
 	return (
 		<ClayPanel
 			collapsable
-			collapseClassNames="mb-4 mt-3"
 			defaultExpanded={sectionTotal > 0}
 			displayTitle={
 				<span className="c-inner" tabIndex="-1">

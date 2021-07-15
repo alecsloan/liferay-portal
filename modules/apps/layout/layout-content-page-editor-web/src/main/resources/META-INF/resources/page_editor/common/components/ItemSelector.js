@@ -26,14 +26,15 @@ import {useId} from '../../app/utils/useId';
 import {openItemSelector} from '../../core/openItemSelector';
 
 export default function ItemSelector({
+	className,
 	eventName,
 	itemSelectorURL,
 	label,
+	modalProps,
 	onItemSelect,
 	quickMappedInfoItems = [],
-	modalProps,
 	selectedItem,
-	showAddButton = true,
+	showEditControls = true,
 	showMappedItems = true,
 	transformValueCallback,
 }) {
@@ -77,8 +78,8 @@ export default function ItemSelector({
 					transformMappedItem
 				);
 			}
-			else if (state.mappedInfoItems?.length > 0) {
-				transformedMappedItems = state.mappedInfoItems.map(
+			else if (state.pageContents?.length > 0) {
+				transformedMappedItems = state.pageContents.map(
 					transformMappedItem
 				);
 			}
@@ -117,7 +118,9 @@ export default function ItemSelector({
 				const contentMenuItems = selectPageContentDropdownItems(
 					selectedItem.classPK,
 					label
-				)(state);
+				)(state)?.filter(
+					(item) => item.label !== Liferay.Language.get('edit-image')
+				);
 
 				if (contentMenuItems?.length) {
 					menuItems.push(...contentMenuItems, {type: 'divider'});
@@ -146,7 +149,7 @@ export default function ItemSelector({
 			return (
 				[
 					...(quickMappedInfoItems || []),
-					...(state.mappedInfoItems || []),
+					...(state.pageContents || []),
 				].find(
 					(item) =>
 						item.classNameId === selectedItem.classNameId &&
@@ -169,88 +172,107 @@ export default function ItemSelector({
 	);
 
 	return (
-		<ClayForm.Group className="mb-2" small>
+		<ClayForm.Group className={className}>
 			<label htmlFor={itemSelectorInputId}>{label}</label>
 
-			<div className="d-flex">
-				<ClayInput
-					className={classNames('mr-2', {
-						'page-editor__item-selector__content-input': showAddButton,
-					})}
-					id={itemSelectorInputId}
-					onClick={() => {
-						if (showAddButton) {
-							openModal();
-						}
-					}}
-					placeholder={Liferay.Util.sub(
-						Liferay.Language.get('select-x'),
-						label
-					)}
-					readOnly
-					sizing="sm"
-					type="text"
-					value={selectedItemTitle}
-				/>
+			<ClayInput.Group small>
+				<ClayInput.GroupItem>
+					<ClayInput
+						className={classNames({
+							'page-editor__item-selector__content-input': showEditControls,
+						})}
+						id={itemSelectorInputId}
+						onClick={() => {
+							if (showEditControls) {
+								openModal();
+							}
+						}}
+						placeholder={Liferay.Util.sub(
+							Liferay.Language.get('select-x'),
+							label
+						)}
+						readOnly
+						sizing="sm"
+						type="text"
+						value={selectedItemTitle}
+					/>
+				</ClayInput.GroupItem>
 
-				{showAddButton &&
+				{showEditControls &&
 					(mappedItemsMenu.length > 0 ? (
+						<ClayInput.GroupItem shrink>
+							<ClayDropDownWithItems
+								items={mappedItemsMenu}
+								trigger={
+									<ClayButtonWithIcon
+										aria-label={selectContentButtonLabel}
+										className="page-editor__item-selector__content-button"
+										displayType="secondary"
+										small
+										symbol={selectContentButtonIcon}
+										title={selectContentButtonLabel}
+									/>
+								}
+							/>
+						</ClayInput.GroupItem>
+					) : (
+						<ClayInput.GroupItem shrink>
+							<ClayButtonWithIcon
+								aria-label={selectContentButtonLabel}
+								className="page-editor__item-selector__content-button"
+								displayType="secondary"
+								onClick={openModal}
+								small
+								symbol={selectContentButtonIcon}
+								title={selectContentButtonLabel}
+							/>
+						</ClayInput.GroupItem>
+					))}
+
+				{showEditControls && selectedItem?.title && (
+					<ClayInput.GroupItem shrink>
 						<ClayDropDownWithItems
-							items={mappedItemsMenu}
+							items={optionsMenu}
 							trigger={
 								<ClayButtonWithIcon
-									aria-label={selectContentButtonLabel}
+									aria-label={Liferay.Util.sub(
+										Liferay.Language.get('view-x-options'),
+										label
+									)}
 									className="page-editor__item-selector__content-button"
 									displayType="secondary"
 									small
-									symbol={selectContentButtonIcon}
-									title={selectContentButtonLabel}
+									symbol="ellipsis-v"
+									title={Liferay.Util.sub(
+										Liferay.Language.get('view-x-options'),
+										label
+									)}
 								/>
 							}
 						/>
-					) : (
-						<ClayButtonWithIcon
-							aria-label={selectContentButtonLabel}
-							className="page-editor__item-selector__content-button"
-							displayType="secondary"
-							onClick={openModal}
-							small
-							symbol={selectContentButtonIcon}
-							title={selectContentButtonLabel}
-						/>
-					))}
-
-				{selectedItem?.title && (
-					<ClayDropDownWithItems
-						items={optionsMenu}
-						trigger={
-							<ClayButtonWithIcon
-								aria-label={Liferay.Util.sub(
-									Liferay.Language.get('view-x-options'),
-									label
-								)}
-								className="ml-2 page-editor__item-selector__content-button"
-								displayType="secondary"
-								small
-								symbol="ellipsis-v"
-								title={Liferay.Util.sub(
-									Liferay.Language.get('view-x-options'),
-									label
-								)}
-							/>
-						}
-					/>
+					</ClayInput.GroupItem>
 				)}
-			</div>
+			</ClayInput.Group>
 		</ClayForm.Group>
 	);
 }
 
 ItemSelector.propTypes = {
+	className: PropTypes.string,
 	eventName: PropTypes.string,
 	itemSelectorURL: PropTypes.string,
 	label: PropTypes.string.isRequired,
+	modalProps: PropTypes.object,
 	onItemSelect: PropTypes.func.isRequired,
+	quickMappedInfoItems: PropTypes.arrayOf(
+		PropTypes.shape({
+			classNameId: PropTypes.string,
+			classPK: PropTypes.string,
+			title: PropTypes.string,
+		})
+	),
 	selectedItem: PropTypes.shape({title: PropTypes.string}),
+	showEditControls: PropTypes.bool,
+	showMappedItems: PropTypes.bool,
 	transformValueCallback: PropTypes.func.isRequired,
 };

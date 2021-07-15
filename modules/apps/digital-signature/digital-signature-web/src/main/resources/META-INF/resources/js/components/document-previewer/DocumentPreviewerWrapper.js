@@ -15,6 +15,7 @@
 import {ClayPaginationWithBasicItems} from '@clayui/pagination';
 import React, {useState} from 'react';
 
+import {OriginalDocumentTag} from '../original-document-tag/OriginalDocumentTag';
 import EmptyState from '../table/EmptyState';
 import DocumentPreviewer from './DocumentPreviewer';
 import ImagePreviewer from './ImagePreviewer';
@@ -24,11 +25,17 @@ const UnavailablePreview = ({
 		'the-envelope-does-not-have-a-document-to-preview'
 	),
 }) => (
-	<EmptyState
-		className="mb-2 mt-4"
-		description={description}
-		title={Liferay.Language.get('no-preview-available')}
-	/>
+	<div className="preview-file">
+		<div className="preview-file-container unavailable-preview">
+			<EmptyState
+				className="mb-2 mt-4"
+				description={description}
+				title={Liferay.Language.get('no-preview-available')}
+			/>
+
+			<OriginalDocumentTag />
+		</div>
+	</div>
 );
 
 const DocumentPreview = ({fileEntry}) => {
@@ -67,6 +74,8 @@ const DocumentPreviewerWrapper = ({fileEntries = []}) => {
 	return (
 		<>
 			<DocumentPreview fileEntry={fileEntry} />
+
+			<OriginalDocumentTag id={documentPage} />
 
 			<div className="align-items-center d-flex flex-column justify-content-center">
 				<ClayPaginationWithBasicItems

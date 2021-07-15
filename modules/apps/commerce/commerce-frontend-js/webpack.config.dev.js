@@ -16,8 +16,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
-const components = require('./test/dev/components/index');
-const {defineServerResponses} = require('./test/dev/fakeServerUtilities');
+const components = require('./dev/components/index');
+const {defineServerResponses} = require('./dev/fakeServerUtilities');
 
 const outputPath = path.resolve(__dirname, './dev/public');
 
@@ -32,7 +32,7 @@ module.exports = {
 			defineServerResponses(app);
 		},
 		compress: false,
-		contentBase: './test/dev/public',
+		contentBase: './dev/public',
 		open: true,
 		openPage: 'index.html',
 		port: 9000,
@@ -57,7 +57,7 @@ module.exports = {
 		rules: [
 			{
 				exclude: /node_modules/,
-				test: /\.(js|jsx)$/,
+				test: /\.(js|jsx|ts|tsx)$/,
 				use: [
 					{
 						loader: 'babel-loader',
@@ -91,11 +91,6 @@ module.exports = {
 					},
 				],
 			},
-			{
-				exclude: /node_modules/,
-				test: /\.tsx?$/,
-				use: 'ts-loader',
-			},
 		],
 	},
 	output: {
@@ -106,20 +101,24 @@ module.exports = {
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		new HtmlWebpackPlugin({
 			inject: false,
-			template: path.resolve(__dirname, './test/dev/public/index.html'),
+			template: path.resolve(__dirname, './dev/public/index.html'),
 		}),
 	],
 	resolve: {
 		alias: {
 			'@liferay/frontend-js-react-web': path.resolve(
 				__dirname,
-				'../../../node_modules/@liferay/frontend-js-react-web/src/main/resources/META-INF/resources/js/index.es.js'
+				'../../../node_modules/@liferay/frontend-js-react-web/src/main/resources/META-INF/resources/js/index.ts'
+			),
+			'@liferay/frontend-js-state-web': path.resolve(
+				__dirname,
+				'../../../node_modules/@liferay/frontend-js-state-web/src/main/resources/META-INF/resources/index.ts'
 			),
 			'frontend-js-web': path.resolve(
 				__dirname,
 				'../../../node_modules/frontend-js-web/src/main/resources/META-INF/resources/index.es.js'
 			),
 		},
-		extensions: ['.js', '.jsx'],
+		extensions: ['.js', '.jsx', '.ts', '.tsx'],
 	},
 };

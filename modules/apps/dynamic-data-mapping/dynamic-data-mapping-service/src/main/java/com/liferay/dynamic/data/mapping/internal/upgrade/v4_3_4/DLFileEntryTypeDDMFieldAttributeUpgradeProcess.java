@@ -18,6 +18,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,12 +42,14 @@ public class DLFileEntryTypeDDMFieldAttributeUpgradeProcess
 	}
 
 	private void _updateCheckboxFieldType() throws Exception {
-		StringBundler sb = new StringBundler(6);
+		StringBundler sb = new StringBundler(8);
 
 		sb.append("select DDMField.storageId, DDMField.fieldName from ");
-		sb.append("DLFileEntryType inner join DDMStructureVersion on ");
-		sb.append("DDMStructureVersion.structureId = ");
-		sb.append("DLFileEntryType.dataDefinitionId inner join DDMField on ");
+		sb.append("DLFileEntryType inner join DDMStructureLink on ");
+		sb.append("DDMStructureLink.classPK = ");
+		sb.append("DLFileEntryType.fileEntryTypeId inner join ");
+		sb.append("DDMStructureVersion on DDMStructureVersion.structureId = ");
+		sb.append("DDMStructureLink.structureId inner join DDMField on ");
 		sb.append("DDMStructureVersion.structureVersionId = ");
 		sb.append("DDMField.structureVersionId and DDMField.fieldType like ? ");
 
@@ -106,12 +109,14 @@ public class DLFileEntryTypeDDMFieldAttributeUpgradeProcess
 	}
 
 	private void _updateNumericFieldType() throws Exception {
-		StringBundler sb = new StringBundler(6);
+		StringBundler sb = new StringBundler(8);
 
 		sb.append("select DDMField.storageId, DDMField.fieldId from ");
-		sb.append("DLFileEntryType inner join DDMStructureVersion on ");
-		sb.append("DDMStructureVersion.structureId = ");
-		sb.append("DLFileEntryType.dataDefinitionId inner join DDMField on ");
+		sb.append("DLFileEntryType inner join DDMStructureLink on ");
+		sb.append("DDMStructureLink.classPK = ");
+		sb.append("DLFileEntryType.fileEntryTypeId inner join ");
+		sb.append("DDMStructureVersion on DDMStructureVersion.structureId = ");
+		sb.append("DDMStructureLink.structureId inner join DDMField on ");
 		sb.append("DDMStructureVersion.structureVersionId = ");
 		sb.append("DDMField.structureVersionId and DDMField.fieldType like ? ");
 
@@ -157,12 +162,17 @@ public class DLFileEntryTypeDDMFieldAttributeUpgradeProcess
 
 							String valueString = resultSet2.getString(3);
 
-							Number number = numberFormat.parse(valueString);
+							if (Validator.isNull(valueString)) {
+								preparedStatement3.setString(1, null);
+							}
+							else {
+								Number number = numberFormat.parse(valueString);
 
-							numberFormat.setGroupingUsed(false);
+								numberFormat.setGroupingUsed(false);
 
-							preparedStatement3.setString(
-								1, numberFormat.format(number));
+								preparedStatement3.setString(
+									1, numberFormat.format(number));
+							}
 
 							preparedStatement3.setLong(
 								2, resultSet2.getLong(1));

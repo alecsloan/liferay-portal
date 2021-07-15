@@ -44,12 +44,13 @@ public class ObjectDefinitionLocalServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.object.service.impl.ObjectDefinitionLocalServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static ObjectDefinition addObjectDefinition(
+	public static ObjectDefinition addCustomObjectDefinition(
 			long userId, String name,
 			List<com.liferay.object.model.ObjectField> objectFields)
 		throws PortalException {
 
-		return getService().addObjectDefinition(userId, name, objectFields);
+		return getService().addCustomObjectDefinition(
+			userId, name, objectFields);
 	}
 
 	/**
@@ -66,6 +67,28 @@ public class ObjectDefinitionLocalServiceUtil {
 		ObjectDefinition objectDefinition) {
 
 		return getService().addObjectDefinition(objectDefinition);
+	}
+
+	public static ObjectDefinition addOrUpdateSystemObjectDefinition(
+			long companyId,
+			com.liferay.object.system.SystemObjectDefinitionMetadata
+				systemObjectDefinitionMetadata)
+		throws PortalException {
+
+		return getService().addOrUpdateSystemObjectDefinition(
+			companyId, systemObjectDefinitionMetadata);
+	}
+
+	public static ObjectDefinition addSystemObjectDefinition(
+			long userId, String dbTableName, String name,
+			String pkObjectFieldDBColumnName, String pkObjectFieldName,
+			int version,
+			List<com.liferay.object.model.ObjectField> objectFields)
+		throws PortalException {
+
+		return getService().addSystemObjectDefinition(
+			userId, dbTableName, name, pkObjectFieldDBColumnName,
+			pkObjectFieldName, version, objectFields);
 	}
 
 	/**
@@ -88,6 +111,12 @@ public class ObjectDefinitionLocalServiceUtil {
 		throws PortalException {
 
 		return getService().createPersistedModel(primaryKeyObj);
+	}
+
+	public static void deleteCompanyObjectDefinitions(long companyId)
+		throws PortalException {
+
+		getService().deleteCompanyObjectDefinitions(companyId);
 	}
 
 	/**
@@ -233,6 +262,12 @@ public class ObjectDefinitionLocalServiceUtil {
 		return getService().fetchObjectDefinition(objectDefinitionId);
 	}
 
+	public static ObjectDefinition fetchObjectDefinition(
+		long companyId, String name) {
+
+		return getService().fetchObjectDefinition(companyId, name);
+	}
+
 	/**
 	 * Returns the object definition with the matching UUID and company.
 	 *
@@ -251,6 +286,12 @@ public class ObjectDefinitionLocalServiceUtil {
 		getActionableDynamicQuery() {
 
 		return getService().getActionableDynamicQuery();
+	}
+
+	public static List<ObjectDefinition> getCustomObjectDefinitions(
+		int status) {
+
+		return getService().getCustomObjectDefinitions(status);
 	}
 
 	public static com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
@@ -347,8 +388,22 @@ public class ObjectDefinitionLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
-	public static void undeployObjectDefinition(long objectDefinitionId) {
-		getService().undeployObjectDefinition(objectDefinitionId);
+	public static List<ObjectDefinition> getSystemObjectDefinitions() {
+		return getService().getSystemObjectDefinitions();
+	}
+
+	public static ObjectDefinition publishCustomObjectDefinition(
+			long userId, long objectDefinitionId)
+		throws PortalException {
+
+		return getService().publishCustomObjectDefinition(
+			userId, objectDefinitionId);
+	}
+
+	public static void undeployObjectDefinition(
+		ObjectDefinition objectDefinition) {
+
+		getService().undeployObjectDefinition(objectDefinition);
 	}
 
 	/**

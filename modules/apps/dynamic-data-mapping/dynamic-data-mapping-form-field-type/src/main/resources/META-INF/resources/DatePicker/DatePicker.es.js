@@ -91,7 +91,15 @@ const getDateFormat = (locale) => {
 	};
 };
 
-const transformToDate = (
+const getInitialMonth = (value) => {
+	if (moment(value).isValid()) {
+		return moment(value).toDate();
+	}
+
+	return moment().toDate();
+};
+
+const getInitialValue = (
 	defaultLanguageId,
 	date,
 	locale,
@@ -102,24 +110,16 @@ const transformToDate = (
 			return moment(date, [
 				getLocaleDateFormat(locale),
 				'YYYY-MM-DD',
-			]).toDate();
+			]).format(getLocaleDateFormat(locale));
 		}
 
 		return moment(date, [
 			getLocaleDateFormat(defaultLanguageId),
 			'YYYY-MM-DD',
-		]).toDate();
+		]).format(getLocaleDateFormat(defaultLanguageId));
 	}
 
 	return date;
-};
-
-const getInitialMonth = (value) => {
-	if (moment(value).isValid()) {
-		return moment(value).toDate();
-	}
-
-	return moment().toDate();
 };
 
 const getValueForHidden = (value, locale) => {
@@ -141,6 +141,7 @@ const DatePicker = ({
 	disabled,
 	formatInEditingLocale,
 	locale,
+	localizedValue: localizedValueInitial = {},
 	name,
 	onChange,
 	spritemap,
@@ -151,11 +152,11 @@ const DatePicker = ({
 
 	const [expanded, setExpand] = useState(false);
 
-	const [localizedValue, setLocalizedValue] = useState({});
+	const [localizedValue, setLocalizedValue] = useState(localizedValueInitial);
 
 	const initialValueMemoized = useMemo(
 		() =>
-			transformToDate(
+			getInitialValue(
 				defaultLanguageId,
 				initialValue,
 				locale,
@@ -188,7 +189,11 @@ const DatePicker = ({
 			});
 
 			if (localizedValue[locale]) {
-				if (typeof localizedValue[locale] === 'string') {
+				if (
+					typeof localizedValue[locale] === 'string' &&
+					(localizedValue[locale].includes('/') ||
+						localizedValue[locale].includes('.'))
+				) {
 					inputRef.current.value = localizedValue[locale];
 				}
 				else {
@@ -279,11 +284,7 @@ const DatePicker = ({
 							true
 						).isValid()
 					) {
-						onChange(
-							moment(value, getLocaleDateFormat(locale)).format(
-								'L'
-							)
-						);
+						onChange(getValueForHidden(value, locale));
 					}
 				}}
 				ref={inputRef}
@@ -322,6 +323,7 @@ const Main = ({
 				localizedValue && localizedValue[locale] != undefined
 			}
 			locale={locale}
+			localizedValue={localizedValue}
 			name={name}
 			onChange={(value) => onChange({}, value)}
 			placeholder={placeholder}

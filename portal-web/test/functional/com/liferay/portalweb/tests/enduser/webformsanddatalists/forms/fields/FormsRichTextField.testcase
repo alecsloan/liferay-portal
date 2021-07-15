@@ -105,7 +105,7 @@ definition {
 	@description = "Verify that a Rich Text Field can be duplicated"
 	@priority = "5"
 	test CanBeDuplicated {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(
@@ -301,11 +301,48 @@ definition {
 	@ignore = "Test Stub"
 	@priority = "5"
 	test CanBeSubmitted {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-133121 CanBeSubmitted pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
 
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		Form.gotoAddField(
+			fieldPositionNumber = "0",
+			fieldType = "Rich Text");
+
+		Form.save();
+
+		Form.publishForm();
+
+		FormsAdminNavigator.gotoPublishedForm();
+
+		FormFields.addRichTextContent(
+			content = "Test",
+			fieldLabel = "Rich Text");
+
+		FormPortlet.submitSuccessfullyAndViewSuccessPage();
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoViewEntries(formName = "Form1");
+
+		FormsAdminNavigator.gotoView(rowIndexNumber = "1");
+
+		FormViewBuilder.validateFieldLabel(fieldLabel = "Rich Text");
+
+		FormFields.viewRichTextValue(
+			fieldName = "Rich Text",
+			fieldValue = "Test");
 	}
 
 	@description = "Verify that changes to the Field can be canceled"
@@ -322,7 +359,7 @@ definition {
 	@description = "Verify that a help text can be added to a Rich Text Field"
 	@priority = "5"
 	test HelpTextCanBeAdded {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(

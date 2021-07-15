@@ -778,7 +778,6 @@ definition {
 	@priority = "4"
 	@refactorneeded
 	test DeleteVideoShortcutInDepot {
-		property dummy.socket.proxy.disabled = "true";
 		property test.name.skip.portal.instance = "DepotRemoteStagingDM#DeleteVideoShortcutInDepot";
 
 		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");
@@ -1176,8 +1175,6 @@ definition {
 		Navigator.openSitePage(
 			pageName = "Test Page",
 			siteName = "Site Name");
-
-		Portlet.addPG(portletName = "Blogs");
 
 		BlogsNavigator.gotoEntryPG(
 			entryContent = "Blogs Entry Content",
@@ -2572,7 +2569,6 @@ definition {
 	@priority = "3"
 	@refactorneeded
 	test PublishVideoShortcutThumbnail {
-		property dummy.socket.proxy.disabled = "true";
 		property test.name.skip.portal.instance = "DepotRemoteStagingDM#PublishVideoShortcutThumbnail";
 
 		DepotNavigator.openDepotDocumentsAndMediaAdmin(depotName = "Test Depot Name");

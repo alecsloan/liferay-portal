@@ -393,8 +393,9 @@ definition {
 	@description = "Verify that an Upload Field can be set to repeatable"
 	@priority = "5"
 	test CanBeSetToRepeatable {
-		property forms.functional = "quarantine";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
+		property test.name.skip.portal.instance = "FormsUploadField#CanBeSetToRepeatable";
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
@@ -424,8 +425,8 @@ definition {
 		FormsAdminNavigator.gotoPublishedForm();
 
 		FormFields.addRepeatableField(
-			key_fieldName = "Upload",
-			key_repeatableFieldsNumber = "1");
+			fieldName = "Upload",
+			repeatableFieldNumber = "1");
 
 		FormFields.viewFieldRepeatableButton(
 			fieldName = "Upload",
@@ -444,6 +445,10 @@ definition {
 			uploadFileName = "Document_1.docx");
 
 		FormPortlet.submitSuccessfully();
+
+		FormPortlet.viewSuccessPage(
+			successPageDescription = "Your information was successfully received. Thank you for filling out the form.",
+			successPageTitle = "Thank you.");
 	}
 
 	@description = "Verify that changes to the Field can be canceled"

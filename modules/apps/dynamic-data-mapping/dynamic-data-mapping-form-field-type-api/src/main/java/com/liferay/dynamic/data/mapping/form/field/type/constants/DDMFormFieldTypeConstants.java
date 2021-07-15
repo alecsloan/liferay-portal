@@ -50,6 +50,10 @@ public class DDMFormFieldTypeConstants {
 
 	public static final String NUMERIC = "numeric";
 
+	public static final String NUMERIC_INPUT_MASK = "numeric_input_mask";
+
+	public static final String OBJECT_FIELD = "object_field";
+
 	public static final String OPTIONS = "options";
 
 	public static final String PARAGRAPH = "paragraph";
@@ -57,6 +61,8 @@ public class DDMFormFieldTypeConstants {
 	public static final String PASSWORD = "password";
 
 	public static final String RADIO = "radio";
+
+	public static final String REDIRECT_BUTTON = "redirect_button";
 
 	public static final String RICH_TEXT = "rich_text";
 

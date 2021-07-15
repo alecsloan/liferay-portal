@@ -203,6 +203,18 @@ public class SearchUtil {
 	public static class SearchContext
 		extends com.liferay.portal.kernel.search.SearchContext {
 
+		@Override
+		public void addFacet(
+			com.liferay.portal.kernel.search.facet.Facet facet) {
+
+			Map<String, com.liferay.portal.kernel.search.facet.Facet> facets =
+				getFacets();
+
+			if (!facets.containsKey(facet.getFieldName())) {
+				super.addFacet(facet);
+			}
+		}
+
 		public void addVulcanAggregation(Aggregation aggregation) {
 			if ((aggregation == null) ||
 				(aggregation.getAggregationTerms() == null)) {
@@ -313,6 +325,10 @@ public class SearchUtil {
 
 		SearchResponse searchResponse =
 			(SearchResponse)searchContext.getAttribute("search.response");
+
+		if (searchResponse == null) {
+			return new ArrayList<>();
+		}
 
 		Map<String, AggregationResult> aggregationResultsMap =
 			searchResponse.getAggregationResultsMap();

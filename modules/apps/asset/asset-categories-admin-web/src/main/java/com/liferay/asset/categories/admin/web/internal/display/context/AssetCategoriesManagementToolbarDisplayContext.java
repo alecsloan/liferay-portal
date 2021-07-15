@@ -14,7 +14,6 @@
 
 package com.liferay.asset.categories.admin.web.internal.display.context;
 
-import com.liferay.asset.categories.admin.web.internal.util.FFAssetCategoriesAdminWebConfigurationUtil;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.frontend.taglib.clay.servlet.taglib.display.context.SearchContainerManagementToolbarDisplayContext;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
@@ -28,6 +27,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
@@ -69,8 +69,7 @@ public class AssetCategoriesManagementToolbarDisplayContext
 	@Override
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
-			FFAssetCategoriesAdminWebConfigurationUtil::
-				setDisplayPageTemplateEnabled,
+			this::_isSetDisplayPageTemplateEnabled,
 			dropdownItem -> {
 				PortletURL setCategoryDisplayPageTemplateURL =
 					PortletURLBuilder.createRenderURL(
@@ -78,7 +77,7 @@ public class AssetCategoriesManagementToolbarDisplayContext
 					).setMVCPath(
 						"/set_category_display_page_template.jsp"
 					).setRedirect(
-						currentURLObj.toString()
+						currentURLObj
 					).setParameter(
 						"parentCategoryId",
 						_assetCategoriesDisplayContext.getCategoryId()
@@ -337,6 +336,29 @@ public class AssetCategoriesManagementToolbarDisplayContext
 		return false;
 	}
 
+	private boolean _isSetDisplayPageTemplateEnabled() {
+		if (_setDisplayPageTemplateEnabled != null) {
+			return _setDisplayPageTemplateEnabled;
+		}
+
+		boolean setDisplayPageTemplateEnabled = true;
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		Group group = themeDisplay.getScopeGroup();
+
+		if (group.isCompany() || group.isDepot()) {
+			setDisplayPageTemplateEnabled = false;
+		}
+
+		_setDisplayPageTemplateEnabled = setDisplayPageTemplateEnabled;
+
+		return _setDisplayPageTemplateEnabled;
+	}
+
 	private final AssetCategoriesDisplayContext _assetCategoriesDisplayContext;
+	private Boolean _setDisplayPageTemplateEnabled;
 
 }

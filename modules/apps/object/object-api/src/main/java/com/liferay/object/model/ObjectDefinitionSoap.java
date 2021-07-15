@@ -41,7 +41,14 @@ public class ObjectDefinitionSoap implements Serializable {
 		soapModel.setUserName(model.getUserName());
 		soapModel.setCreateDate(model.getCreateDate());
 		soapModel.setModifiedDate(model.getModifiedDate());
+		soapModel.setDBTableName(model.getDBTableName());
 		soapModel.setName(model.getName());
+		soapModel.setPKObjectFieldDBColumnName(
+			model.getPKObjectFieldDBColumnName());
+		soapModel.setPKObjectFieldName(model.getPKObjectFieldName());
+		soapModel.setSystem(model.isSystem());
+		soapModel.setVersion(model.getVersion());
+		soapModel.setStatus(model.getStatus());
 
 		return soapModel;
 	}
@@ -167,12 +174,64 @@ public class ObjectDefinitionSoap implements Serializable {
 		_modifiedDate = modifiedDate;
 	}
 
+	public String getDBTableName() {
+		return _dbTableName;
+	}
+
+	public void setDBTableName(String dbTableName) {
+		_dbTableName = dbTableName;
+	}
+
 	public String getName() {
 		return _name;
 	}
 
 	public void setName(String name) {
 		_name = name;
+	}
+
+	public String getPKObjectFieldDBColumnName() {
+		return _pkObjectFieldDBColumnName;
+	}
+
+	public void setPKObjectFieldDBColumnName(String pkObjectFieldDBColumnName) {
+		_pkObjectFieldDBColumnName = pkObjectFieldDBColumnName;
+	}
+
+	public String getPKObjectFieldName() {
+		return _pkObjectFieldName;
+	}
+
+	public void setPKObjectFieldName(String pkObjectFieldName) {
+		_pkObjectFieldName = pkObjectFieldName;
+	}
+
+	public boolean getSystem() {
+		return _system;
+	}
+
+	public boolean isSystem() {
+		return _system;
+	}
+
+	public void setSystem(boolean system) {
+		_system = system;
+	}
+
+	public int getVersion() {
+		return _version;
+	}
+
+	public void setVersion(int version) {
+		_version = version;
+	}
+
+	public int getStatus() {
+		return _status;
+	}
+
+	public void setStatus(int status) {
+		_status = status;
 	}
 
 	private long _mvccVersion;
@@ -183,6 +242,12 @@ public class ObjectDefinitionSoap implements Serializable {
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
+	private String _dbTableName;
 	private String _name;
+	private String _pkObjectFieldDBColumnName;
+	private String _pkObjectFieldName;
+	private boolean _system;
+	private int _version;
+	private int _status;
 
 }

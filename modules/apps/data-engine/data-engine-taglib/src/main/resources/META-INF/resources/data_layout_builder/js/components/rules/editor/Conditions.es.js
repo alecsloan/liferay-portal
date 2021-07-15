@@ -177,6 +177,18 @@ function FieldRight({fields, left, right, roles, ...otherProps}) {
 					};
 				}
 
+				if (
+					left.field?.type === 'checkbox_multiple' ||
+					left.field?.type === 'radio' ||
+					left.field?.type === 'select'
+				) {
+					return {
+						options: left.field?.options ?? [],
+						placeholder: Liferay.Language.get('choose-an-option'),
+						value: [right.value],
+					};
+				}
+
 				return {
 					value: right.value,
 				};
@@ -189,6 +201,7 @@ function FieldRight({fields, left, right, roles, ...otherProps}) {
 			<FieldStateless
 				{...otherProps}
 				{...props}
+				dataType={left.field?.dataType}
 				showEmptyOption={false}
 				type={
 					left.type === 'user'

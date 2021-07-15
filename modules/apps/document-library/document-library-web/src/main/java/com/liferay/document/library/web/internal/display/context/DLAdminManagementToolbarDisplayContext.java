@@ -56,7 +56,6 @@ import com.liferay.portal.kernel.servlet.taglib.ui.Menu;
 import com.liferay.portal.kernel.servlet.taglib.ui.URLMenuItem;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -117,12 +116,15 @@ public class DLAdminManagementToolbarDisplayContext
 			return null;
 		}
 
+		DigitalSignatureConfiguration digitalSignatureConfiguration =
+			DigitalSignatureConfigurationUtil.getDigitalSignatureConfiguration(
+				_themeDisplay.getCompanyId(), _themeDisplay.getSiteGroupId());
 		boolean enableOnBulk = _isEnableOnBulk();
 		boolean stagedActions = _isStagedActions();
 		User user = _themeDisplay.getUser();
 
 		return DropdownItemListBuilder.add(
-			() -> isDigitalSignatureEnabled() && stagedActions,
+			() -> digitalSignatureConfiguration.enabled() && stagedActions,
 			dropdownItem -> {
 				dropdownItem.putData("action", "collectDigitalSignature");
 				dropdownItem.setIcon("signature");
@@ -516,27 +518,21 @@ public class DLAdminManagementToolbarDisplayContext
 
 		return new ViewTypeItemList(displayStyleURL, _getDisplayStyle()) {
 			{
-				if (ArrayUtil.contains(_getDisplayViews(), "icon")) {
-					addCardViewTypeItem();
-				}
+				String[] displayViews = _getDisplayViews();
 
-				if (ArrayUtil.contains(_getDisplayViews(), "descriptive")) {
-					addListViewTypeItem();
-				}
-
-				if (ArrayUtil.contains(_getDisplayViews(), "list")) {
-					addTableViewTypeItem();
+				for (String displayView : displayViews) {
+					if (displayView.equals("icon")) {
+						addCardViewTypeItem();
+					}
+					else if (displayView.equals("descriptive")) {
+						addListViewTypeItem();
+					}
+					else if (displayView.equals("list")) {
+						addTableViewTypeItem();
+					}
 				}
 			}
 		};
-	}
-
-	public boolean isDigitalSignatureEnabled() {
-		DigitalSignatureConfiguration digitalSignatureConfiguration =
-			DigitalSignatureConfigurationUtil.getDigitalSignatureConfiguration(
-				_themeDisplay.getCompanyId(), _themeDisplay.getSiteGroupId());
-
-		return digitalSignatureConfiguration.enabled();
 	}
 
 	@Override

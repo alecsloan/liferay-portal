@@ -875,7 +875,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 		}
 
 		boolean neverExpire = ParamUtil.getBoolean(
-			uploadPortletRequest, "neverExpire");
+			uploadPortletRequest, "neverExpire", true);
 
 		if (!PropsValues.SCHEDULER_ENABLED || neverExpire) {
 			return null;
@@ -898,10 +898,17 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 			expirationDateHour += 12;
 		}
 
-		return _portal.getDate(
+		Date expirationDate = _portal.getDate(
 			expirationDateMonth, expirationDateDay, expirationDateYear,
 			expirationDateHour, expirationDateMinute, timeZone,
 			FileEntryExpirationDateException.class);
+
+		if ((expirationDate != null) && expirationDate.before(new Date())) {
+			throw new FileEntryExpirationDateException(
+				"Expiration date " + expirationDate + " is in the past");
+		}
+
+		return expirationDate;
 	}
 
 	private Date _getReviewDate(
@@ -913,7 +920,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 		}
 
 		boolean neverReview = ParamUtil.getBoolean(
-			uploadPortletRequest, "neverReview");
+			uploadPortletRequest, "neverReview", true);
 
 		if (!PropsValues.SCHEDULER_ENABLED || neverReview) {
 			return null;

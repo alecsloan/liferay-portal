@@ -22,7 +22,7 @@ export default function NotConfigured() {
 
 	const {configureGooglePageSpeedURL, imagesPath} = data;
 
-	const defaultIllustration = `${imagesPath}/issues_default.svg`;
+	const defaultIllustration = `${imagesPath}/issues_configure.svg`;
 
 	return (
 		<div className="pb-3 px-3 text-center">
@@ -35,37 +35,33 @@ export default function NotConfigured() {
 				width="120px"
 			/>
 
-			<div className="font-weight-semi-bold mb-2">
-				<span>
-					{Liferay.Language.get(
-						"check-issues-that-impact-on-your-page's-accessibility-and-seo"
-					)}
-				</span>
-			</div>
+			<p className="font-weight-semi-bold mb-2">
+				{Liferay.Language.get(
+					"check-issues-that-impact-on-your-page's-accessibility-and-seo"
+				)}
+			</p>
 
 			{configureGooglePageSpeedURL ? (
 				<>
-					<div className="mb-3 text-secondary">
+					<p className="mb-3 text-secondary">
 						{Liferay.Language.get(
-							'connect-to-google-pagespeed-to-run-a-page-audit'
+							'configure-google-pagespeed-to-run-a-page-audit'
 						)}
-					</div>
+					</p>
 
 					<ClayLink
 						className="btn btn-secondary"
 						href={configureGooglePageSpeedURL}
 					>
-						{Liferay.Language.get('connect-to-google-pagespeed')}
+						{Liferay.Language.get('configure')}
 					</ClayLink>
 				</>
 			) : (
-				<div className="text-secondary">
-					<span>
-						{Liferay.Language.get(
-							'connect-with-google-pagespeed-from-site-settings-pages-google-pagespeed'
-						)}
-					</span>
-				</div>
+				<p className="text-secondary">
+					{Liferay.Language.get(
+						'connect-with-google-pagespeed-from-site-settings-pages-google-pagespeed'
+					)}
+				</p>
 			)}
 		</div>
 	);

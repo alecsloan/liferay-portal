@@ -78,13 +78,13 @@ definition {
 		var HTML = '''<link data-senna-track="temporary" href="''';
 
 		if ("${locale}" == "zh") {
-			var zhAlternate = '''" hreflang="zh-CN" rel="alternate" />''';
+			var zhAlternate = '''" hreflang="zh-CN" rel="alternate">''';
 
 			var pageSource = StringUtil.add("${HTML}", "${portalURL}/zh/web/guest${zhAlternate}","");
 		}
 
 		else if ("${locale}" == "es") {
-			var esAlternate = '''" hreflang="es-ES" rel="alternate" />''';
+			var esAlternate = '''" hreflang="es-ES" rel="alternate">''';
 
 			var pageSource = StringUtil.add("${HTML}", "${portalURL}/es/web/guest${esAlternate}","");
 		}
@@ -102,7 +102,7 @@ definition {
 
 	macro assertCanonicalURL {
 		var HTML = '''<link data-senna-track="temporary" href="''';
-		var HTML2 = '''" rel="canonical" />''';
+		var HTML2 = '''" rel="canonical">''';
 
 		if (isSet(customCanonicalURL)) {
 			var portalURL = "${customCanonicalURL}";
@@ -268,6 +268,10 @@ definition {
 			value1 = "${friendlyURLEdit}");
 
 		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		Alert.closeMessage(messageType = "SUCCESS");
 	}
 
 	macro editName {
@@ -456,7 +460,7 @@ definition {
 			key_oldFriendlyURL = "${activeURL}",
 			locator1 = "SitePages#FRIENDLY_URL_HISTORY_ITEM");
 
-		Click(locator1 = "Icon#TIMES");
+		Click(locator1 = "Modal#CLOSE_BUTTON");
 
 		AssertVisible(
 			locator1 = "TextInput#FRIENDLY_URL",
@@ -465,6 +469,8 @@ definition {
 		Button.clickSave();
 
 		Alert.viewSuccessMessage();
+
+		Alert.closeMessage(messageType = "SUCCESS");
 	}
 
 	macro selectFilterInCollectionCategoryFilter {

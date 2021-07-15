@@ -833,6 +833,24 @@ public class AssetCategoriesDisplayContext {
 		return false;
 	}
 
+	public boolean isShowSelectAssetDisplayPage() {
+		if (_showSelectAssetDisplayPage != null) {
+			return _showSelectAssetDisplayPage;
+		}
+
+		boolean showSelectAssetDisplayPage = true;
+
+		Group group = _themeDisplay.getScopeGroup();
+
+		if (group.isCompany() || group.isDepot()) {
+			showSelectAssetDisplayPage = false;
+		}
+
+		_showSelectAssetDisplayPage = showSelectAssetDisplayPage;
+
+		return _showSelectAssetDisplayPage;
+	}
+
 	private long _getDefaultVocabularyId() throws PortalException {
 		List<AssetVocabulary> vocabularies = getVocabularies();
 
@@ -871,7 +889,7 @@ public class AssetCategoriesDisplayContext {
 		).setMVCPath(
 			"/view.jsp"
 		).setRedirect(
-			currentURL.toString()
+			currentURL
 		).setNavigation(
 			getNavigation()
 		).build();
@@ -931,6 +949,7 @@ public class AssetCategoriesDisplayContext {
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
 	private String _selectCategoryURL;
+	private Boolean _showSelectAssetDisplayPage;
 	private final ThemeDisplay _themeDisplay;
 	private List<AssetVocabulary> _vocabularies;
 	private SearchContainer<AssetVocabulary> _vocabulariesSearchContainer;

@@ -41,7 +41,7 @@ definition {
 
 		Navigator.openURL();
 
-		ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
+		var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
 
 		Navigator.gotoSitePage(
 			pageName = "AC Page",
@@ -55,7 +55,7 @@ definition {
 
 		ACUtils.launchAC();
 
-		ACProperties.switchProperty(propertyName = "Liferay DXP Combined Property");
+		ACProperties.switchProperty(propertyName = "${propertyName}");
 
 		ACNavigation.goToSegments();
 
@@ -141,6 +141,24 @@ definition {
 		AssertTextEquals(
 			locator1 = "ACSegments#NO_MEMBER_TITLE",
 			value1 = "There are no items found.");
+	}
+
+	@description = "Feature ID: Legacy | Automation ID: LRAC-8135 | Test Summary: Edit a static segment and check the edits are saved"
+	@ignore = "true"
+	@priority = "5"
+	test CanEditStaticSegmentCheckEditSaved {
+
+		// TODO LRAC-8135 CanEditStaticSegmentCheckEditSaved pending implementation
+
+	}
+
+	@description = "Feature ID: Legacy | Automation ID: LRAC-8136 | Test Summary: Rename Individuals Segment"
+	@ignore = "true"
+	@priority = "5"
+	test CanRenameIndividualsSegment {
+
+		// TODO LRAC-8136 CanRenameIndividualsSegment pending implementation
+
 	}
 
 }

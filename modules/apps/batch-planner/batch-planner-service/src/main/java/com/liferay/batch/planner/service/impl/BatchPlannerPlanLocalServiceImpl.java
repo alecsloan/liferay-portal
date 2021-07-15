@@ -46,7 +46,8 @@ public class BatchPlannerPlanLocalServiceImpl
 
 	@Override
 	public BatchPlannerPlan addBatchPlannerPlan(
-			long userId, String externalType, String name)
+			long userId, boolean export, String externalType,
+			String externalURL, String internalClassName, String name)
 		throws PortalException {
 
 		_validateExternalType(externalType);
@@ -61,7 +62,10 @@ public class BatchPlannerPlanLocalServiceImpl
 		batchPlannerPlan.setCompanyId(user.getCompanyId());
 		batchPlannerPlan.setUserId(userId);
 		batchPlannerPlan.setUserName(user.getFullName());
+		batchPlannerPlan.setExport(export);
 		batchPlannerPlan.setExternalType(externalType);
+		batchPlannerPlan.setExternalURL(externalURL);
+		batchPlannerPlan.setInternalClassName(internalClassName);
 		batchPlannerPlan.setName(name);
 
 		batchPlannerPlan = batchPlannerPlanPersistence.update(batchPlannerPlan);
@@ -94,6 +98,19 @@ public class BatchPlannerPlanLocalServiceImpl
 			batchPlannerPlanId);
 
 		return batchPlannerPlan;
+	}
+
+	@Override
+	public BatchPlannerPlan updateActive(
+			long batchPlannerPlanId, boolean active)
+		throws PortalException {
+
+		BatchPlannerPlan batchPlannerPlan =
+			batchPlannerPlanPersistence.findByPrimaryKey(batchPlannerPlanId);
+
+		batchPlannerPlan.setActive(active);
+
+		return batchPlannerPlanPersistence.update(batchPlannerPlan);
 	}
 
 	@Override

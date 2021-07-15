@@ -12,7 +12,7 @@
  * details.
  */
 
-import {PagesVisitor} from 'data-engine-js-components-web';
+import {PagesVisitor, sectionAdded} from 'data-engine-js-components-web';
 import {
 	FieldSetUtil,
 	FieldSupport,
@@ -44,6 +44,7 @@ export default (state, action, config) => {
 
 			const {
 				fieldSet,
+				fieldName,
 				indexes = {
 					columnIndex: 0,
 					pageIndex: activePage,
@@ -80,7 +81,9 @@ export default (state, action, config) => {
 			const props = {
 				availableLanguageIds,
 				defaultLanguageId,
+				editingLanguageId,
 				fieldNameGenerator,
+				fieldTypes,
 				generateFieldNameUsingFieldLabel,
 			};
 
@@ -130,6 +133,29 @@ export default (state, action, config) => {
 				);
 			}
 
+			if (fieldName) {
+				return sectionAdded(
+					props,
+					{
+						...state,
+						pages,
+					},
+					{
+						data: {
+							fieldName,
+							parentFieldName,
+						},
+						indexes,
+						newField: SettingsContext.updateField(
+							props,
+							fieldSetField,
+							'label',
+							fieldSet.name
+						),
+					}
+				);
+			}
+
 			const newField = SettingsContext.updateField(
 				props,
 				fieldSetField,
@@ -152,7 +178,13 @@ export default (state, action, config) => {
 			const {fieldTypes} = config;
 			const {editingLanguageId, pages} = state;
 			const {fieldSet} = action.payload;
-			const {dataDefinitionFields, defaultDataLayout, id} = fieldSet;
+			const {
+				availableLanguageIds,
+				dataDefinitionFields,
+				defaultDataLayout,
+				defaultLanguageId,
+				id,
+			} = fieldSet;
 			const fieldSetId = `${id}`;
 			const visitor = new PagesVisitor(pages);
 			const newPages = visitor.mapFields((field) => {
@@ -170,8 +202,19 @@ export default (state, action, config) => {
 				const rows = normalizeDataLayoutRows(
 					defaultDataLayout.dataLayoutPages
 				);
+				const props = {
+					availableLanguageIds,
+					defaultLanguageId,
+					editingLanguageId,
+				};
+				const updatedFieldSet = SettingsContext.updateField(
+					props,
+					field,
+					'label',
+					fieldSet.name
+				);
 
-				return {...field, nestedFields, rows};
+				return {...updatedFieldSet, nestedFields, rows};
 			});
 
 			return {pages: newPages};

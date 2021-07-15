@@ -72,7 +72,10 @@ import org.osgi.service.component.annotations.Reference;
 		"product.navigation.control.menu.category.key=" + ProductNavigationControlMenuCategoryKeys.USER,
 		"product.navigation.control.menu.entry.order:Integer=400"
 	},
-	service = ProductNavigationControlMenuEntry.class
+	service = {
+		AnalyticsReportsProductNavigationControlMenuEntry.class,
+		ProductNavigationControlMenuEntry.class
+	}
 )
 public class AnalyticsReportsProductNavigationControlMenuEntry
 	extends BaseProductNavigationControlMenuEntry {
@@ -172,8 +175,7 @@ public class AnalyticsReportsProductNavigationControlMenuEntry
 
 	public boolean isPanelStateOpen(HttpServletRequest httpServletRequest) {
 		String analyticsReportsPanelState = SessionClicks.get(
-			httpServletRequest, "com.liferay.analytics.reports.web_panelState",
-			"closed");
+			httpServletRequest, _SESSION_CLICKS_KEY, "closed");
 
 		if (Objects.equals(analyticsReportsPanelState, "open")) {
 			return true;
@@ -232,6 +234,12 @@ public class AnalyticsReportsProductNavigationControlMenuEntry
 		}
 
 		return super.isShow(httpServletRequest);
+	}
+
+	public void setPanelState(
+		HttpServletRequest httpServletRequest, String panelState) {
+
+		SessionClicks.put(httpServletRequest, _SESSION_CLICKS_KEY, panelState);
 	}
 
 	@Activate
@@ -304,6 +312,9 @@ public class AnalyticsReportsProductNavigationControlMenuEntry
 
 	private static final String _ICON_TMPL_CONTENT = StringUtil.read(
 		AnalyticsReportsProductNavigationControlMenuEntry.class, "icon.tmpl");
+
+	private static final String _SESSION_CLICKS_KEY =
+		"com.liferay.analytics.reports.web_panelState";
 
 	@Reference
 	private AnalyticsReportsInfoItemObjectProviderTracker

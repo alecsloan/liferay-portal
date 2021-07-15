@@ -2,18 +2,19 @@
 <head>
 <title>WorkflowMetrics</title>
 </head>
+
 <body>
-<table cellpadding="1" cellspacing="1" border="1">
+<table border="1" cellpadding="1" cellspacing="1">
 <thead>
 <tr><td rowspan="1" colspan="3">WorkflowMetrics</td></tr>
 </thead>
+
 <tbody>
 <tr>
 	<td>DASHBOARD_AND_PERFORMANCE_CARD_BY_PROCESS_STATUS</td>
 	<td>//div[@class='header'][span[contains(text(),'${key_statusName}')]]/following-sibling::div[1]</td>
 	<td></td>
 </tr>
-
 <tr>
 	<td>DASHBOARD_TOTAL_COMPLETED_ITEMS_BUTTON</td>
 	<td>//div[contains(@class,'d-flex')]/a[${key_index}]</td>
@@ -82,6 +83,21 @@
 <tr>
 	<td>FILTER_CLEAR_ALL</td>
 	<td>//span[contains(text(),'Clear All')] | //button[contains(text(),'Clear All')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PERFORMANCE_COMPLETED_ITEMS_BY_STATUS</td>
+	<td>//div[@class='header'][span[contains(text(),'${key_status}')]]/following-sibling::div[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GENERIC_TABLE_HEADER</td>
+	<td>//tr//th[text()='${key_columnName}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GENERIC_TABLE_HEADER_WITH_ORDER_OPTION</td>
+	<td>//tr//span[text()='${key_columnName}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -171,12 +187,12 @@
 </tr>
 <tr>
 	<td>METRICS_PERFORMANCE_BY_ASSIGNEE_DATE_RANGE_DROPDOWN</td>
-	<td>xpath=(//button[contains(@class, 'dropdown-toggle filter-dropdown-button')])[6]</td>
+	<td>xpath=(//button[contains(@class, 'dropdown-toggle filter-dropdown-button')])[7]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>METRICS_PERFORMANCE_BY_ASSIGNEE_VIEW_STEPS_DROPDOWN</td>
-	<td>xpath=(//button[contains(@class, 'dropdown-toggle filter-dropdown-button')])[5]</td>
+	<td>xpath=(//button[contains(@class, 'dropdown-toggle filter-dropdown-button')])[6]</td>
 	<td></td>
 </tr>
 <tr>
@@ -235,6 +251,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>METRICS_DROPDOWN_FILTER_ACTIVATED</td>
+	<td>//body[@id="senna_surface1"]//div[@class='dropdown-menu show']/li[${key_taskPosition}]//div[contains(text(),'${key_taskName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_ITEMS_PER_PAGE_SELECT</td>
+	<td>//div[contains(@class,'pagination-items-per-page')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>METRICS_NO_SLA_MESSAGE</td>
 	<td>//div[contains(., 'No SLAs are defined for this process.')]</td>
 	<td></td>
@@ -246,7 +272,7 @@
 </tr>
 <tr>
 	<td>METRICS_PERFORMANCE_BY_STEP_RANGE_DROPDOWN</td>
-	<td>xpath=(//button[contains(@class, 'filter-dropdown-button')])[4]</td>
+	<td>xpath=(//button[contains(@class, 'filter-dropdown-button')])[5]</td>
 	<td></td>
 </tr>
 <tr>
@@ -270,14 +296,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>METRICS_PERFORMANCE_BY_STEP_TOOLTIP</td>
+	<td>//div[contains(@class,'flex-row autofit-row')]/span[@title='View the average completion time and percentage of SLA breaches over the selected time period for each step of the workflow process.']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>METRICS_DASHBOARD_TAB</td>
 	<td>//li[contains(@class,'nav-item')]//a[contains(@href, 'dashboard')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>METRICS_PERFORMANCE_BY_ASSIGNEE_AVG_COMPLETION_TIME</td>
-	<td>xpath=(//span[contains(text(),'${key_assignee}')]/ancestor::td[1]/following-sibling::td//span)[2]
-</td>
+	<td>xpath=(//span[contains(text(),'${key_assignee}')]/ancestor::td[1]/following-sibling::td//span)[2]</td>
 	<td></td>
 </tr>
 <tr>
@@ -293,6 +323,11 @@
 <tr>
 	<td>METRICS_PERFORMANCE_BY_ASSIGNEE_CARD_VIEW_ALL_ASSIGNEES_LINK</td>
 	<td>//a//span[contains(text(), 'View All Assignees (${key_assigneesNumber})')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_PERFORMANCE_BY_ASSIGNEE_CARD_VIEW_ALL_ASSIGNEES_LINK_NEW_LANGUAGE</td>
+	<td>//a//span[contains(text(), '${key_newLangText} (${key_assigneesNumber})')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -331,6 +366,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>METRICS_WORKFLOW_ALL_ITEMS_PROCESS_STEP_DISPLAYS_UPDATE_STATUS</td>
+	<td>//td[contains(@title,'${key_workflowAssetTitle}')]/following-sibling::td[contains(@class,'bounded-column') and contains(text(),'Update')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>METRICS_WORKFLOW_PROCESS_NAME</td>
 	<td>//td//span[contains(text(),'${key_workflowProcessName}')] | //a[contains(text(),'${key_workflowProcessName}')]</td>
 	<td></td>
@@ -361,13 +401,33 @@
 	<td></td>
 </tr>
 <tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_CARD_FILTER_ORDER</td>
+	<td>//li[${key_order}]//span[contains(@class, "dropdown-item control-hidden")]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_CARD_FILTER_OPTION</td>
 	<td>//div[contains(@class, 'dropdown-menu show')]//span[contains(@class, 'dropdown-item')]//*[text()='${key_workflowStep}']</td>
 	<td></td>
 </tr>
 <tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_CARD_FILTER_OPTION2</td>
+	<td>//div[contains(@class, 'dropdown-menu show')]//span[contains(@class, 'dropdown-item')]//*[contains(text(),'${key_workflowStep}')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_CARD_FILTER_PROCESS_STEP</td>
 	<td>//button[contains(@class, 'filter-dropdown-button')][contains(text(), 'Process Step')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_CARD_FILTER_ROLE</td>
+	<td>//button[contains(@class, 'filter-dropdown-button')][contains(text(), 'Role')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_CARD_FILTER_OPTIONS</td>
+	<td>//div[contains(@class, 'dropdown-menu show')]//li[${key_rowNumber}]</td>
 	<td></td>
 </tr>
 <tr>
@@ -386,8 +446,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_CARD_VIEW_ALL_ASSIGNEES_LINK</td>
+	<td>//a//span[contains(text(), 'View All Assignees (${key_assigneesNumber})')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_ALL_ASSIGNEES_DROPDOWN_INDEX</td>
+	<td>//div[contains(@class,'dropdown-menu show')]//li[contains(@aria-selected,'false')][${key_index}]//span[contains(@class,'text')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_PAGE_NAME</td>
-	<td>//td[contains(@class,'table-title')]//span[contains(text(),'${key_assigneeName}')]</td>
+	<td>//td//a[contains(@class, 'workload-by-step-link')]//span[contains(text(),'${key_assigneeName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -397,27 +467,57 @@
 </tr>
 <tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_PAGE_TASKCOUNT</td>
-	<td>//td[contains(@class,'table-title')]//span[contains(text(),'${key_assigneeName}')]/../../following-sibling::td[3]//a[contains(text(),'${key_taskCount}')]</td>
+	<td>//span[contains(text(),'${key_assigneeName}')]/../../following-sibling::td[3]//a[contains(text(),'${key_taskCount}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_TASKCOUNT_ON_TIME</td>
-	<td>xpath=(//span[contains(text(),'${assigneeName}')]/ancestor::td[contains(@class,'table-title')]/following-sibling::td//a)[2]</td>
+	<td>xpath=(//td//a[contains(@class, 'workload-by-step-link')])[3]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_TASKCOUNT_OVERDUE</td>
-	<td>xpath=(//span[contains(text(),'${assigneeName}')]/ancestor::td[contains(@class,'table-title')]/following-sibling::td//a)[1]</td>
+	<td>xpath=(//td//a[contains(@class, 'workload-by-step-link')])[2]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_TASKCOUNT_TOTAL_PENDING</td>
-	<td>xpath=(//span[contains(text(),'${assigneeName}')]/ancestor::td[contains(@class,'table-title')]/following-sibling::td//a)[3]</td>
+	<td>xpath=(//td//a[contains(@class, 'workload-by-step-link')])[4]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>METRICS_WORKLOAD_BY_ASSIGNEE_SEARCH_ASSIGNEE_NAME</td>
 	<td>//input[@placeholder='Search for Assignee Name']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_SEARCH_STEPS</td>
+	<td>//input[@placeholder='Search for']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_PERCENTAGE</td>
+	<td>//span[contains(@class, "task-count-percentage")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>NEW_LANGUAGE_DASHBOARD_TOTAL_PENDING_ITEMS_TITLE</td>
+	<td>//div[@class='header']//span[contains(text(),'${newLanguageCardName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_SEARCH_ASSIGNEE_NAME_NEW_LANGUAGE</td>
+	<td>//input[@placeholder='${key_newLangText}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_ICON</td>
+	<td>//div[contains(@class, "p-0 col-md-3")]//span[contains(@class, "workflow-tooltip")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKLOAD_BY_ASSIGNEE_ICON_MESSAGE</td>
+	<td>//div[contains(@class, "flex-row autofit-row")]//span[contains(@data-restore-title, "Monitor the workload and performance of users assigned to the process's pending items.")]</td>
 	<td></td>
 </tr>
 <tr>
@@ -439,4 +539,3 @@
 </table>
 </body>
 </html>
-

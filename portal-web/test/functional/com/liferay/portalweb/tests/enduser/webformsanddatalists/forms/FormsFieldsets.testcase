@@ -841,14 +841,77 @@ definition {
 	}
 
 	@description = "Verify that a Single Selection Field can be added to a Form via Fieldset"
-	@ignore = "Test Stub"
 	@priority = "5"
 	test CanAddASingleSelectionFieldToAForm {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-133487 CanAddASingleSelectionFieldToAForm pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
 
+		Navigator.gotoNavItem(navItem = "Element Sets");
+
+		FormsAdminNavigator.gotoAddElementSet();
+
+		Form.editName(formName = "Element Set 1");
+
+		Form.addTextField(fieldPositionNumber = "0");
+
+		Form.closeSidebar();
+
+		Form.gotoAddField(
+			fieldPositionNumber = "1",
+			fieldType = "Single Selection");
+
+		FormFields.editOptionsRow(
+			optionValue = "Option 1",
+			rowNumber = "1");
+
+		Form.saveElementSet();
+
+		FormsAdminNavigator.gotoBack();
+
+		Navigator.gotoNavItem(navItem = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		Form.gotoAddElementSet(
+			elementSetTitle = "Element Set 1",
+			fieldPositionNumber = "0");
+
+		AssertElementPresent(
+			key_name = "Text",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
+
+		AssertElementPresent(
+			key_name = "Single Selection",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
+
+		Click(
+			key_name = "Single Selection",
+			locator1 = "FormFields#FIELD_TARGET_LABEL");
+
+		FormFields.viewOptionsRowFieldValue(
+			fieldValue = "Option 1",
+			rowNumber = "1");
+
+		Form.save();
+
+		Form.publishForm();
+
+		FormsAdminNavigator.gotoPublishedForm();
+
+		AssertElementPresent(
+			key_rowNumber = "1",
+			locator1 = "FormPortlet#SELECT_SINGLE_SELECTION_ROW");
+
+		AssertElementPresent(
+			key_optionValue = "Option 1",
+			key_rowNumber = "1",
+			locator1 = "FormPortlet#SELECT_SINGLE_SELECTION_ROW_OPTION");
 	}
 
 	@description = "Verify that a Text Field can be added to a Form via Fieldset"
@@ -907,7 +970,7 @@ definition {
 	@description = "Verify that an Upload Field can be added to a Form via Fieldset"
 	@priority = "5"
 	test CanAddAUploadFieldToAForm {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(
@@ -1017,7 +1080,7 @@ definition {
 	@description = "Verify that a Fieldset can be added multiple times to Form"
 	@priority = "3"
 	test CanBeAddedToAFormMultipleTimes {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(
@@ -1281,7 +1344,7 @@ definition {
 	@description = "Verify that a Field with the Autocomplete Property persists after being added to a Form via Fieldset"
 	@priority = "5"
 	test PreserveTheAutoCompleteProperty {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(
@@ -1427,20 +1490,75 @@ definition {
 	}
 
 	@description = "Verify that a Hide Label Property persists after being added to a Form via Fieldset"
-	@ignore = "Test Stub"
 	@priority = "5"
 	test PreserveTheHideLabelProperty {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
-		// TODO LPS-133472 PreserveTheHideLabelProperty pending implementation
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Forms");
 
+		Navigator.gotoNavItem(navItem = "Element Sets");
+
+		FormsAdminNavigator.gotoAddElementSet();
+
+		Form.editName(formName = "Element Set 1");
+
+		Form.gotoAddField(
+			fieldPositionNumber = "0",
+			fieldType = "Numeric");
+
+		Form.closeSidebar();
+
+		Form.gotoAddField(
+			fieldPositionNumber = "1",
+			fieldType = "Text");
+
+		Form.gotoAdvancedTab();
+
+		FormFields.disableSwitcher(fieldName = "Show Label");
+
+		Form.closeSidebar();
+
+		FormFields.viewFieldLabelNotPresent(fieldLabel = "Text");
+
+		Form.saveElementSet();
+
+		FormsAdminNavigator.gotoBack();
+
+		Navigator.gotoNavItem(navItem = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Form.editName(formName = "Form 1");
+
+		Form.gotoAddElementSet(
+			elementSetTitle = "Element Set 1",
+			fieldPositionNumber = "0");
+
+		FormFields.viewField(fieldName = "Numeric");
+
+		AssertElementPresent(
+			key_fieldLabel = "Text",
+			key_fieldName = "Text",
+			locator1 = "FormFields#TEXT_FIELD");
+
+		FormFields.viewFieldLabelNotPresent(fieldLabel = "Text");
+
+		Form.save();
+
+		Form.publishForm();
+
+		FormsAdminNavigator.gotoPublishedForm();
+
+		FormFields.viewFieldLabelNotPresent(fieldLabel = "Text");
 	}
 
 	@description = "Verify that an Inline Property persists after being added to a Form via Fieldset"
 	@priority = "4"
 	test PreserveTheInlineProperty {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(
@@ -1600,7 +1718,7 @@ definition {
 	@description = "Verify that a Placeholder Text persists after being added to a Form via Fieldset"
 	@priority = "5"
 	test PreserveThePlaceholderText {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(
@@ -1663,7 +1781,7 @@ definition {
 	@description = "Verify that a Predefined Value persists after being added to a Form via Fieldset"
 	@priority = "5"
 	test PreserveThePredefinedValue {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(
@@ -1865,7 +1983,7 @@ definition {
 	@description = "Verify that a Show as Switcher Property persists after being added to a Form via Fieldset"
 	@priority = "4"
 	test PreserveTheShowAsSwitcherProperty {
-		property forms.functional = "false";
+		property forms.functional = "true";
 		property portal.acceptance = "false";
 
 		ProductMenu.gotoPortlet(

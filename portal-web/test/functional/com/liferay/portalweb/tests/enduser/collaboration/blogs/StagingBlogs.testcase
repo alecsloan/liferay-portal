@@ -65,7 +65,8 @@ definition {
 		JSONBlog.addEntry(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title",
-			groupName = "Site name-staging");
+			groupName = "Site Name (Staging)",
+			site = "false");
 
 		BlogsNavigator.openToStagingCP(
 			groupName = "Site Name",
@@ -98,22 +99,19 @@ definition {
 			publicationType = "Local");
 	}
 
+	@description = "This ensures that users can publish a scheduled blog entry to the live site."
 	@priority = "3"
-	@refactorneeded
+	@refactordone
 	test CanPublishScheduledEntry {
-		property test.name.skip.portal.instance = "BlogsUsecase#StagingBlogsWithScheduledPublishing";
+		property custom.properties = "company.default.time.zone=America/Los_Angeles";
 
-		// Can still explore how to schedule a Blog entry through JSON. This would involve using DateUtil.java
-
-		BlogsNavigator.openToAddEntry(siteURLKey = "site-name-staging");
-
-		BlogsEntry.addEntryContent(
+		JSONBlog.addEntry(
+			displayDate = "true",
 			entryContent = "Blogs Entry Content",
-			entryTitle = "Blogs Entry Title");
-
-		BlogsEntry.scheduleBlogEntry();
-
-		PortletEntry.publish();
+			entryTitle = "Blogs Entry Title",
+			groupName = "Site Name (Staging)",
+			increaseMinutes = "2",
+			site = "false");
 
 		Navigator.gotoStagedSitePage(
 			pageName = "Staging Blogs Page",
@@ -135,7 +133,7 @@ definition {
 
 		Blogs.viewNoEntryCP();
 
-		Pause(locator1 = "60000");
+		Pause(locator1 = "120000");
 
 		Refresh();
 
@@ -207,7 +205,8 @@ definition {
 
 		BlogsNavigator.openToEditEntryInSite(
 			entryTitle = "Blogs Entry Title",
-			groupName = "Site Name",
+			groupName = "Site Name (Staging)",
+			site = "false",
 			siteURLKey = "site-name-staging");
 
 		BlogsEntry.removeSmallImage(uploadFileName = "Document_3.jpg");
@@ -257,7 +256,8 @@ definition {
 		JSONBlog.addEntry(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title",
-			groupName = "Site name-staging");
+			groupName = "Site Name (Staging)",
+			site = "false");
 
 		BlogsNavigator.openToStagingCP(
 			groupName = "Site Name",
@@ -307,7 +307,8 @@ definition {
 		JSONBlog.addEntry(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title",
-			groupName = "Site Name-staging");
+			groupName = "Site Name (Staging)",
+			site = "false");
 
 		Navigator.gotoStagedSitePage(
 			pageName = "Staging Blogs Page",

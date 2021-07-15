@@ -20,11 +20,13 @@ definition {
 
 		DMNavigator.openToConfigInSystemSettings(portlet = "Google Cloud Translator");
 
+		var valueReference = Translations.setGoogleCloudTranslationServiceKey();
+
 		SystemSettings.configureSystemSetting(
 			enableSetting = "true",
 			settingFieldName = "Enabled",
 			settingName = "Service Account Private Key",
-			settingValue = PropsUtil.get("google.cloud.translation.service.key"));
+			settingValue = "${valueReference}");
 	}
 
 	tearDown {
@@ -37,6 +39,8 @@ definition {
 		property test.name.skip.portal.instance = "AutoTranslation#CannotSaveWhenConfigurationIsBlank";
 
 		DMNavigator.openToConfigInSystemSettings(portlet = "Google Cloud Translator");
+
+		SystemSettings.resetConfiguration();
 
 		Translations.saveInvalidConfiguration(settingValue = "");
 
@@ -146,7 +150,7 @@ definition {
 
 		WebContent.addWithStructureCP(
 			webContentNumeric = "10",
-			webContentTitle = "This is the title of a web article in English");
+			webContentTitle = "This is the title of the numeric field in English");
 
 		PortletEntry.publish();
 
@@ -155,7 +159,7 @@ definition {
 			siteURLKey = "site-name",
 			sourceLanguageId = "en_US",
 			targetLanguageId = "es_ES",
-			webContentTitle = "This is the title of a web article in English");
+			webContentTitle = "This is the title of the numeric field in English");
 
 		Translations.translateSpecificFieldsWithGoogle(fieldNameList = "Decimal");
 
@@ -181,7 +185,7 @@ definition {
 			siteURLKey = "site-name",
 			sourceLanguageId = "en_US",
 			targetLanguageId = "es_ES",
-			webContentTitle = "This is the title of a web article in English");
+			webContentTitle = "This is the title of the numeric field in English");
 
 		Translations.viewTargetFields(
 			webContentDecimal = "1,0",
@@ -213,7 +217,7 @@ definition {
 
 		WebContent.addWithStructureCP(
 			webContentRichText = "This is the content of the rich text field in English",
-			webContentTitle = "This is the title of a web article in English");
+			webContentTitle = "This is the title of the rich text field in English");
 
 		PortletEntry.publish();
 
@@ -222,19 +226,19 @@ definition {
 			siteURLKey = "site-name",
 			sourceLanguageId = "en_US",
 			targetLanguageId = "ja_JP",
-			webContentTitle = "This is the title of a web article in English");
+			webContentTitle = "This is the title of the rich text field in English");
 
 		Translations.translateSpecificFieldsWithGoogle(fieldNameList = "Title");
 
 		Translations.viewTargetFields(
 			webContentSourceHTML = "This is the content of the rich text field in English",
-			webContentTitle = "これは英語のウェブ記事のタイトルです");
+			webContentTitle = "これは英語のリッチテキストフィールドのタイトルです");
 
 		Translations.translateSpecificFieldsWithGoogle(fieldNameList = "Rich Text");
 
 		Translations.viewTargetFields(
 			webContentSourceHTML = "これは英語のリッチ テキスト フィールドの内容です",
-			webContentTitle = "これは英語のウェブ記事のタイトルです");
+			webContentTitle = "これは英語のリッチテキストフィールドのタイトルです");
 
 		PortletEntry.publish();
 
@@ -243,17 +247,21 @@ definition {
 			siteURLKey = "site-name",
 			sourceLanguageId = "en_US",
 			targetLanguageId = "ja_JP",
-			webContentTitle = "This is the title of a web article in English");
+			webContentTitle = "This is the title of the rich text field in English");
 
 		Translations.viewTargetFields(
 			webContentSourceHTML = "これは英語のリッチ テキスト フィールドの内容です",
-			webContentTitle = "これは英語のウェブ記事のタイトルです");
+			webContentTitle = "これは英語のリッチテキストフィールドのタイトルです");
 	}
 
 	@description = "This ensures that the text box field of a customized web content can be translated independently"
 	@priority = "5"
 	test CanTranslateTextBoxFieldIndependently {
 		property test.name.skip.portal.instance = "AutoTranslation#CanTranslateTextBoxFieldIndependently";
+
+		JSONWebcontent.deleteWebContent(
+			groupName = "Site Name",
+			title = "This is the title of a web article in English");
 
 		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name");
 
@@ -298,7 +306,7 @@ definition {
 		Translations.translateSpecificFieldsWithGoogle(fieldNameList = "Text Box");
 
 		Translations.viewTargetFields(
-			webContentTextBox = "これは、英語のテキスト ボックス フィールドの内容です",
+			webContentTextBox = "これは英語のテキストボックスフィールドの内容です",
 			webContentTitle = "これは英語のウェブ記事のタイトルです");
 
 		PortletEntry.publish();
@@ -311,7 +319,7 @@ definition {
 			webContentTitle = "This is the title of a web article in English");
 
 		Translations.viewTargetFields(
-			webContentTextBox = "これは、英語のテキスト ボックス フィールドの内容です",
+			webContentTextBox = "これは英語のテキストボックスフィールドの内容です",
 			webContentTitle = "これは英語のウェブ記事のタイトルです");
 	}
 
@@ -319,6 +327,10 @@ definition {
 	@priority = "5"
 	test CanTranslateTextFieldIndependently {
 		property test.name.skip.portal.instance = "AutoTranslation#CanTranslateTextFieldIndependently";
+
+		JSONWebcontent.deleteWebContent(
+			groupName = "Site Name",
+			title = "This is the title of a web article in English");
 
 		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name");
 
@@ -440,7 +452,7 @@ definition {
 		Translations.viewTranslationEntry(
 			language = "ja-JP",
 			status = "Approved",
-			title = "Translation of WC WebContent Title to ja-JP");
+			title = "Translation of This is the title of a web article in English to ja-JP");
 	}
 
 	@description = "The Auto Translate button should not appear in the side-by-side view after Google Translations are enabled then disabled"
@@ -476,6 +488,10 @@ definition {
 			key_text = "Auto Translate",
 			locator1 = "Button#ANY");
 
+		Translations.changeTargetLocale(
+			currentTargetLocale = "ar-SA",
+			newTargetLocale = "es-ES");
+
 		Translations.viewTargetFields(
 			webContentContent = "Este es el contenido de un artículo web en inglés.",
 			webContentDescription = "Esta es la descripción de un artículo web en inglés",
@@ -486,6 +502,11 @@ definition {
 	@priority = "4"
 	test TranslateButtonIsDisabledWhenFieldIsNull {
 		property test.name.skip.portal.instance = "AutoTranslation#TranslateButtonIsDisabledWhenFieldIsNull";
+
+		JSONWebcontent.addWebContent(
+			content = "This is the content of a web article in English",
+			groupName = "Site Name",
+			title = "Title Translate Button is Disabled When Field is Null");
 
 		Translations.openToTranslateEntry(
 			groupName = "Site Name",

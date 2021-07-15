@@ -21,6 +21,7 @@ import com.liferay.object.model.ObjectField;
 import com.liferay.object.service.ObjectDefinitionLocalServiceUtil;
 import com.liferay.object.service.ObjectEntryLocalServiceUtil;
 import com.liferay.object.service.ObjectFieldLocalServiceUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -36,7 +37,6 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -73,10 +73,15 @@ public class ObjectDefinitionGraphQLTest {
 		_objectFieldName = "a" + RandomTestUtil.randomString(5);
 
 		_objectDefinition =
-			ObjectDefinitionLocalServiceUtil.addObjectDefinition(
+			ObjectDefinitionLocalServiceUtil.addCustomObjectDefinition(
 				TestPropsValues.getUserId(), _objectDefinitionName,
 				Collections.singletonList(
 					_createObjectField(_objectFieldName, "String")));
+
+		_objectDefinition =
+			ObjectDefinitionLocalServiceUtil.publishCustomObjectDefinition(
+				TestPropsValues.getUserId(),
+				_objectDefinition.getObjectDefinitionId());
 
 		_objectEntry = ObjectEntryLocalServiceUtil.addObjectEntry(
 			TestPropsValues.getUserId(), TestPropsValues.getGroupId(),
@@ -116,7 +121,7 @@ public class ObjectDefinitionGraphQLTest {
 			new GraphQLField(
 				"delete" + _objectDefinitionName,
 				HashMapBuilder.<String, Object>put(
-					_objectDefinition.getPrimaryKeyColumnName(),
+					_objectDefinition.getPKObjectFieldName(),
 					_objectEntry.getObjectEntryId()
 				).build()));
 
@@ -230,7 +235,7 @@ public class ObjectDefinitionGraphQLTest {
 						new GraphQLField(
 							key,
 							HashMapBuilder.<String, Object>put(
-								_objectDefinition.getPrimaryKeyColumnName(),
+								_objectDefinition.getPKObjectFieldName(),
 								_objectEntry.getObjectEntryId()
 							).build(),
 							new GraphQLField(_objectFieldName)))),
@@ -254,7 +259,7 @@ public class ObjectDefinitionGraphQLTest {
 					).build(),
 					new GraphQLField(_objectFieldName),
 					new GraphQLField(
-						_objectDefinition.getPrimaryKeyColumnName()))));
+						_objectDefinition.getPKObjectFieldName()))));
 
 		Assert.assertEquals(
 			value,
@@ -268,7 +273,7 @@ public class ObjectDefinitionGraphQLTest {
 		Long objectEntryId = JSONUtil.getValueAsLong(
 			jsonObject, "JSONObject/data",
 			"JSONObject/create" + _objectDefinitionName,
-			"Object/" + _objectDefinition.getPrimaryKeyColumnName());
+			"Object/" + _objectDefinition.getPKObjectFieldName());
 
 		Assert.assertEquals(
 			value,
@@ -283,7 +288,7 @@ public class ObjectDefinitionGraphQLTest {
 								StringBundler.concat(
 									"{", _objectFieldName, ": \"", value, "\"}")
 							).put(
-								_objectDefinition.getPrimaryKeyColumnName(),
+								_objectDefinition.getPKObjectFieldName(),
 								String.valueOf(objectEntryId)
 							).build(),
 							new GraphQLField(_objectFieldName)))),

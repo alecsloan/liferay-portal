@@ -79,7 +79,6 @@ import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.site.exception.InitializationException;
 import com.liferay.site.initializer.SiteInitializer;
 import com.liferay.site.insurance.site.initializer.internal.util.ImagesImporterUtil;
-import com.liferay.site.insurance.site.initializer.internal.util.StyleBookEntriesImporterUtil;
 import com.liferay.site.navigation.menu.item.layout.constants.SiteNavigationMenuItemTypeConstants;
 import com.liferay.site.navigation.model.SiteNavigationMenu;
 import com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService;
@@ -88,6 +87,7 @@ import com.liferay.site.navigation.type.SiteNavigationMenuItemType;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.model.StyleBookEntry;
 import com.liferay.style.book.service.StyleBookEntryLocalService;
+import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 
 import java.io.File;
 
@@ -359,6 +359,19 @@ public class InsuranceSiteInitializer implements SiteInitializer {
 			JSONObject journalArticleJSONObject =
 				JSONFactoryUtil.createJSONObject(content);
 
+			Map<Locale, String> titleMap = Collections.singletonMap(
+				LocaleUtil.getSiteDefault(),
+				journalArticleJSONObject.getString("name"));
+
+			Calendar calendar = CalendarFactoryUtil.getCalendar(
+				_serviceContext.getTimeZone());
+
+			int displayDateMonth = calendar.get(Calendar.MONTH);
+			int displayDateDay = calendar.get(Calendar.DAY_OF_MONTH);
+			int displayDateYear = calendar.get(Calendar.YEAR);
+			int displayDateHour = calendar.get(Calendar.HOUR_OF_DAY);
+			int displayDateMinute = calendar.get(Calendar.MINUTE);
+
 			List<String> assetTagNames = new ArrayList<>();
 
 			JSONArray assetTagNamesJSONArray =
@@ -373,26 +386,15 @@ public class InsuranceSiteInitializer implements SiteInitializer {
 			_serviceContext.setAssetTagNames(
 				assetTagNames.toArray(new String[0]));
 
-			Calendar calendar = CalendarFactoryUtil.getCalendar(
-				_serviceContext.getTimeZone());
-
-			int displayDateMonth = calendar.get(Calendar.MONTH);
-			int displayDateDay = calendar.get(Calendar.DAY_OF_MONTH);
-			int displayDateYear = calendar.get(Calendar.YEAR);
-			int displayDateHour = calendar.get(Calendar.HOUR_OF_DAY);
-			int displayDateMinute = calendar.get(Calendar.MINUTE);
-
 			_journalArticleLocalService.addArticle(
-				_serviceContext.getUserId(), _serviceContext.getScopeGroupId(),
+				null, _serviceContext.getUserId(),
+				_serviceContext.getScopeGroupId(),
 				journalFolderMap.getOrDefault(
 					journalArticleJSONObject.getString("folder"),
 					JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID),
 				JournalArticleConstants.CLASS_NAME_ID_DEFAULT, 0,
 				journalArticleJSONObject.getString("articleId"), false, 1,
-				Collections.singletonMap(
-					LocaleUtil.getSiteDefault(),
-					journalArticleJSONObject.getString("name")),
-				null,
+				titleMap, null, titleMap,
 				StringUtil.replace(
 					_read("journal_article.xml", url), "[$", "$]",
 					fileEntriesMap),
@@ -583,7 +585,7 @@ public class InsuranceSiteInitializer implements SiteInitializer {
 
 		File file = FileUtil.createTempFile(url.openStream());
 
-		StyleBookEntriesImporterUtil.importStyleBookEntries(
+		_styleBookEntryZipProcessor.importStyleBookEntries(
 			_serviceContext.getUserId(), _serviceContext.getScopeGroupId(),
 			file, false);
 	}
@@ -1097,6 +1099,9 @@ public class InsuranceSiteInitializer implements SiteInitializer {
 
 	@Reference
 	private StyleBookEntryLocalService _styleBookEntryLocalService;
+
+	@Reference
+	private StyleBookEntryZipProcessor _styleBookEntryZipProcessor;
 
 	@Reference
 	private ThemeLocalService _themeLocalService;

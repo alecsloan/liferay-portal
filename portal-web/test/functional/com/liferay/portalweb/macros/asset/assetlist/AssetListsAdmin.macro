@@ -124,6 +124,18 @@ definition {
 		PortletEntry.save();
 	}
 
+	macro addPersonalizedVariation {
+		Button.click(button = "New Personalized Variation");
+
+		SelectFrame(locator1 = "IFrame#MODAL_BODY");
+
+		LexiconTable.clickTableEntryTitle(tableEntry = "${segmentName}");
+
+		SelectFrameTop();
+
+		Alert.viewSuccessMessage();
+	}
+
 	macro addSelection {
 		Click(locator1 = "Button#NEW");
 
@@ -323,14 +335,6 @@ definition {
 			listEntry = "${assetListTitle}");
 	}
 
-	macro gotoPersonalizationMenuItem {
-		Click(locator1 = "AssetLists#PERSONALIZATION_DROPDOWN");
-
-		Click(
-			key_menuItem = "View Content",
-			locator1 = "AssetLists#PERSONALIZATION_DROPDOWN_ITEM");
-	}
-
 	macro openAssetListsAdmin {
 		Navigator.openWithAppendToBaseURL(urlAppend = "group/${siteURLKey}/~/control_panel/manage?p_p_id=com_liferay_asset_list_web_portlet_AssetListPortlet");
 	}
@@ -502,6 +506,10 @@ definition {
 	macro viewCollectionItems {
 		AssetListsAdmin.gotoEntry(assetListName = "${assetListTitle}");
 
+		if (isSet(personalizedVariation)) {
+			Navigator.gotoNavTab(navTab = "${personalizedVariation}");
+		}
+
 		WaitForLiferayEvent.initializeLiferayEventLog();
 
 		Click(locator1 = "AssetLists#ASSET_LIST_ELLIPSIS");
@@ -526,6 +534,10 @@ definition {
 		Click(
 			key_title = "${assetListTitle}",
 			locator1 = "AssetLists#ASSET_LIST_ENTRY_TITLE");
+
+		if (isSet(personalizedVariation)) {
+			Navigator.gotoNavTab(navTab = "${personalizedVariation}");
+		}
 
 		WaitForLiferayEvent.initializeLiferayEventLog();
 
@@ -554,6 +566,10 @@ definition {
 		Click(
 			key_title = "${assetListTitle}",
 			locator1 = "AssetLists#ASSET_LIST_ENTRY_TITLE");
+
+		if (isSet(personalizedVariation)) {
+			Navigator.gotoNavTab(navTab = "${personalizedVariation}");
+		}
 
 		WaitForLiferayEvent.initializeLiferayEventLog();
 

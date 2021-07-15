@@ -25,14 +25,14 @@ import com.liferay.fragment.renderer.FragmentRendererController;
 import com.liferay.fragment.renderer.FragmentRendererTracker;
 import com.liferay.fragment.util.configuration.FragmentEntryConfigurationParser;
 import com.liferay.frontend.token.definition.FrontendTokenDefinitionRegistry;
+import com.liferay.info.collection.provider.item.selector.criterion.RelatedInfoItemCollectionProviderItemSelectorCriterion;
 import com.liferay.info.item.InfoItemClassDetails;
 import com.liferay.info.item.InfoItemFormVariation;
 import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemDetailsProvider;
 import com.liferay.info.item.provider.InfoItemFormProvider;
 import com.liferay.info.item.provider.InfoItemFormVariationsProvider;
-import com.liferay.info.list.provider.item.selector.criterion.InfoItemRelatedListProviderItemSelectorCriterion;
-import com.liferay.info.list.provider.item.selector.criterion.InfoItemRelatedListProviderItemSelectorReturnType;
+import com.liferay.info.list.provider.item.selector.criterion.InfoListProviderItemSelectorReturnType;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.criteria.InfoItemItemSelectorReturnType;
@@ -155,20 +155,17 @@ public class ContentPageEditorLayoutPageTemplateDisplayContext
 		List<ItemSelectorCriterion> collectionItemSelectorCriterions =
 			super.getCollectionItemSelectorCriterions();
 
-		if (!_pageIsDisplayPage ||
-			!_ffLayoutContentPageEditorConfiguration.
-				relatedItemCollectionProvidersEnabled()) {
-
+		if (!_pageIsDisplayPage) {
 			return collectionItemSelectorCriterions;
 		}
 
-		InfoItemRelatedListProviderItemSelectorCriterion
-			infoItemRelatedListProviderItemSelectorCriterion =
-				new InfoItemRelatedListProviderItemSelectorCriterion();
+		RelatedInfoItemCollectionProviderItemSelectorCriterion
+			relatedInfoItemCollectionProviderItemSelectorCriterion =
+				new RelatedInfoItemCollectionProviderItemSelectorCriterion();
 
-		infoItemRelatedListProviderItemSelectorCriterion.
+		relatedInfoItemCollectionProviderItemSelectorCriterion.
 			setDesiredItemSelectorReturnTypes(
-				new InfoItemRelatedListProviderItemSelectorReturnType());
+				new InfoListProviderItemSelectorReturnType());
 
 		List<String> sourceItemTypes = new ArrayList<>();
 
@@ -194,13 +191,13 @@ public class ContentPageEditorLayoutPageTemplateDisplayContext
 			sourceItemTypes.add(AssetEntry.class.getName());
 		}
 
-		infoItemRelatedListProviderItemSelectorCriterion.setSourceItemTypes(
-			sourceItemTypes);
+		relatedInfoItemCollectionProviderItemSelectorCriterion.
+			setSourceItemTypes(sourceItemTypes);
 
 		return ListUtil.concat(
 			collectionItemSelectorCriterions,
 			Collections.singletonList(
-				infoItemRelatedListProviderItemSelectorCriterion));
+				relatedInfoItemCollectionProviderItemSelectorCriterion));
 	}
 
 	private JSONObject _addDisplayPageMappingFields(

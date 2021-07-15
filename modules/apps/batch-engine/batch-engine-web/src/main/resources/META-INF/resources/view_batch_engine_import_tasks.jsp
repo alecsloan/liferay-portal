@@ -35,8 +35,18 @@ BatchEngineImportTaskDisplayContext batchEngineImportTaskDisplayContext = (Batch
 			modelVar="batchEngineImportTask"
 		>
 			<liferay-ui:search-container-column-text
+				name="user"
+				value="<%= PortalUtil.getUserEmailAddress(batchEngineImportTask.getUserId()) %>"
+			/>
+
+			<liferay-ui:search-container-column-text
 				name="operation"
 				property="operation"
+			/>
+
+			<liferay-ui:search-container-column-text
+				name="entity"
+				value="<%= batchEngineImportTaskDisplayContext.getSimpleName(batchEngineImportTask.getClassName()) %>"
 			/>
 
 			<liferay-ui:search-container-column-text
@@ -49,10 +59,10 @@ BatchEngineImportTaskDisplayContext batchEngineImportTaskDisplayContext = (Batch
 				property="createDate"
 			/>
 
-			<liferay-ui:search-container-column-text
+			<liferay-ui:search-container-column-jsp
 				cssClass="important table-cell-ws-nowrap"
 				name="status"
-				property="executeStatus"
+				path="/batch_engine_import_task_status.jsp"
 			/>
 		</liferay-ui:search-container-row>
 

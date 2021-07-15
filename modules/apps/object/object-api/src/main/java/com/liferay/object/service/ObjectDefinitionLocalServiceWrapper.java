@@ -34,12 +34,12 @@ public class ObjectDefinitionLocalServiceWrapper
 	}
 
 	@Override
-	public com.liferay.object.model.ObjectDefinition addObjectDefinition(
+	public com.liferay.object.model.ObjectDefinition addCustomObjectDefinition(
 			long userId, String name,
 			java.util.List<com.liferay.object.model.ObjectField> objectFields)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _objectDefinitionLocalService.addObjectDefinition(
+		return _objectDefinitionLocalService.addCustomObjectDefinition(
 			userId, name, objectFields);
 	}
 
@@ -59,6 +59,31 @@ public class ObjectDefinitionLocalServiceWrapper
 
 		return _objectDefinitionLocalService.addObjectDefinition(
 			objectDefinition);
+	}
+
+	@Override
+	public com.liferay.object.model.ObjectDefinition
+			addOrUpdateSystemObjectDefinition(
+				long companyId,
+				com.liferay.object.system.SystemObjectDefinitionMetadata
+					systemObjectDefinitionMetadata)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _objectDefinitionLocalService.addOrUpdateSystemObjectDefinition(
+			companyId, systemObjectDefinitionMetadata);
+	}
+
+	@Override
+	public com.liferay.object.model.ObjectDefinition addSystemObjectDefinition(
+			long userId, String dbTableName, String name,
+			String pkObjectFieldDBColumnName, String pkObjectFieldName,
+			int version,
+			java.util.List<com.liferay.object.model.ObjectField> objectFields)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _objectDefinitionLocalService.addSystemObjectDefinition(
+			userId, dbTableName, name, pkObjectFieldDBColumnName,
+			pkObjectFieldName, version, objectFields);
 	}
 
 	/**
@@ -85,6 +110,13 @@ public class ObjectDefinitionLocalServiceWrapper
 
 		return _objectDefinitionLocalService.createPersistedModel(
 			primaryKeyObj);
+	}
+
+	@Override
+	public void deleteCompanyObjectDefinitions(long companyId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_objectDefinitionLocalService.deleteCompanyObjectDefinitions(companyId);
 	}
 
 	/**
@@ -257,6 +289,14 @@ public class ObjectDefinitionLocalServiceWrapper
 			objectDefinitionId);
 	}
 
+	@Override
+	public com.liferay.object.model.ObjectDefinition fetchObjectDefinition(
+		long companyId, String name) {
+
+		return _objectDefinitionLocalService.fetchObjectDefinition(
+			companyId, name);
+	}
+
 	/**
 	 * Returns the object definition with the matching UUID and company.
 	 *
@@ -277,6 +317,13 @@ public class ObjectDefinitionLocalServiceWrapper
 		getActionableDynamicQuery() {
 
 		return _objectDefinitionLocalService.getActionableDynamicQuery();
+	}
+
+	@Override
+	public java.util.List<com.liferay.object.model.ObjectDefinition>
+		getCustomObjectDefinitions(int status) {
+
+		return _objectDefinitionLocalService.getCustomObjectDefinitions(status);
 	}
 
 	@Override
@@ -388,9 +435,27 @@ public class ObjectDefinitionLocalServiceWrapper
 	}
 
 	@Override
-	public void undeployObjectDefinition(long objectDefinitionId) {
+	public java.util.List<com.liferay.object.model.ObjectDefinition>
+		getSystemObjectDefinitions() {
+
+		return _objectDefinitionLocalService.getSystemObjectDefinitions();
+	}
+
+	@Override
+	public com.liferay.object.model.ObjectDefinition
+			publishCustomObjectDefinition(long userId, long objectDefinitionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _objectDefinitionLocalService.publishCustomObjectDefinition(
+			userId, objectDefinitionId);
+	}
+
+	@Override
+	public void undeployObjectDefinition(
+		com.liferay.object.model.ObjectDefinition objectDefinition) {
+
 		_objectDefinitionLocalService.undeployObjectDefinition(
-			objectDefinitionId);
+			objectDefinition);
 	}
 
 	/**

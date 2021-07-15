@@ -3362,7 +3362,7 @@ public class JenkinsResultsParserUtil {
 					"Downloading ", url.toString(), " to ",
 					getCanonicalPath(file)));
 
-			FileUtils.copyURLToFile(url, file);
+			FileUtils.copyURLToFile(url, file, 10000, 10000);
 		}
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
@@ -3647,7 +3647,7 @@ public class JenkinsResultsParserUtil {
 
 				if (expectResponse && (bytes == 0) && (i < 1)) {
 					System.out.println(
-						"Could not find response, retrying request");
+						"Unable to get response, retrying request");
 
 					continue;
 				}
@@ -3901,9 +3901,9 @@ public class JenkinsResultsParserUtil {
 
 					@Override
 					public FileVisitResult visitFile(
-						Path path, BasicFileAttributes attributes) {
+						Path path, BasicFileAttributes basicFileAttributes) {
 
-						if (attributes.isSymbolicLink()) {
+						if (basicFileAttributes.isSymbolicLink()) {
 							return FileVisitResult.CONTINUE;
 						}
 

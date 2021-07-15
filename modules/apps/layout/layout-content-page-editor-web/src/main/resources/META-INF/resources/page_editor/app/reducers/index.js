@@ -20,7 +20,6 @@ import fragmentEntryLinksReducer from './fragmentEntryLinksReducer';
 import fragmentsReducer from './fragmentsReducer';
 import languageIdReducer from './languageIdReducer';
 import layoutDataReducer from './layoutDataReducer';
-import mappedInfoItemsReducer from './mappedInfoItemsReducer';
 import mappingFieldsReducer from './mappingFieldsReducer';
 import masterLayoutReducer from './masterLayoutReducer';
 import networkReducer from './networkReducer';
@@ -30,7 +29,6 @@ import selectedViewportSizeReducer from './selectedViewportSizeReducer';
 import showResolvedCommentsReducer from './showResolvedCommentsReducer';
 import sidebarReducer from './sidebarReducer';
 import undoReducer from './undoReducer';
-import widgetsReducer from './widgetsReducer';
 
 const combinedReducer = (state, action) =>
 	Object.entries({
@@ -40,7 +38,6 @@ const combinedReducer = (state, action) =>
 		fragments: fragmentsReducer,
 		languageId: languageIdReducer,
 		layoutData: layoutDataReducer,
-		mappedInfoItems: mappedInfoItemsReducer,
 		mappingFields: mappingFieldsReducer,
 		masterLayout: masterLayoutReducer,
 		network: networkReducer,
@@ -50,7 +47,6 @@ const combinedReducer = (state, action) =>
 		selectedViewportSize: selectedViewportSizeReducer,
 		showResolvedComments: showResolvedCommentsReducer,
 		sidebar: sidebarReducer,
-		widgets: widgetsReducer,
 	}).reduce(
 		(nextState, [namespace, reducer]) => ({
 			...nextState,

@@ -11,11 +11,38 @@ definition {
 			locator1 = "FormFields#FIELD_ADD_SPECIFIC");
 	}
 
+	macro addRichTextContent {
+		SelectFrame.selectFrameNoLoading(
+			key_fieldLabel = "${fieldLabel}",
+			locator1 = "FormFields#RICH_TEXT_CONTENT");
+
+		Type(
+			locator1 = "FormFields#PREDEFINED_VALUE_BODY",
+			value1 = "${content}");
+
+		SelectFrame(value1 = "relative=top");
+	}
+
 	macro addSingleSelectionOption {
 		Type(
 			key_rowNumber = "${optionValue}",
 			locator1 = "FormFields#OPTIONS_OPTION_VALUE_FIELD",
 			value1 = "${optionName}");
+	}
+
+	macro addTableInBodyParagraph {
+		Click.clickNoMouseOver(
+			key_titleName = "Table",
+			locator1 = "FormFields#TOOLBAR_ANY_ITEM_BUTTON");
+
+		Click(locator1 = "CKEditor#OK_BUTTON");
+	}
+
+	macro assertFieldsGroup {
+		AssertVisible(
+			key_fieldFieldLabel = "${fieldFieldLabel}",
+			key_fieldsGroupLabel = "${fieldGroupLabel}",
+			locator1 = "FormFields#FIELD_GROUP");
 	}
 
 	macro assertFieldsNotVisibleInFieldGroup {
@@ -85,6 +112,20 @@ definition {
 			locator1 = "FormFields#DELETE_OPTION_FROM_MULTIPLE_SELECTION");
 	}
 
+	macro deleteTextWithBackspaceInBodyParagraph {
+		Click(
+			key_fieldName = "Paragraph",
+			locator1 = "FormFields#PARAGRAPH_BODY_TEXT_CONTENT");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+		SelectFieldText(locator1 = "CKEditor#BODY");
+
+		KeyPress(
+			locator1 = "CKEditor#BODY",
+			value1 = "\BACK_SPACE");
+	}
+
 	macro disableCheckbox {
 		if (IsChecked(locator1 = "FormFields#CHECKBOX", key_fieldName = "${fieldName}")) {
 			Click(
@@ -140,6 +181,20 @@ definition {
 			locator1 = "FormFields#COLOR_SWATCH_ITEM");
 	}
 
+	macro editColorField {
+		Type(
+			key_fieldName = "${fieldName}",
+			key_rowNumber = "${rowNumber}",
+			locator1 = "FormFields#COLOR_FIELD_BY_ROW",
+			value1 = "${colorValue}");
+
+		FormFields.viewColorField(
+			colorValue = "${colorValue}",
+			fieldLabel = "${fieldLabel}",
+			fieldName = "${fieldName}",
+			rowNumber = "${rowNumber}");
+	}
+
 	macro editConfirmationFieldText {
 		AssertElementPresent.assertVisible(
 			key_fieldName = "${fieldName}",
@@ -164,6 +219,29 @@ definition {
 			key_index = "${index}",
 			locator1 = "FormFields#PUBLISHED_FORM_FIELD_BY_INDEX",
 			value1 = "${key_value}");
+	}
+
+	macro editDateCalendar {
+		Click(locator1 = "FormFields#DATE_CALENDAR");
+
+		Select(
+			key_valueName = "year",
+			locator1 = "FormFields#DATE_CALENDAR_FIELD",
+			value1 = "${valueYear}");
+
+		Select(
+			key_valueName = "month",
+			locator1 = "FormFields#DATE_CALENDAR_FIELD",
+			value1 = "${valueMonth}");
+
+		Click(
+			key_valueDay = "${valueDay}",
+			locator1 = "FormFields#DATE_CALENDAR_DAY");
+
+		AssertTextEquals(
+			key_fieldName = "${fieldName}",
+			locator1 = "FormFields#DATE_FIELD",
+			value1 = "${fieldValue}");
 	}
 
 	macro editDatePredefinedValue {
@@ -306,6 +384,12 @@ definition {
 
 		Type(
 			locator1 = "FormFields#PASSWORD_FIELD",
+			value1 = "${fieldValue}");
+	}
+
+	macro editPlaceholderField {
+		Type(
+			locator1 = "FormFields#SIDEBAR_BASIC_PLACEHOLDER",
 			value1 = "${fieldValue}");
 	}
 
@@ -532,9 +616,11 @@ definition {
 	}
 
 	macro enableMultipleSelectionCheckbox {
-		var key_rowNumber = "${rowNumber}";
-		var key_optionValue = "${optionValue}";
-		var key_fieldName = "${fieldName}";
+		Click(
+			key_fieldName = "${fieldName}",
+			key_optionValue = "${optionValue}",
+			key_rowNumber = "${rowNumber}",
+			locator1 = "FormFields#SELECT_SINGLE_SELECTION_ROW_OPTION");
 
 		Check.checkToggleSwitch(
 			key_fieldName = "${fieldName}",
@@ -559,6 +645,34 @@ definition {
 		var fieldName = selenium.getElementValue("FormFields#FIELD_NAME_EDIT");
 
 		return "${fieldName}";
+	}
+
+	macro moveFieldToPosition {
+		if (isSet(formPageNumber)) {
+			key_formPageNumber = "${formPageNumber}";
+		}
+		else {
+			key_formPageNumber = "0";
+		}
+
+		if (isSet(fieldColumnNumber)) {
+			key_fieldColumnNumber = "${fieldColumnNumber}";
+		}
+		else {
+			key_fieldColumnNumber = "0";
+		}
+
+		if (isSet(fieldRowNumber)) {
+			key_fieldRowNumber = "${fieldRowNumber}";
+		}
+		else {
+			key_fieldRowNumber = "0";
+		}
+
+		DragAndDrop.javaScriptDragAndDropToObject(
+			key_fieldLabel = "${fieldLabel}",
+			locator1 = "FormFields#LABEL",
+			locator2 = "Form#ADD_FIELD_SPECIFIC_POSITION");
 	}
 
 	macro moveGridOptionsRow {
@@ -627,6 +741,22 @@ definition {
 			locator1 = "FormViewBuilder#SELECT_LANGUAGE_AT_APP_DEPLOYED");
 	}
 
+	macro resizeField {
+		Form.gotoFieldContainer(fieldName = "${fieldName}");
+
+		DragAndDrop.dragAndDrop(
+			locator1 = "FormFields#FIELD_HANDLE_RIGHT",
+			value1 = "${moveForce},0");
+	}
+
+	macro resizeFieldGroup {
+		Form.gotoFieldContainer(fieldName = "${fieldName}");
+
+		DragAndDrop.dragAndDrop(
+			locator1 = "FormFields#FIELD_GROUP_HANDLE_RIGHT",
+			value1 = "${moveForce},0");
+	}
+
 	macro selectAutoCompleteOption {
 		var key_autocompleteOption = "${autocompleteOption}";
 
@@ -638,6 +768,23 @@ definition {
 			key_checkboxOption = "${checkboxOption}",
 			key_fieldName = "${fieldName}",
 			locator1 = "FormFields#CHECKBOX_OPTION_LABEL");
+	}
+
+	macro selectColorFromColorPicker {
+		Click(
+			key_fieldLabel = "${fieldLabel}",
+			key_rowNumber = "${rowNumber}",
+			locator1 = "FormFields#COLOR_PICKER_BY_ROW");
+
+		Click(
+			key_colorSwatchItem = "${colorValue}",
+			locator1 = "FormFields#COLOR_SWATCH_ITEM");
+
+		FormFields.viewColorField(
+			colorValue = "${colorValue}",
+			fieldLabel = "${fieldLabel}",
+			fieldName = "${fieldName}",
+			rowNumber = "${rowNumber}");
 	}
 
 	macro selectDataProviderOutputType {
@@ -899,6 +1046,20 @@ definition {
 			locator1 = "FormFields#CHECKBOX");
 	}
 
+	macro viewColorField {
+		AssertTextEquals(
+			key_fieldName = "${fieldName}",
+			key_rowNumber = "${rowNumber}",
+			locator1 = "FormFields#COLOR_FIELD_BY_ROW",
+			value1 = "${colorValue}");
+
+		AssertElementPresent(
+			key_colorValue = "${colorValue}",
+			key_fieldLabel = "${fieldLabel}",
+			key_rowNumber = "${rowNumber}",
+			locator1 = "FormFields#COLOR_FROM_COLOR_PICKER_BY_ROW");
+	}
+
 	macro viewColorLabel {
 		AssertTextEquals.assertText(
 			key_fieldLabel = "${fieldLabel}",
@@ -1009,11 +1170,41 @@ definition {
 			locator1 = "FormFields#FIELD");
 	}
 
+	macro viewFieldByIndex {
+		AssertElementPresent(
+			key_fieldLabel = "${fieldLabel}",
+			key_formPageNumber = "${formPageNumber}",
+			key_index = "${index}",
+			locator1 = "FormFields#FIELD_LABEL_BY_INDEX");
+	}
+
+	macro viewFieldDisabled {
+		AssertNotEditable(
+			key_fieldName = "${fieldName}",
+			locator1 = "FormFields#TEXT_FIELD");
+	}
+
+	macro viewFieldDropdownItem {
+		WaitForElementPresent(
+			key_itemName = "${itemName}",
+			locator1 = "FormFields#FIELD_DROPDOWN_ITEM");
+
+		AssertElementPresent(
+			key_itemName = "${itemName}",
+			locator1 = "FormFields#FIELD_DROPDOWN_ITEM");
+	}
+
 	macro viewFieldHelpText {
 		AssertTextEquals(
 			key_fieldName = "${fieldName}",
 			locator1 = "FormFields#HELP_TEXT",
 			value1 = "${fieldHelpText}");
+	}
+
+	macro viewFieldHidden {
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			locator1 = "FormFields#FIELD_HIDDEN");
 	}
 
 	macro viewFieldLabel {
@@ -1058,11 +1249,43 @@ definition {
 		}
 	}
 
+	macro viewFieldNotRequired {
+		AssertElementNotPresent(
+			key_fieldFieldLabel = "${fieldLabel}",
+			locator1 = "FormFields#FIELD_REQUIRED");
+	}
+
+	macro viewFieldNotVisible {
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			locator1 = "FormFields#FIELD_HIDDEN");
+	}
+
 	macro viewFieldPlaceholderText {
 		AssertElementPresent(
 			key_fieldName = "${fieldName}",
 			key_placeHolder = "${placeHolder}",
 			locator1 = "FormFields#TEXT_FIELD_PLACEHOLDER");
+	}
+
+	macro viewFieldPosition {
+		if (isSet(formPageNumber)) {
+			key_formPageNumber = "${formPageNumber}";
+		}
+		else {
+			key_formPageNumber = "0";
+		}
+
+		if (isSet(fieldPositionNumber)) {
+			key_fieldPositionNumber = "${fieldPositionNumber}";
+		}
+		else {
+			key_fieldPositionNumber = "0";
+		}
+
+		key_fieldName = "${fieldLabel}";
+
+		AssertElementPresent(locator1 = "Form#FIELD_BODY_IN_SPECIFIC_POSITION");
 	}
 
 	macro viewFieldPredefinedValue {
@@ -1106,6 +1329,35 @@ definition {
 		}
 	}
 
+	macro viewFieldRequired {
+		AssertElementPresent(
+			key_fieldFieldLabel = "${fieldLabel}",
+			locator1 = "FormFields#FIELD_REQUIRED");
+	}
+
+	macro viewFieldSize {
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			key_size = "${size}",
+			locator1 = "FormFields#FIELD_SIZE");
+	}
+
+	macro viewFieldSizeNotEquals {
+		AssertElementNotPresent(
+			key_fieldName = "${fieldName}",
+			key_size = "${size}",
+			locator1 = "FormFields#FIELD_SIZE");
+	}
+
+	macro viewFieldsSameRow {
+		for (var fieldName : list "${fieldNames}") {
+			AssertElementPresent(
+				key_fieldName = "${fieldName}",
+				key_fieldRowNumber = "${fieldRowNumber}",
+				locator1 = "FormFields#FIELD_ON_ROW");
+		}
+	}
+
 	macro viewFieldValidationErrorMessage {
 		var key_fieldName = "${fieldName}";
 
@@ -1116,6 +1368,12 @@ definition {
 		AssertTextEquals(
 			locator1 = "Message#ERROR_SPECIFIC_FORM_FIELD_REQUIRED",
 			value1 = "${fieldValidationErrorMessage}");
+	}
+
+	macro viewFieldVisible {
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			locator1 = "FormFields#FIELD_VISIBLE");
 	}
 
 	macro viewGridOptionNotPresent {
@@ -1148,6 +1406,14 @@ definition {
 			value1 = "${fieldValue}");
 	}
 
+	macro viewNumericFieldValue {
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			key_fieldValue = "${value}",
+			key_rowNumber = "${rowNumber}",
+			locator1 = "FormFields#NUMBER_FIELD_VALUE_ROW");
+	}
+
 	macro viewOptionColumnsName {
 		AssertElementPresent(
 			key_fieldName = "${fieldTitle}",
@@ -1162,6 +1428,21 @@ definition {
 			key_optionName = "${optionName}",
 			key_rowNumber = "${rowNumber}",
 			locator1 = "FormFields#GRID_OPTIONS_OPTION_ROW_NAME");
+	}
+
+	macro viewOptionRowNameNotPresent {
+		AssertElementNotPresent(
+			key_fieldName = "${fieldName}",
+			key_optionName = "${optionName}",
+			key_rowNumber = "${rowNumber}",
+			locator1 = "FormFields#GRID_OPTIONS_OPTION_ROW_NAME");
+	}
+
+	macro viewOptionSingleSelection {
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			key_optionName = "${optionName}",
+			locator1 = "FormFields#FIELD_TARGET_LABEL_AND_BODY_OPTION");
 	}
 
 	macro viewOptionsPositionHorizontal {
@@ -1239,6 +1520,13 @@ definition {
 			locator1 = "FormFields#PARAGRAPH_SPECIFIC_FIELD_BY_BODY");
 	}
 
+	macro viewParagraphContentNotEquals {
+		AssertTextNotEquals(
+			key_fieldName = "Paragraph",
+			locator1 = "FormFields#PARAGRAPH_BODY_TEXT_CONTENT",
+			value1 = "${fieldValue}");
+	}
+
 	macro viewParagraphField {
 		if (!(isSet(fieldName))) {
 			var key_fieldName = "${fieldTitle}";
@@ -1269,6 +1557,12 @@ definition {
 		}
 	}
 
+	macro viewParagraphFieldNotPresent {
+		key_fieldName = "${fieldTitle}";
+
+		AssertElementNotPresent(locator1 = "FormFields#PARAGRAPH_TITLE");
+	}
+
 	macro viewPredefinedValueDropdownContent {
 		AssertElementPresent(
 			key_textContent = "${key_textContent}",
@@ -1280,6 +1574,12 @@ definition {
 			key_fieldLabel = "${fieldLabel}",
 			key_index = "${index}",
 			locator1 = "FormFields#PUBLISHED_FORM_FIELD_BY_INDEX");
+	}
+
+	macro viewPublishedFormFieldSeparatorByIndex {
+		AssertElementPresent(
+			key_index = "${index}",
+			locator1 = "FormFields#PUBLISHED_FORM_FIELD_SEPARATOR_BY_INDEX");
 	}
 
 	macro viewRadioLabel {
@@ -1304,12 +1604,25 @@ definition {
 		AssertVisible(locator1 = "FormFields#FIELD_ADD_DUPLICATE");
 	}
 
+	macro viewRepeatableFieldGroup {
+		AssertElementPresent(
+			key_repeatableFieldNumber = "${repeatableFieldNumber}",
+			locator1 = "FormFields#FIELD_REPEATABLE_FIELD_GROUP");
+	}
+
 	macro viewRepeatableFieldHelpText {
 		AssertTextEquals(
 			key_fieldName = "${fieldName}",
 			key_repeatableFieldNumber = "${repeatableFieldNumber}",
 			locator1 = "FormFields#REPEATABLE_HELP_TEXT",
 			value1 = "${fieldHelpText}");
+	}
+
+	macro viewRepeatableFieldInFieldGroup {
+		AssertElementPresent(
+			key_fieldName = "${fieldName}",
+			key_repeatableFieldNumber = "${repeatableFieldNumber}",
+			locator1 = "FormFields#FIELD_REPEATABLE_FIELD_IN_FIELD_GROUP");
 	}
 
 	macro viewRepeatableFields {
@@ -1399,8 +1712,27 @@ definition {
 			locator1 = "Icon#ASTERISK_DATE_FIELD");
 	}
 
+	macro viewRequiredAsteriskDataFieldNotPresent {
+		AssertElementNotPresent(
+			key_fieldFieldLabel = "${fieldFieldLabel}",
+			locator1 = "Icon#ASTERISK_DATE_FIELD");
+	}
+
 	macro viewRequiredAsteriskNotPresent {
 		AssertElementNotPresent(locator1 = "Icon#ASTERISK");
+	}
+
+	macro viewRichTextPredefinedValue {
+		SelectFrame.selectFrameNoLoading(
+			key_fieldLabel = "Rich Text",
+			locator1 = "CKEditor#BODY_FIELD_IFRAME_WEB_CONTENT_ARTICLE");
+
+		AssertTextEquals(
+			key_fieldName = "Rich Text",
+			locator1 = "CKEditor#BODY",
+			value1 = "${fieldValue}");
+
+		SelectFrame(value1 = "relative=top");
 	}
 
 	macro viewRichTextValue {
@@ -1480,11 +1812,29 @@ definition {
 			locator1 = "FormFields#SELECT_FIELD");
 	}
 
+	macro viewSeparator {
+		AssertTextEquals(
+			key_fieldLabel = "${fieldLabel}",
+			locator1 = "FormFields#LABEL",
+			value1 = "${fieldLabel}");
+
+		AssertElementPresent(
+			key_fieldLabel = "${fieldLabel}",
+			locator1 = "FormFields#SEPARATOR_LINE");
+	}
+
 	macro viewSingleSelectionOption {
 		AssertElementPresent(
 			key_optionLabel = "${optionLabel}",
 			key_position = "${optionPosition}",
 			locator1 = "FormFields#SELECT_ASSERT_RADIO_OPTION_ORDER");
+	}
+
+	macro viewSourceElement {
+		key_value = "${value}";
+		key_elementName = "${elementName}";
+
+		AssertElementPresent(locator1 = "FormFields#ANY_SOURCE_ELEMENT");
 	}
 
 	macro viewSwitcher {
@@ -1519,6 +1869,14 @@ definition {
 		var key_optionValue = "${optionValue}";
 
 		AssertElementPresent(locator1 = "FormFields#SWITCHER_OPTION_IN_FIELD");
+	}
+
+	macro viewTableNotPresent {
+		AssertElementNotPresent(
+			key_fieldName = "liferay-ddm-form-field-paragraph-text",
+			locator1 = "FormFields#PARAGRAPH_BODY_CONTENT_TABLE");
+
+		SelectFrame(value1 = "relative=top");
 	}
 
 	macro viewTextField {

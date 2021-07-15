@@ -2,12 +2,19 @@
 <head>
 <title>WorkflowMetricsProcessListView</title>
 </head>
+
 <body>
-<table cellpadding="1" cellspacing="1" border="1">
+<table border="1" cellpadding="1" cellspacing="1">
 <thead>
 <tr><td rowspan="1" colspan="3">WorkflowMetricsProcessListView</td></tr>
 </thead>
+
 <tbody>
+<tr>
+	<td>DELETE_SLA_MESSAGE</td>
+	<td>//p[contains(text(),'Deleting SLAs will reflect on report data. This action cannot be undone. Are you sure you want to permanently delete it?')]</td>
+	<td></td>
+</tr>
 <tr>
 	<td>METRICS_WORKFLOW_SEARCH_BAR</td>
 	<td>//input[@placeholder='Search for']</td>
@@ -16,6 +23,11 @@
 <tr>
 	<td>METRICS_WORKFLOW_SEARCH_BAR_BUTTON</td>
 	<td>//span[contains(@class,'input-group-inset-item')]//button[contains(@class,'btn')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>METRICS_WORKFLOW_TOOLTIP_MESSAGE</td>
+	<td>//span[text()='${key_sectionName}']/following-sibling::span[contains(@title, '${key_tooltipMessage}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -49,14 +61,14 @@
 	<td></td>
 </tr>
 <tr>
-    <td>METRICS_OVERDUE_ITEMS_TABLE_ROW</td>
-    <td>//tr[${key_rowNumber}]//td[2]</td>
+	<td>METRICS_OVERDUE_ITEMS_TABLE_ROW</td>
+	<td>//tr[${key_rowNumber}]//td[2]</td>
 	<td></td>
 </tr>
 <tr>
-    <td>ANY_ARROW_ORDER</td>
-    <td>//*[contains(@class, 'lexicon-icon lexicon-icon-order-arrow-${key_value}')]</td>
-    <td></td>
+	<td>ANY_ARROW_ORDER</td>
+	<td>//*[contains(@class, 'lexicon-icon lexicon-icon-order-arrow-${key_value}')]</td>
+	<td></td>
 </tr>
 <tr>
 	<td>CLEAR_SEARCH</td>
@@ -74,14 +86,24 @@
 	<td></td>
 </tr>
 <tr>
-    <td>ASSERT_PERCENTAGE_CARDS</td>
-    <td>//span[contains(.,'${key_cardName}')]/../..//span[contains(@class,'xsmall') and contains(text(),'%')]</td>
-    <td></td>
+	<td>ASSERT_PERCENTAGE_CARDS</td>
+	<td>//span[contains(.,'${key_cardName}')]/../..//span[contains(@class,'xsmall') and contains(text(),'%')]</td>
+	<td></td>
 </tr>
 <tr>
-    <td>ENTER_PROCESS_METRICS</td>
-    <td>//td[contains(@class,'table-title')]//a[contains(text(),'${key_processName}')]</td>
-    <td></td>
+	<td>ENTER_PROCESS_METRICS</td>
+	<td>//td[contains(@class,'table-title')]//a[contains(text(),'${key_processName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ASSERT_SLA_INFO</td>
+	<td>//th[contains(text(),'${key_columnName}')]/../../..//td[contains(text(),'${key_fieldName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ASSERT_SLA_NAME</td>
+	<td>//th[contains(text(),'SLA Name')]/../../..//a[contains(text(),'${key_slaName}')]</td>
+	<td></td>
 </tr>
 </tbody>
 </table>
