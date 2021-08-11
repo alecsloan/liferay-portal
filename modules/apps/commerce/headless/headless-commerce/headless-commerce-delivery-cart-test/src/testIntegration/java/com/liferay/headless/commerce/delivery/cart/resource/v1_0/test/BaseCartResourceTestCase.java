@@ -401,22 +401,27 @@ public abstract class BaseCartResourceTestCase {
 	}
 
 	@Test
-	public void testGetChannelCartsPage() throws Exception {
-		Page<Cart> page = cartResource.getChannelCartsPage(
-			testGetChannelCartsPage_getChannelId(), Pagination.of(1, 2));
+	public void testGetChannelAccountCartsPage() throws Exception {
+		Page<Cart> page = cartResource.getChannelAccountCartsPage(
+			testGetChannelAccountCartsPage_getAccountId(),
+			testGetChannelAccountCartsPage_getChannelId(), Pagination.of(1, 2));
 
 		Assert.assertEquals(0, page.getTotalCount());
 
-		Long channelId = testGetChannelCartsPage_getChannelId();
+		Long accountId = testGetChannelAccountCartsPage_getAccountId();
+		Long irrelevantAccountId =
+			testGetChannelAccountCartsPage_getIrrelevantAccountId();
+		Long channelId = testGetChannelAccountCartsPage_getChannelId();
 		Long irrelevantChannelId =
-			testGetChannelCartsPage_getIrrelevantChannelId();
+			testGetChannelAccountCartsPage_getIrrelevantChannelId();
 
-		if (irrelevantChannelId != null) {
-			Cart irrelevantCart = testGetChannelCartsPage_addCart(
-				irrelevantChannelId, randomIrrelevantCart());
+		if ((irrelevantAccountId != null) && (irrelevantChannelId != null)) {
+			Cart irrelevantCart = testGetChannelAccountCartsPage_addCart(
+				irrelevantAccountId, irrelevantChannelId,
+				randomIrrelevantCart());
 
-			page = cartResource.getChannelCartsPage(
-				irrelevantChannelId, Pagination.of(1, 2));
+			page = cartResource.getChannelAccountCartsPage(
+				irrelevantAccountId, irrelevantChannelId, Pagination.of(1, 2));
 
 			Assert.assertEquals(1, page.getTotalCount());
 
@@ -425,11 +430,14 @@ public abstract class BaseCartResourceTestCase {
 			assertValid(page);
 		}
 
-		Cart cart1 = testGetChannelCartsPage_addCart(channelId, randomCart());
+		Cart cart1 = testGetChannelAccountCartsPage_addCart(
+			accountId, channelId, randomCart());
 
-		Cart cart2 = testGetChannelCartsPage_addCart(channelId, randomCart());
+		Cart cart2 = testGetChannelAccountCartsPage_addCart(
+			accountId, channelId, randomCart());
 
-		page = cartResource.getChannelCartsPage(channelId, Pagination.of(1, 2));
+		page = cartResource.getChannelAccountCartsPage(
+			accountId, channelId, Pagination.of(1, 2));
 
 		Assert.assertEquals(2, page.getTotalCount());
 
@@ -443,24 +451,30 @@ public abstract class BaseCartResourceTestCase {
 	}
 
 	@Test
-	public void testGetChannelCartsPageWithPagination() throws Exception {
-		Long channelId = testGetChannelCartsPage_getChannelId();
+	public void testGetChannelAccountCartsPageWithPagination()
+		throws Exception {
 
-		Cart cart1 = testGetChannelCartsPage_addCart(channelId, randomCart());
+		Long accountId = testGetChannelAccountCartsPage_getAccountId();
+		Long channelId = testGetChannelAccountCartsPage_getChannelId();
 
-		Cart cart2 = testGetChannelCartsPage_addCart(channelId, randomCart());
+		Cart cart1 = testGetChannelAccountCartsPage_addCart(
+			accountId, channelId, randomCart());
 
-		Cart cart3 = testGetChannelCartsPage_addCart(channelId, randomCart());
+		Cart cart2 = testGetChannelAccountCartsPage_addCart(
+			accountId, channelId, randomCart());
 
-		Page<Cart> page1 = cartResource.getChannelCartsPage(
-			channelId, Pagination.of(1, 2));
+		Cart cart3 = testGetChannelAccountCartsPage_addCart(
+			accountId, channelId, randomCart());
+
+		Page<Cart> page1 = cartResource.getChannelAccountCartsPage(
+			accountId, channelId, Pagination.of(1, 2));
 
 		List<Cart> carts1 = (List<Cart>)page1.getItems();
 
 		Assert.assertEquals(carts1.toString(), 2, carts1.size());
 
-		Page<Cart> page2 = cartResource.getChannelCartsPage(
-			channelId, Pagination.of(2, 2));
+		Page<Cart> page2 = cartResource.getChannelAccountCartsPage(
+			accountId, channelId, Pagination.of(2, 2));
 
 		Assert.assertEquals(3, page2.getTotalCount());
 
@@ -468,25 +482,42 @@ public abstract class BaseCartResourceTestCase {
 
 		Assert.assertEquals(carts2.toString(), 1, carts2.size());
 
-		Page<Cart> page3 = cartResource.getChannelCartsPage(
-			channelId, Pagination.of(1, 3));
+		Page<Cart> page3 = cartResource.getChannelAccountCartsPage(
+			accountId, channelId, Pagination.of(1, 3));
 
 		assertEqualsIgnoringOrder(
 			Arrays.asList(cart1, cart2, cart3), (List<Cart>)page3.getItems());
 	}
 
-	protected Cart testGetChannelCartsPage_addCart(Long channelId, Cart cart)
+	protected Cart testGetChannelAccountCartsPage_addCart(
+			Long accountId, Long channelId, Cart cart)
 		throws Exception {
 
-		return cartResource.postChannelCart(channelId, cart);
-	}
-
-	protected Long testGetChannelCartsPage_getChannelId() throws Exception {
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
 	}
 
-	protected Long testGetChannelCartsPage_getIrrelevantChannelId()
+	protected Long testGetChannelAccountCartsPage_getAccountId()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected Long testGetChannelAccountCartsPage_getIrrelevantAccountId()
+		throws Exception {
+
+		return null;
+	}
+
+	protected Long testGetChannelAccountCartsPage_getChannelId()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected Long testGetChannelAccountCartsPage_getIrrelevantChannelId()
 		throws Exception {
 
 		return null;
