@@ -14,9 +14,8 @@
 
 package com.liferay.commerce.product.content.web.internal.layout.display.page;
 
-import com.liferay.commerce.product.model.CProduct;
+import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.service.CPDefinitionLocalService;
-import com.liferay.commerce.product.service.CProductLocalService;
 import com.liferay.commerce.product.url.CPFriendlyURL;
 import com.liferay.friendly.url.model.FriendlyURLEntry;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
@@ -36,28 +35,30 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Eudaldo Alonso
+ * @author Alec Sloan
  */
 @Component(
 	enabled = false, immediate = true, service = LayoutDisplayPageProvider.class
 )
-public class CProductLayoutDisplayPageProvider
-	implements LayoutDisplayPageProvider<CProduct> {
+public class CPDefinitionLayoutDisplayPageProvider
+	implements LayoutDisplayPageProvider<CPDefinition> {
 
 	@Override
 	public String getClassName() {
-		return CProduct.class.getName();
+		return CPDefinition.class.getName();
 	}
 
 	@Override
-	public LayoutDisplayPageObjectProvider<CProduct>
+	public LayoutDisplayPageObjectProvider<CPDefinition>
 		getLayoutDisplayPageObjectProvider(
 			InfoItemReference infoItemReference) {
 
 		try {
-			CProduct cProduct = _cProductLocalService.getCProduct(
-				infoItemReference.getClassPK());
+			CPDefinition cpDefinition =
+				_cpDefinitionLocalService.getCPDefinition(
+					infoItemReference.getClassPK());
 
-			long groupId = cProduct.getGroupId();
+			long groupId = cpDefinition.getGroupId();
 
 			ServiceContext serviceContext =
 				ServiceContextThreadLocal.getServiceContext();
@@ -66,8 +67,8 @@ public class CProductLayoutDisplayPageProvider
 				groupId = serviceContext.getScopeGroupId();
 			}
 
-			return new CProductLayoutDisplayPageObjectProvider(
-				cProduct, groupId);
+			return new CPDefinitionLayoutDisplayPageObjectProvider(
+				cpDefinition, groupId);
 		}
 		catch (PortalException portalException) {
 			throw new RuntimeException(portalException);
@@ -75,7 +76,7 @@ public class CProductLayoutDisplayPageProvider
 	}
 
 	@Override
-	public LayoutDisplayPageObjectProvider<CProduct>
+	public LayoutDisplayPageObjectProvider<CPDefinition>
 		getLayoutDisplayPageObjectProvider(long groupId, String urlTitle) {
 
 		try {
@@ -87,17 +88,18 @@ public class CProductLayoutDisplayPageProvider
 			FriendlyURLEntry friendlyURLEntry =
 				_friendlyURLEntryLocalService.fetchFriendlyURLEntry(
 					companyGroup.getGroupId(),
-					_portal.getClassNameId(CProduct.class), urlTitle);
+					_portal.getClassNameId(CPDefinition.class), urlTitle);
 
 			if (friendlyURLEntry == null) {
 				return null;
 			}
 
-			CProduct cProduct = _cProductLocalService.getCProduct(
-				friendlyURLEntry.getClassPK());
+			CPDefinition cpDefinition =
+				_cpDefinitionLocalService.getCPDefinition(
+					friendlyURLEntry.getClassPK());
 
-			return new CProductLayoutDisplayPageObjectProvider(
-				cProduct, groupId);
+			return new CPDefinitionLayoutDisplayPageObjectProvider(
+				cpDefinition, groupId);
 		}
 		catch (PortalException portalException) {
 			throw new RuntimeException(portalException);
@@ -115,9 +117,6 @@ public class CProductLayoutDisplayPageProvider
 
 	@Reference
 	private CPFriendlyURL _cpFriendlyURL;
-
-	@Reference
-	private CProductLocalService _cProductLocalService;
 
 	@Reference
 	private FriendlyURLEntryLocalService _friendlyURLEntryLocalService;
