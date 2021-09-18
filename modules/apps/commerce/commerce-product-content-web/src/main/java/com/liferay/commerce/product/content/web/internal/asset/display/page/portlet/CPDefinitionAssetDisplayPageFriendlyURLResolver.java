@@ -28,11 +28,9 @@ import com.liferay.commerce.product.constants.CPPortletKeys;
 import com.liferay.commerce.product.constants.CPWebKeys;
 import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.model.CPDisplayLayout;
-import com.liferay.commerce.product.model.CProduct;
 import com.liferay.commerce.product.model.CommerceChannel;
 import com.liferay.commerce.product.service.CPDefinitionLocalService;
 import com.liferay.commerce.product.service.CPDisplayLayoutLocalService;
-import com.liferay.commerce.product.service.CProductLocalService;
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.product.url.CPFriendlyURL;
 import com.liferay.commerce.product.util.CPDefinitionHelper;
@@ -79,7 +77,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Ivica Cardic
  */
 @Component(enabled = false, service = FriendlyURLResolver.class)
-public class CProductAssetDisplayPageFriendlyURLResolver
+public class CPDefinitionAssetDisplayPageFriendlyURLResolver
 	extends BaseAssetDisplayPageFriendlyURLResolver {
 
 	@Override
@@ -91,7 +89,7 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 
 		Group companyGroup = _groupLocalService.getCompanyGroup(companyId);
 
-		long classNameId = _portal.getClassNameId(CProduct.class);
+		long classNameId = _portal.getClassNameId(CPDefinition.class);
 
 		String urlTitle = friendlyURL.substring(
 			_assetDisplayPageFriendlyURLResolverHelper.getURLSeparatorLength(
@@ -105,16 +103,15 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 			return null;
 		}
 
-		CProduct cProduct = _cProductLocalService.getCProduct(
+		CPDefinition cpDefinition = _cpDefinitionLocalService.getCPDefinition(
 			friendlyURLEntry.getClassPK());
 
 		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider =
-			_getLayoutDisplayPageObjectProvider(cProduct);
+			_getLayoutDisplayPageObjectProvider(cpDefinition);
 
 		CPDisplayLayout cpDisplayLayout =
 			_cpDisplayLayoutLocalService.fetchCPDisplayLayout(
-				groupId, CPDefinition.class,
-				cProduct.getPublishedCPDefinitionId());
+				groupId, CPDefinition.class, cpDefinition.getCPDefinitionId());
 
 		if ((cpDisplayLayout == null) &&
 			(layoutDisplayPageObjectProvider != null) &&
@@ -147,7 +144,8 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 		}
 
 		return _getBasicLayoutURL(
-			groupId, privateLayout, mainPath, params, requestContext, cProduct);
+			groupId, privateLayout, mainPath, params, requestContext,
+			cpDefinition);
 	}
 
 	@Override
@@ -166,7 +164,7 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 		FriendlyURLEntry friendlyURLEntry =
 			_friendlyURLEntryLocalService.fetchFriendlyURLEntry(
 				companyGroup.getGroupId(),
-				_portal.getClassNameId(CProduct.class), urlTitle);
+				_portal.getClassNameId(CPDefinition.class), urlTitle);
 
 		if (friendlyURLEntry == null) {
 			return null;
@@ -189,16 +187,15 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 			return null;
 		}
 
-		CProduct cProduct = _cProductLocalService.getCProduct(
+		CPDefinition cpDefinition = _cpDefinitionLocalService.getCPDefinition(
 			friendlyURLEntry.getClassPK());
 
 		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider =
-			_getLayoutDisplayPageObjectProvider(cProduct);
+			_getLayoutDisplayPageObjectProvider(cpDefinition);
 
 		CPDisplayLayout cpDisplayLayout =
 			_cpDisplayLayoutLocalService.fetchCPDisplayLayout(
-				groupId, CPDefinition.class,
-				cProduct.getPublishedCPDefinitionId());
+				groupId, CPDefinition.class, cpDefinition.getCPDefinitionId());
 
 		if ((cpDisplayLayout == null) &&
 			(layoutDisplayPageObjectProvider != null) &&
@@ -213,7 +210,7 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 		}
 
 		Layout layout = _getProductLayout(
-			groupId, privateLayout, cProduct.getPublishedCPDefinitionId());
+			groupId, privateLayout, cpDefinition.getCPDefinitionId());
 
 		return new LayoutFriendlyURLComposite(
 			layout,
@@ -229,7 +226,7 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 	private String _getBasicLayoutURL(
 			long groupId, boolean privateLayout, String mainPath,
 			Map<String, String[]> params, Map<String, Object> requestContext,
-			CProduct cProduct)
+			CPDefinition cpDefinition)
 		throws PortalException {
 
 		HttpServletRequest httpServletRequest =
@@ -239,7 +236,7 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 
 		CPCatalogEntry cpCatalogEntry = _cpDefinitionHelper.getCPCatalogEntry(
 			_getCommerceAccountId(groupId, httpServletRequest), groupId,
-			cProduct.getPublishedCPDefinitionId(), locale);
+			cpDefinition.getCPDefinitionId(), locale);
 
 		Layout layout = _getProductLayout(
 			groupId, privateLayout, cpCatalogEntry.getCPDefinitionId());
@@ -328,15 +325,15 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 	}
 
 	private LayoutDisplayPageObjectProvider<?>
-		_getLayoutDisplayPageObjectProvider(CProduct cProduct) {
+		_getLayoutDisplayPageObjectProvider(CPDefinition cpDefinition) {
 
 		LayoutDisplayPageProvider<?> layoutDisplayPageProvider =
 			layoutDisplayPageProviderTracker.
 				getLayoutDisplayPageProviderByClassName(
-					CProduct.class.getName());
+					CPDefinition.class.getName());
 
 		InfoItemReference infoItemReference = new InfoItemReference(
-			CProduct.class.getName(), cProduct.getCProductId());
+			CPDefinition.class.getName(), cpDefinition.getCPDefinitionId());
 
 		return layoutDisplayPageProvider.getLayoutDisplayPageObjectProvider(
 			infoItemReference);
@@ -398,7 +395,7 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		CProductAssetDisplayPageFriendlyURLResolver.class);
+		CPDefinitionAssetDisplayPageFriendlyURLResolver.class);
 
 	@Reference
 	private AssetDisplayPageFriendlyURLProvider
@@ -428,9 +425,6 @@ public class CProductAssetDisplayPageFriendlyURLResolver
 
 	@Reference
 	private CPFriendlyURL _cpFriendlyURL;
-
-	@Reference
-	private CProductLocalService _cProductLocalService;
 
 	@Reference
 	private FriendlyURLEntryLocalService _friendlyURLEntryLocalService;
