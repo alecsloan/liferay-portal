@@ -21,7 +21,6 @@ import com.liferay.commerce.product.catalog.CPQuery;
 import com.liferay.commerce.product.constants.CPPortletKeys;
 import com.liferay.commerce.product.data.source.CPDataSourceResult;
 import com.liferay.commerce.product.model.CPDefinition;
-import com.liferay.commerce.product.model.CProduct;
 import com.liferay.commerce.product.service.CPDefinitionLocalService;
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.product.url.CPFriendlyURL;
@@ -163,8 +162,8 @@ public class CPDefinitionSitemapURLProvider implements SitemapURLProvider {
 
 		FriendlyURLEntry friendlyURLEntry =
 			_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
-				_portal.getClassNameId(CProduct.class),
-				cpDefinition.getCProductId());
+				_portal.getClassNameId(CPDefinition.class),
+				cpDefinition.getCPDefinitionId());
 
 		String productFriendlyURL =
 			currentSiteURL + urlSeparator +

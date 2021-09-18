@@ -289,8 +289,8 @@ public class CPDefinitionLocalServiceImpl
 
 		_friendlyURLEntryLocalService.addFriendlyURLEntry(
 			companyGroup.getGroupId(),
-			classNameLocalService.getClassNameId(CProduct.class),
-			cProduct.getCProductId(), newURLTitleMap, serviceContext);
+			classNameLocalService.getClassNameId(CPDefinition.class),
+			cpDefinitionId, newURLTitleMap, serviceContext);
 
 		// Asset
 
@@ -848,8 +848,8 @@ public class CPDefinitionLocalServiceImpl
 			cpDefinition.getCompanyId());
 
 		_friendlyURLEntryLocalService.deleteFriendlyURLEntry(
-			companyGroup.getGroupId(), CProduct.class,
-			cpDefinition.getCProductId());
+			companyGroup.getGroupId(), CPDefinition.class,
+			cpDefinition.getCPDefinitionId());
 
 		// Commerce product display layouts
 
@@ -1302,8 +1302,8 @@ public class CPDefinitionLocalServiceImpl
 		try {
 			FriendlyURLEntry friendlyURLEntry =
 				_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
-					classNameLocalService.getClassNameId(CProduct.class),
-					cpDefinition.getCProductId());
+					classNameLocalService.getClassNameId(CPDefinition.class),
+					cpDefinitionId);
 
 			List<FriendlyURLEntryLocalization> friendlyURLEntryLocalizations =
 				_friendlyURLEntryLocalService.getFriendlyURLEntryLocalizations(
@@ -1334,13 +1334,10 @@ public class CPDefinitionLocalServiceImpl
 		throws PortalException {
 
 		try {
-			CPDefinition cpDefinition =
-				cpDefinitionPersistence.findByPrimaryKey(cpDefinitionId);
-
 			FriendlyURLEntry friendlyURLEntry =
 				_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
-					classNameLocalService.getClassNameId(CProduct.class),
-					cpDefinition.getCProductId());
+					classNameLocalService.getClassNameId(CPDefinition.class),
+					cpDefinitionId);
 
 			return friendlyURLEntry.getUrlTitleMapAsXML();
 		}
@@ -1650,9 +1647,10 @@ public class CPDefinitionLocalServiceImpl
 
 		// Commerce product friendly URL entries
 
-		long classNameId = classNameLocalService.getClassNameId(CProduct.class);
+		long classNameId = classNameLocalService.getClassNameId(
+			CPDefinition.class);
 
-		long classPK = cpDefinition.getCProductId();
+		long classPK = cpDefinition.getCPDefinitionId();
 
 		try {
 			FriendlyURLEntry friendlyURLEntry =
@@ -2455,7 +2453,8 @@ public class CPDefinitionLocalServiceImpl
 		Group companyGroup = _groupLocalService.getCompanyGroup(
 			cpDefinition.getCompanyId());
 
-		long classNameId = classNameLocalService.getClassNameId(CProduct.class);
+		long classNameId = classNameLocalService.getClassNameId(
+			CPDefinition.class);
 
 		for (Map.Entry<Locale, String> titleEntry : urlTitleMap.entrySet()) {
 			String urlTitle = urlTitleMap.get(titleEntry.getKey());
@@ -2465,7 +2464,7 @@ public class CPDefinitionLocalServiceImpl
 
 				urlTitle = _friendlyURLEntryLocalService.getUniqueUrlTitle(
 					companyGroup.getGroupId(), classNameId,
-					cpDefinition.getCProductId(), titleEntry.getValue());
+					cpDefinition.getCPDefinitionId(), titleEntry.getValue());
 
 				newURLTitleMap.put(
 					LocaleUtil.toLanguageId(titleEntry.getKey()), urlTitle);

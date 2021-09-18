@@ -361,14 +361,14 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 				cpDefinition.getCPDefinitionId());
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			CProduct.class);
+			CPDefinition.class);
 
 		Map<String, String> languageIdToUrlTitleMap = new HashMap<>();
 
 		try {
 			FriendlyURLEntry friendlyURLEntry =
 				_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
-					classNameId, cpDefinition.getCProductId());
+					classNameId, cpDefinition.getCPDefinitionId());
 
 			languageIdToUrlTitleMap =
 				friendlyURLEntry.getLanguageIdToUrlTitleMap();

@@ -23,12 +23,10 @@ import com.liferay.commerce.product.internal.catalog.DatabaseCPCatalogEntryImpl;
 import com.liferay.commerce.product.internal.catalog.IndexCPCatalogEntryImpl;
 import com.liferay.commerce.product.internal.search.CPDefinitionSearcher;
 import com.liferay.commerce.product.model.CPDefinition;
-import com.liferay.commerce.product.model.CProduct;
 import com.liferay.commerce.product.model.CommerceChannel;
 import com.liferay.commerce.product.permission.CommerceProductViewPermission;
 import com.liferay.commerce.product.service.CPDefinitionLocalService;
 import com.liferay.commerce.product.service.CPInstanceLocalService;
-import com.liferay.commerce.product.service.CProductLocalService;
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.product.url.CPFriendlyURL;
 import com.liferay.commerce.product.util.CPDefinitionHelper;
@@ -102,10 +100,77 @@ public class CPDefinitionHelperImpl implements CPDefinitionHelper {
 	public String getFriendlyURL(long cpDefinitionId, ThemeDisplay themeDisplay)
 		throws PortalException {
 
-		CPDefinition cpDefinition = _cpDefinitionLocalService.getCPDefinition(
-			cpDefinitionId);
+		FriendlyURLEntry friendlyURLEntry = null;
 
-		return _getFriendlyURL(cpDefinition.getCProductId(), themeDisplay);
+		try {
+			friendlyURLEntry =
+				_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
+					_portal.getClassNameId(CPDefinition.class), cpDefinitionId);
+		}
+		catch (Exception exception) {
+			if (_log.isInfoEnabled()) {
+				_log.info(
+					"No friendly URL found for " + cpDefinitionId, exception);
+			}
+
+			return StringPool.BLANK;
+		}
+
+		Layout layout = null;
+
+		Group group = themeDisplay.getScopeGroup();
+
+		String layoutUuid = _cpDefinitionLocalService.getLayoutUuid(
+			group.getGroupId(), cpDefinitionId);
+
+		if (Validator.isNotNull(layoutUuid)) {
+			try {
+				layout = _layoutLocalService.getLayoutByUuidAndGroupId(
+					layoutUuid, group.getGroupId(), true);
+			}
+			catch (PortalException portalException) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(portalException, portalException);
+				}
+			}
+
+			if (layout == null) {
+				try {
+					layout = _layoutLocalService.getLayoutByUuidAndGroupId(
+						layoutUuid, group.getGroupId(), false);
+				}
+				catch (PortalException portalException) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(portalException, portalException);
+					}
+				}
+			}
+		}
+
+		if (layout == null) {
+			long plid = _portal.getPlidFromPortletId(
+				group.getGroupId(), CPPortletKeys.CP_CONTENT_WEB);
+
+			if (plid > 0) {
+				layout = _layoutLocalService.getLayout(plid);
+			}
+		}
+
+		if (layout == null) {
+			layout = themeDisplay.getLayout();
+		}
+
+		String currentSiteURL = _portal.getGroupFriendlyURL(
+			layout.getLayoutSet(), themeDisplay);
+
+		String urlSeparator = _cpFriendlyURL.getProductURLSeparator(
+			themeDisplay.getCompanyId());
+
+		String productFriendlyURL =
+			currentSiteURL + urlSeparator +
+				friendlyURLEntry.getUrlTitle(themeDisplay.getLanguageId());
+
+		return _portal.addPreservedParameters(themeDisplay, productFriendlyURL);
 	}
 
 	@Override
@@ -185,83 +250,6 @@ public class CPDefinitionHelperImpl implements CPDefinitionHelper {
 		return cpDefinitionSearcher;
 	}
 
-	private String _getFriendlyURL(long cProductId, ThemeDisplay themeDisplay)
-		throws PortalException {
-
-		FriendlyURLEntry friendlyURLEntry = null;
-
-		try {
-			friendlyURLEntry =
-				_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
-					_portal.getClassNameId(CProduct.class), cProductId);
-		}
-		catch (Exception exception) {
-			if (_log.isInfoEnabled()) {
-				_log.info("No friendly URL found for " + cProductId, exception);
-			}
-
-			return StringPool.BLANK;
-		}
-
-		Layout layout = null;
-
-		Group group = themeDisplay.getScopeGroup();
-
-		CProduct cProduct = _cProductLocalService.getCProduct(cProductId);
-
-		String layoutUuid = _cpDefinitionLocalService.getLayoutUuid(
-			group.getGroupId(), cProduct.getPublishedCPDefinitionId());
-
-		if (Validator.isNotNull(layoutUuid)) {
-			try {
-				layout = _layoutLocalService.getLayoutByUuidAndGroupId(
-					layoutUuid, group.getGroupId(), true);
-			}
-			catch (PortalException portalException) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(portalException, portalException);
-				}
-			}
-
-			if (layout == null) {
-				try {
-					layout = _layoutLocalService.getLayoutByUuidAndGroupId(
-						layoutUuid, group.getGroupId(), false);
-				}
-				catch (PortalException portalException) {
-					if (_log.isDebugEnabled()) {
-						_log.debug(portalException, portalException);
-					}
-				}
-			}
-		}
-
-		if (layout == null) {
-			long plid = _portal.getPlidFromPortletId(
-				group.getGroupId(), CPPortletKeys.CP_CONTENT_WEB);
-
-			if (plid > 0) {
-				layout = _layoutLocalService.getLayout(plid);
-			}
-		}
-
-		if (layout == null) {
-			layout = themeDisplay.getLayout();
-		}
-
-		String currentSiteURL = _portal.getGroupFriendlyURL(
-			layout.getLayoutSet(), themeDisplay, false, false);
-
-		String urlSeparator = _cpFriendlyURL.getProductURLSeparator(
-			themeDisplay.getCompanyId());
-
-		String productFriendlyURL =
-			currentSiteURL + urlSeparator +
-				friendlyURLEntry.getUrlTitle(themeDisplay.getLanguageId());
-
-		return _portal.addPreservedParameters(themeDisplay, productFriendlyURL);
-	}
-
 	private String _getOrderByCol(String sortField) {
 		if (sortField.equals("modifiedDate")) {
 			sortField = Field.MODIFIED_DATE;
@@ -321,9 +309,6 @@ public class CPDefinitionHelperImpl implements CPDefinitionHelper {
 
 	@Reference
 	private CPInstanceLocalService _cpInstanceLocalService;
-
-	@Reference
-	private CProductLocalService _cProductLocalService;
 
 	@Reference
 	private FriendlyURLEntryLocalService _friendlyURLEntryLocalService;
