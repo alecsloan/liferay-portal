@@ -28,7 +28,6 @@ import com.liferay.commerce.product.constants.CPPortletKeys;
 import com.liferay.commerce.product.importer.CPFileImporter;
 import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.model.CPInstance;
-import com.liferay.commerce.product.model.CProduct;
 import com.liferay.commerce.product.model.CommerceCatalog;
 import com.liferay.commerce.product.model.CommerceChannel;
 import com.liferay.commerce.product.test.util.CPTestUtil;
@@ -298,8 +297,8 @@ public class CommerceSitemapURLProviderTest {
 
 		FriendlyURLEntry friendlyURLEntry =
 			_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
-				_portal.getClassNameId(CProduct.class),
-				cpDefinition.getCProductId());
+				_portal.getClassNameId(CPDefinition.class),
+				cpDefinition.getCPDefinitionId());
 
 		String currentSiteURL = _portal.getGroupFriendlyURL(
 			layout.getLayoutSet(), _themeDisplay, false, false);
