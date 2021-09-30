@@ -17,7 +17,6 @@ package com.liferay.commerce.product.content.web.internal.info;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.type.BooleanInfoFieldType;
 import com.liferay.info.field.type.DateInfoFieldType;
-import com.liferay.info.field.type.ImageInfoFieldType;
 import com.liferay.info.field.type.NumberInfoFieldType;
 import com.liferay.info.field.type.TextInfoFieldType;
 import com.liferay.info.field.type.URLInfoFieldType;
@@ -48,26 +47,6 @@ public interface CPDefinitionInfoItemFields {
 		).labelInfoLocalizedValue(
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "approved")
-		).build();
-	public static final InfoField<TextInfoFieldType> attachmentsInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			TextInfoFieldType.INSTANCE
-		).name(
-			"attachments"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "attachments")
-		).build();
-	public static final InfoField<TextInfoFieldType>
-		availabilityEstimateInfoField = InfoField.builder(
-		).infoFieldType(
-			TextInfoFieldType.INSTANCE
-		).name(
-			"availabilityEstimate"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "availability-estimate")
 		).build();
 	public static final InfoField<TextInfoFieldType> availabilityInfoField =
 		InfoField.builder(
@@ -343,16 +322,6 @@ public interface CPDefinitionInfoItemFields {
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "group-id")
 		).build();
-	public static final InfoField<TextInfoFieldType> gtinInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			TextInfoFieldType.INSTANCE
-		).name(
-			"gtin"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "gtin")
-		).build();
 	public static final InfoField<NumberInfoFieldType> heightInfoField =
 		InfoField.builder(
 		).infoFieldType(
@@ -372,16 +341,6 @@ public interface CPDefinitionInfoItemFields {
 		).labelInfoLocalizedValue(
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "ignore-sku-combinations")
-		).build();
-	public static final InfoField<ImageInfoFieldType> imageGalleryInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			ImageInfoFieldType.INSTANCE
-		).name(
-			"imageGalleryInfoField"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "image-gallery")
 		).build();
 	public static final InfoField<BooleanInfoFieldType> inactiveInfoField =
 		InfoField.builder(
@@ -422,16 +381,6 @@ public interface CPDefinitionInfoItemFields {
 		).labelInfoLocalizedValue(
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "last-publish-date")
-		).build();
-	public static final InfoField<TextInfoFieldType>
-		manufacturerPartNumberInfoField = InfoField.builder(
-		).infoFieldType(
-			TextInfoFieldType.INSTANCE
-		).name(
-			"manufacturerPartNumber"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "manufacturer-part-number")
 		).build();
 	public static final InfoField<NumberInfoFieldType>
 		maxSubscriptionCyclesInfoField = InfoField.builder(
@@ -641,16 +590,6 @@ public interface CPDefinitionInfoItemFields {
 		).labelInfoLocalizedValue(
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "status")
-		).build();
-	public static final InfoField<NumberInfoFieldType> stockQuantityInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			NumberInfoFieldType.INSTANCE
-		).name(
-			"stockQuantity"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "stock-quantity")
 		).build();
 	public static final InfoField<BooleanInfoFieldType>
 		subscriptionEnabledInfoField = InfoField.builder(

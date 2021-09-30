@@ -20,7 +20,6 @@ import com.liferay.commerce.inventory.CPDefinitionInventoryEngine;
 import com.liferay.commerce.inventory.CPDefinitionInventoryEngineRegistry;
 import com.liferay.commerce.inventory.engine.CommerceInventoryEngine;
 import com.liferay.commerce.model.CPDefinitionInventory;
-import com.liferay.commerce.product.content.util.CPContentHelper;
 import com.liferay.commerce.product.content.web.internal.info.CPDefinitionInfoItemFields;
 import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.model.CPInstance;
@@ -34,13 +33,11 @@ import com.liferay.info.item.field.reader.InfoItemFieldReaderFieldSetProvider;
 import com.liferay.info.item.provider.InfoItemFieldValuesProvider;
 import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -119,35 +116,10 @@ public class CPDefinitionInfoItemFieldValuesProvider
 						CPDefinitionInfoItemFields.availabilityInfoField,
 						availabilityStatus));
 
-				Map<Locale, String> availabilityEstimateMap = new HashMap<>();
-
-				for (Locale locale : LanguageUtil.getAvailableLocales()) {
-					availabilityEstimateMap.put(
-						locale,
-						cpDefinitionInventoryEngine.getAvailabilityEstimate(
-							cpInstance, locale));
-				}
-
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.
-							availabilityEstimateInfoField,
-						InfoLocalizedValue.<String>builder(
-						).defaultLocale(
-							LocaleUtil.fromLanguageId(
-								cpDefinition.getDefaultLanguageId())
-						).values(
-							availabilityEstimateMap
-						).build()));
-
 				cpDefinitionInfoFieldValues.add(
 					new InfoFieldValue<>(
 						CPDefinitionInfoItemFields.basePriceInfoField,
 						cpInstance.getPrice()));
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.gtinInfoField,
-						cpInstance.getGtin()));
 				cpDefinitionInfoFieldValues.add(
 					new InfoFieldValue<>(
 						CPDefinitionInfoItemFields.inventoryInfoField,
@@ -156,22 +128,8 @@ public class CPDefinitionInfoItemFieldValuesProvider
 							commerceChannelGroupId, cpInstance.getSku())));
 				cpDefinitionInfoFieldValues.add(
 					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.
-							manufacturerPartNumberInfoField,
-						cpInstance.getManufacturerPartNumber()));
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
 						CPDefinitionInfoItemFields.skuInfoField,
 						cpInstance.getSku()));
-
-				int stockQuantity = _commerceInventoryEngine.getStockQuantity(
-					serviceContext.getCompanyId(), commerceChannelGroupId,
-					cpInstance.getSku());
-
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.stockQuantityInfoField,
-						stockQuantity));
 			}
 
 			cpDefinitionInfoFieldValues.add(
@@ -183,16 +141,6 @@ public class CPDefinitionInfoItemFieldValuesProvider
 				new InfoFieldValue<>(
 					CPDefinitionInfoItemFields.approvedInfoField,
 					cpDefinition.isApproved()));
-			cpDefinitionInfoFieldValues.add(
-				new InfoFieldValue<>(
-					CPDefinitionInfoItemFields.attachmentsInfoField,
-					_cpContentHelper.getCPAttachmentFileEntries(
-						cpDefinition.getCPDefinitionId(),
-						serviceContext.getThemeDisplay())));
-			cpDefinitionInfoFieldValues.add(
-				new InfoFieldValue<>(
-					CPDefinitionInfoItemFields.attachmentsInfoField,
-					cpDefinition.isAvailableIndividually()));
 
 			List<AssetCategory> assetCategories =
 				_assetCategoryLocalService.getCategories(
@@ -332,12 +280,6 @@ public class CPDefinitionInfoItemFieldValuesProvider
 				new InfoFieldValue<>(
 					CPDefinitionInfoItemFields.ignoreSKUCombinationsInfoField,
 					cpDefinition.isIgnoreSKUCombinations()));
-			cpDefinitionInfoFieldValues.add(
-				new InfoFieldValue<>(
-					CPDefinitionInfoItemFields.imageGalleryInfoField,
-					_cpContentHelper.getCPAttachmentFileEntries(
-						cpDefinition.getCPDefinitionId(),
-						serviceContext.getThemeDisplay())));
 			cpDefinitionInfoFieldValues.add(
 				new InfoFieldValue<>(
 					CPDefinitionInfoItemFields.inactiveInfoField,
@@ -529,9 +471,6 @@ public class CPDefinitionInfoItemFieldValuesProvider
 
 	@Reference
 	private CommerceInventoryEngine _commerceInventoryEngine;
-
-	@Reference
-	private CPContentHelper _cpContentHelper;
 
 	@Reference
 	private CPDefinitionHelper _cpDefinitionHelper;

@@ -85,8 +85,6 @@ public class CPDefinitionInfoItemFormProvider
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.descriptionInfoField
 		).infoFieldSetEntry(
-			CPDefinitionInfoItemFields.imageGalleryInfoField
-		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.inventoryInfoField
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.nameInfoField
@@ -126,10 +124,6 @@ public class CPDefinitionInfoItemFormProvider
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.approvedInfoField
 		).infoFieldSetEntry(
-			CPDefinitionInfoItemFields.attachmentsInfoField
-		).infoFieldSetEntry(
-			CPDefinitionInfoItemFields.availabilityEstimateInfoField
-		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.availableIndividuallyInfoField
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.channelFilterEnabledInfoField
@@ -168,8 +162,6 @@ public class CPDefinitionInfoItemFormProvider
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.groupIdInfoField
 		).infoFieldSetEntry(
-			CPDefinitionInfoItemFields.gtinInfoField
-		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.heightInfoField
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.ignoreSKUCombinationsInfoField
@@ -177,8 +169,6 @@ public class CPDefinitionInfoItemFormProvider
 			CPDefinitionInfoItemFields.inactiveInfoField
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.incompleteInfoField
-		).infoFieldSetEntry(
-			CPDefinitionInfoItemFields.manufacturerPartNumberInfoField
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.pendingInfoField
 		).infoFieldSetEntry(
@@ -203,8 +193,6 @@ public class CPDefinitionInfoItemFormProvider
 			CPDefinitionInfoItemFields.statusByUserUuidInfoField
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.statusDateInfoField
-		).infoFieldSetEntry(
-			CPDefinitionInfoItemFields.stockQuantityInfoField
 		).infoFieldSetEntry(
 			CPDefinitionInfoItemFields.subscriptionEnabledInfoField
 		).infoFieldSetEntry(
