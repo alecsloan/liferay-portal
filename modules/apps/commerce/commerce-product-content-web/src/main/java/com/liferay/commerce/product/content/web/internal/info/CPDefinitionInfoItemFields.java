@@ -48,16 +48,6 @@ public interface CPDefinitionInfoItemFields {
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "approved")
 		).build();
-	public static final InfoField<TextInfoFieldType> availabilityInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			TextInfoFieldType.INSTANCE
-		).name(
-			"availability"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "availability")
-		).build();
 	public static final InfoField<BooleanInfoFieldType>
 		availableIndividuallyInfoField = InfoField.builder(
 		).infoFieldType(
@@ -67,16 +57,6 @@ public interface CPDefinitionInfoItemFields {
 		).labelInfoLocalizedValue(
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "available-individually")
-		).build();
-	public static final InfoField<NumberInfoFieldType> basePriceInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			NumberInfoFieldType.INSTANCE
-		).name(
-			"basePrice"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "base-price")
 		).build();
 	public static final InfoField<TextInfoFieldType> categoriesInfoField =
 		InfoField.builder(
@@ -362,16 +342,6 @@ public interface CPDefinitionInfoItemFields {
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "incomplete")
 		).build();
-	public static final InfoField<NumberInfoFieldType> inventoryInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			NumberInfoFieldType.INSTANCE
-		).name(
-			"inventory"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(
-				CPDefinitionInfoItemFields.class, "inventory")
-		).build();
 	public static final InfoField<DateInfoFieldType> lastPublishDateInfoField =
 		InfoField.builder(
 		).infoFieldType(
@@ -521,15 +491,6 @@ public interface CPDefinitionInfoItemFields {
 		).labelInfoLocalizedValue(
 			InfoLocalizedValue.localize(
 				CPDefinitionInfoItemFields.class, "short-description")
-		).build();
-	public static final InfoField<TextInfoFieldType> skuInfoField =
-		InfoField.builder(
-		).infoFieldType(
-			TextInfoFieldType.INSTANCE
-		).name(
-			"sku"
-		).labelInfoLocalizedValue(
-			InfoLocalizedValue.localize(CPDefinitionInfoItemFields.class, "sku")
 		).build();
 	public static final InfoField<TextInfoFieldType> stagedModelTypeInfoField =
 		InfoField.builder(

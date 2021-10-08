@@ -16,13 +16,10 @@ package com.liferay.commerce.product.content.web.internal.info.item.provider;
 
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
-import com.liferay.commerce.inventory.CPDefinitionInventoryEngine;
 import com.liferay.commerce.inventory.CPDefinitionInventoryEngineRegistry;
 import com.liferay.commerce.inventory.engine.CommerceInventoryEngine;
-import com.liferay.commerce.model.CPDefinitionInventory;
 import com.liferay.commerce.product.content.web.internal.info.CPDefinitionInfoItemFields;
 import com.liferay.commerce.product.model.CPDefinition;
-import com.liferay.commerce.product.model.CPInstance;
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.product.util.CPDefinitionHelper;
 import com.liferay.commerce.service.CPDefinitionInventoryLocalService;
@@ -35,6 +32,7 @@ import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleUtil;
 
 import java.util.ArrayList;
@@ -82,56 +80,6 @@ public class CPDefinitionInfoItemFieldValuesProvider
 			new ArrayList<>();
 
 		try {
-			ServiceContext serviceContext =
-				ServiceContextThreadLocal.getServiceContext();
-
-			List<CPInstance> cpInstances = cpDefinition.getCPInstances();
-
-			if (cpInstances.size() == 1) {
-				CPInstance cpInstance = cpInstances.get(0);
-
-				long commerceChannelGroupId =
-					_commerceChannelLocalService.
-						getCommerceChannelGroupIdBySiteGroupId(
-							serviceContext.getScopeGroupId());
-
-				CPDefinitionInventory cpDefinitionInventory =
-					_cpDefinitionInventoryLocalService.
-						fetchCPDefinitionInventoryByCPDefinitionId(
-							cpDefinition.getCPDefinitionId());
-
-				CPDefinitionInventoryEngine cpDefinitionInventoryEngine =
-					_cpDefinitionInventoryEngineRegistry.
-						getCPDefinitionInventoryEngine(cpDefinitionInventory);
-
-				String availabilityStatus =
-					_commerceInventoryEngine.getAvailabilityStatus(
-						cpInstance.getCompanyId(), commerceChannelGroupId,
-						cpDefinitionInventoryEngine.getMinStockQuantity(
-							cpInstance),
-						cpInstance.getSku());
-
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.availabilityInfoField,
-						availabilityStatus));
-
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.basePriceInfoField,
-						cpInstance.getPrice()));
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.inventoryInfoField,
-						_commerceInventoryEngine.getStockQuantity(
-							serviceContext.getCompanyId(),
-							commerceChannelGroupId, cpInstance.getSku())));
-				cpDefinitionInfoFieldValues.add(
-					new InfoFieldValue<>(
-						CPDefinitionInfoItemFields.skuInfoField,
-						cpInstance.getSku()));
-			}
-
 			cpDefinitionInfoFieldValues.add(
 				new InfoFieldValue<>(
 					CPDefinitionInfoItemFields.
@@ -246,12 +194,20 @@ public class CPDefinitionInfoItemFieldValuesProvider
 				new InfoFieldValue<>(
 					CPDefinitionInfoItemFields.displayDateInfoField,
 					cpDefinition.getDisplayDate()));
-			cpDefinitionInfoFieldValues.add(
-				new InfoFieldValue<>(
-					CPDefinitionInfoItemFields.displayPageUrlInfoField,
-					_cpDefinitionHelper.getFriendlyURL(
-						cpDefinition.getCPDefinitionId(),
-						serviceContext.getThemeDisplay())));
+
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
+
+			if (themeDisplay != null) {
+				cpDefinitionInfoFieldValues.add(
+					new InfoFieldValue<>(
+						CPDefinitionInfoItemFields.displayPageUrlInfoField,
+						_cpDefinitionHelper.getFriendlyURL(
+							cpDefinition.getCPDefinitionId(), themeDisplay)));
+			}
+
 			cpDefinitionInfoFieldValues.add(
 				new InfoFieldValue<>(
 					CPDefinitionInfoItemFields.draftInfoField,
