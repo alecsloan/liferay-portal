@@ -106,6 +106,18 @@ public class CPDefinitionAssetDisplayPageFriendlyURLResolver
 		CPDefinition cpDefinition = _cpDefinitionLocalService.getCPDefinition(
 			friendlyURLEntry.getClassPK());
 
+		HttpServletRequest httpServletRequest =
+			(HttpServletRequest)requestContext.get("request");
+
+		Locale locale = _portal.getLocale(httpServletRequest);
+
+		CPCatalogEntry cpCatalogEntry = _cpDefinitionHelper.getCPCatalogEntry(
+			_getCommerceAccountId(groupId, httpServletRequest), groupId,
+			cpDefinition.getCPDefinitionId(), locale);
+
+		httpServletRequest.setAttribute(
+			CPWebKeys.CP_CATALOG_ENTRY, cpCatalogEntry);
+
 		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider =
 			_getLayoutDisplayPageObjectProvider(cpDefinition);
 
@@ -129,9 +141,7 @@ public class CPDefinitionAssetDisplayPageFriendlyURLResolver
 				_assetDisplayPageFriendlyURLProvider.getFriendlyURL(
 					_portal.getClassName(
 						layoutDisplayPageObjectProvider.getClassNameId()),
-					layoutDisplayPageObjectProvider.getClassPK(),
-					_portal.getLocale(
-						(HttpServletRequest)requestContext.get("request")),
+					layoutDisplayPageObjectProvider.getClassPK(), locale,
 					themeDisplay);
 
 			if (Validator.isNotNull(assetFriendlyURL)) {
@@ -251,9 +261,6 @@ public class CPDefinitionAssetDisplayPageFriendlyURLResolver
 
 		actualParams.put("p_p_lifecycle", new String[] {"0"});
 		actualParams.put("p_p_mode", new String[] {"view"});
-
-		httpServletRequest.setAttribute(
-			CPWebKeys.CP_CATALOG_ENTRY, cpCatalogEntry);
 
 		String queryString = _http.parameterMapToString(actualParams, false);
 
